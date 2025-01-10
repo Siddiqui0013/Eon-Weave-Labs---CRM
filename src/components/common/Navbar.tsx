@@ -9,11 +9,12 @@ const Navbar = () => {
 
   const userRole = useSelector((state: RootState) => state.user.role);
   const links = getRoleLinks(userRole);
-  const [activeLink, setActiveLink] = useState(links[0]?.path);
+  const [activeLink, setActiveLink] = useState('');
 
     return (
-        <nav className="w-[20%] h-screen bg-[#171717] flex flex-col">
-            <div className="p-4 my-8">
+        <nav className="w-[20%] h-screen fixed top-0 overflow-hidden left-0 bg-[#171717] flex flex-col">
+            <div className="p-4 my-8 flex justify-between">
+                <Link to="/" className="text-xl font-bold text-white">Eon Weave Labs</Link>
                 <img src={logo} alt="EWL" className="h-8" />
             </div>
 
@@ -26,7 +27,7 @@ const Navbar = () => {
                             className={`flex items-center mx-2 rounded-full px-6 py-3
                                 ${activeLink === link.path
                                     ? 'bg-primary text-white' 
-                                    : 'text-white'
+                                    : 'text-white bg-transparent'
                                 }`}
                         >
                             <span>{link.name}</span>
