@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import Navbar from "./components/common/Navbar";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
