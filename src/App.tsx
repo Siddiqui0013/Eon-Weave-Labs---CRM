@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Navbar from "./components/common/Navbar";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
@@ -19,6 +19,11 @@ const App = () => {
 
   const role = useSelector((state: RootState) => state.user.role);
 
+  useEffect(() => {
+    console.log("Current Role:", role);
+    <Navigate to={`/${role}/dashboard`} replace />
+  }, [role]);
+
   const renderRoutes = () => {
     switch (role) {
       case "bdo":
@@ -31,17 +36,6 @@ const App = () => {
   };
 
 return (
-
-//   <div className="grid grid-cols-[auto,1fr] h-screen">
-//   <Navbar />
-//   <div className="flex-1">
-//     <Routes>
-//       <Route path="/" element={<Navigate to={`/${role}/dashboard`} replace />} />
-//       {renderRoutes()}
-//       <Route path="*" element={<Navigate to="/login" replace />} />
-//     </Routes>
-//   </div>
-// </div>
 
 <div className="flex w-[100%]">
 <div className="w-[20%]">
