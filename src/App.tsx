@@ -14,7 +14,7 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setRole("hr"));
+    dispatch(setRole("bdo"));
   }, [dispatch]);
 
   const role = useSelector((state: RootState) => state.user.role);
@@ -30,6 +30,10 @@ const App = () => {
         return <Route path="bdo/*" element={<BdoRoutes />} />;
       case "hr":
         return <Route path="hr/*" element={<HrRoutes />} />;
+      // case "developer":
+      //   return <Route path="developer/*" element={<HrRoutes />} />;
+      // case "ceo":
+      //   return <Route path="ceo/*" element={<HrRoutes />} />;
       default:
         return <Route path="/" element={<LoginForm />} />;
     }
