@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router";
+import { useLocation } from "react-router";
 import Navbar from "./components/common/Navbar";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
@@ -13,9 +14,10 @@ import "./App.css"
 const App = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    dispatch(setRole("hr"));
+    dispatch(setRole("bdo"));
   }, [dispatch])
 
   const role = useSelector((state: RootState) => state.user.role);
@@ -24,14 +26,18 @@ const App = () => {
   useEffect(() => {
     // if (role == "ceo" || role == "hr" || role == "developer" || role == "bdo") {
     if (DefinedRoles.includes(role)) {
-    navigate(`/${role}/dashboard`, { replace: true });
+      if (!location.pathname.includes(`/${role}`)) {
+        navigate(`/${role}/dashboard`);
+      } else {
+        navigate(location.pathname);
+      }
     } else {
-      navigate("/", { replace: true });
+      navigate("/");
     }
   }, [role]);
 
   const renderRoutes = () => {
-    
+
     switch (role) {
       case "bdo":
         return <Route path="bdo/*" element={<BdoRoutes />} />;
@@ -60,21 +66,21 @@ const App = () => {
   //   }
   // };
 
-return (
-  <div className="flex w-[100%]">
-    {
-    // role && (
-    DefinedRoles.includes(role) && (
-      <div className="w-[20%]">
-        <Navbar />
+  return (
+    <div className="flex w-[100%]">
+      {
+        // role && (
+        DefinedRoles.includes(role) && (
+          <div className="w-[20%]">
+            <Navbar />
+          </div>
+        )}
+      <div className={`flex-1 lg:p-5 md:p-4 p-2.5 ${!role ? "w-full" : ""}`}>
+        {/* <div className={`flex-1 ${!DefinedRoles.includes(role) ? "w-full" : ""}`}> */}
+        <Routes>{renderRoutes()}</Routes>
       </div>
-    )}
-    <div className={`flex-1 ${!role ? "w-full" : ""}`}>
-    {/* <div className={`flex-1 ${!DefinedRoles.includes(role) ? "w-full" : ""}`}> */}
-      <Routes>{renderRoutes()}</Routes>
     </div>
-  </div>
-)
+  )
 };
 
 function AppWrapper() {
@@ -109,7 +115,7 @@ export default AppWrapper;
 //   const dispatch = useDispatch();
 
 //   useEffect(() => {
-//     dispatch(setRole("hr")); 
+//     dispatch(setRole("hr"));
 //   }, [dispatch]);
 
 //     return (
