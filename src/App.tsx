@@ -15,14 +15,18 @@ const App = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(setRole("bdo"));
-  }, [dispatch]);
+    dispatch(setRole("hr"));
+  }, [dispatch])
 
   const role = useSelector((state: RootState) => state.user.role);
+  const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
 
   useEffect(() => {
-    if (role) {
-      navigate(`/${role}/dashboard`, { replace: true });
+    // if (role == "ceo" || role == "hr" || role == "developer" || role == "bdo") {
+    if (DefinedRoles.includes(role)) {
+    navigate(`/${role}/dashboard`, { replace: true });
+    } else {
+      navigate("/", { replace: true });
     }
   }, [role]);
 
@@ -58,12 +62,15 @@ const App = () => {
 
 return (
   <div className="flex w-[100%]">
-    {role && (
+    {
+    // role && (
+    DefinedRoles.includes(role) && (
       <div className="w-[20%]">
         <Navbar />
       </div>
     )}
     <div className={`flex-1 ${!role ? "w-full" : ""}`}>
+    {/* <div className={`flex-1 ${!DefinedRoles.includes(role) ? "w-full" : ""}`}> */}
       <Routes>{renderRoutes()}</Routes>
     </div>
   </div>
