@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import logo from "../../assets/logo.png"
 import { useSelector, useDispatch } from "react-redux";
 import { setRole } from "../../redux/slices/userSlice";
+import { signOut,auth } from "../../firebase"
 
 const Navbar = () => {
 
@@ -24,31 +25,45 @@ const Navbar = () => {
   }, [location.pathname]);
 
     return (
-        <nav className="w-[20%] h-screen fixed top-0 overflow-hidden left-0 bg-[#171717] flex flex-col">
-            <div className="p-4 my-8 flex justify-between">
-            <Link to={role ? `/${role}/dashboard` : "/"} className="text-xl font-bold text-white">
-            Eon Weave Labs
-                </Link>
-                <img src={logo} alt="EWL" className="h-8" />
+        <nav className="w-[20%] h-screen fixed top-0 overflow-hidden left-0 bg-[#171717] flex flex-col justify-between">
+
+            <div className="box1">
+                <div className="p-4 my-8 flex justify-between">
+                <Link to={role ? `/${role}/dashboard` : "/"} className="text-xl font-bold text-white">
+                Eon Weave Labs
+                    </Link>
+                    <img src={logo} alt="EWL" className="h-8" />
+                </div>
+
+                <ul className="flex flex-col">
+                    {links.map((link) => (
+                        <li key={link.path}>
+                            <Link
+                                to={link.path}
+                                onClick={() => setActiveLink(link.path)}
+                                className={`flex items-center mx-2 rounded-full px-6 py-3
+                                    ${activeLink === link.path
+                                        ? 'bg-primary text-white' 
+                                        : 'text-white bg-transparent'
+                                    }`}
+                            >
+                                <span>{link.name}</span>
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
             </div>
 
-            <ul className="flex flex-col">
-                {links.map((link) => (
-                    <li key={link.path}>
-                        <Link
-                            to={link.path}
-                            onClick={() => setActiveLink(link.path)}
-                            className={`flex items-center mx-2 rounded-full px-6 py-3
-                                ${activeLink === link.path
-                                    ? 'bg-primary text-white' 
-                                    : 'text-white bg-transparent'
-                                }`}
-                        >
-                            <span>{link.name}</span>
-                        </Link>
-                    </li>
-                ))}
-            </ul>
+            <button className="bg-primary text-white font-bold mb-12 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            // onClick={() => signOut(auth)}
+            onClick={() => {
+              signOut(auth);
+              dispatch(setRole(""));
+            //   window.location.href = "/";
+            }}
+            >
+            Sign out</button>
+
         </nav>
     );
 };
