@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router";
 import Navbar from "./components/common/Navbar";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
@@ -12,16 +12,18 @@ import HrRoutes from "./components/modules/hr/HrRoutes";
 import "./App.css"
 const App = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(setRole("bdo"));
+    dispatch(setRole("hr"));
   }, [dispatch]);
 
   const role = useSelector((state: RootState) => state.user.role);
 
   useEffect(() => {
-    console.log("Current Role:", role);
-    <Navigate to={`/${role}/dashboard`} replace />
+    if (role) {
+      navigate(`/${role}/dashboard`, { replace: true });
+    }
   }, [role]);
 
   const renderRoutes = () => {
@@ -30,39 +32,23 @@ const App = () => {
         return <Route path="bdo/*" element={<BdoRoutes />} />;
       case "hr":
         return <Route path="hr/*" element={<HrRoutes />} />;
-      // case "developer":
-      //   return <Route path="developer/*" element={<HrRoutes />} />;
-      // case "ceo":
-      //   return <Route path="ceo/*" element={<HrRoutes />} />;
       default:
         return <Route path="/" element={<LoginForm />} />;
     }
   };
 
 return (
-
-<div className="flex w-[100%]">
-<div className="w-[20%]">
-<Navbar />
-</div>
-<div className="flex-1">
-<Routes>
-{/* <Route path="/" element={<Navigate to={`/${role}/dashboard`} replace />} /> */}
-{renderRoutes()}
-</Routes>
-</div>
-</div>
-
-//   <div className="grid grid-cols-[auto,1fr] h-screen">
-//   <Navbar />
-//   <div className="flex-1">
-//       <Routes>
-//           {renderRoutes()}
-//       </Routes>
-//   </div>
-// </div>
-
-  );
+  <div className="flex w-[100%]">
+    {role && (
+      <div className="w-[20%]">
+        <Navbar />
+      </div>
+    )}
+    <div className={`flex-1 ${!role ? "w-full" : ""}`}>
+      <Routes>{renderRoutes()}</Routes>
+    </div>
+  </div>
+)
 };
 
 function AppWrapper() {

@@ -1,7 +1,8 @@
 import { getRoleLinks } from "../../utils/roleUtils";
+import { useLocation } from "react-router";
 import { RootState } from "../../redux/Store"
 import { Link } from "react-router"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import logo from "../../assets/logo.png"
 import { useSelector } from "react-redux";
 
@@ -9,7 +10,12 @@ const Navbar = () => {
 
   const userRole = useSelector((state: RootState) => state.user.role);
   const links = getRoleLinks(userRole);
-  const [activeLink, setActiveLink] = useState('');
+  const location = useLocation()
+  const [activeLink, setActiveLink] = useState(location.pathname);
+
+  useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location.pathname]);
 
     return (
         <nav className="w-[20%] h-screen fixed top-0 overflow-hidden left-0 bg-[#171717] flex flex-col">
