@@ -4,14 +4,20 @@ import { RootState } from "../../redux/Store"
 import { Link } from "react-router"
 import { useState, useEffect } from "react";
 import logo from "../../assets/logo.png"
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setRole } from "../../redux/slices/userSlice";
 
 const Navbar = () => {
 
-  const userRole = useSelector((state: RootState) => state.user.role);
-  const links = getRoleLinks(userRole);
+  const role = useSelector((state: RootState) => state.user.role);
+  const links = getRoleLinks(role);
   const location = useLocation()
   const [activeLink, setActiveLink] = useState(location.pathname);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setRole(role));
+  }, [role]);
 
   useEffect(() => {
     setActiveLink(location.pathname);
@@ -20,7 +26,9 @@ const Navbar = () => {
     return (
         <nav className="w-[20%] h-screen fixed top-0 overflow-hidden left-0 bg-[#171717] flex flex-col">
             <div className="p-4 my-8 flex justify-between">
-                <Link to="/" className="text-xl font-bold text-white">Eon Weave Labs</Link>
+            <Link to={role ? `/${role}/dashboard` : "/"} className="text-xl font-bold text-white">
+            Eon Weave Labs
+                </Link>
                 <img src={logo} alt="EWL" className="h-8" />
             </div>
 

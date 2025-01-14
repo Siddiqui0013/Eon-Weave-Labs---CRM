@@ -15,7 +15,7 @@ const App = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(setRole("hr"));
+    dispatch(setRole("bdo"));
   }, [dispatch]);
 
   const role = useSelector((state: RootState) => state.user.role);
@@ -27,6 +27,7 @@ const App = () => {
   }, [role]);
 
   const renderRoutes = () => {
+    
     switch (role) {
       case "bdo":
         return <Route path="bdo/*" element={<BdoRoutes />} />;
@@ -35,7 +36,25 @@ const App = () => {
       default:
         return <Route path="/" element={<LoginForm />} />;
     }
-  };
+  }
+
+  // const renderRoutes = () => {
+  //   switch (role) {
+  //     case "bdo":
+  //       return <Route path="bdo/*" element={<BdoRoutes />} />;
+  //     case "hr":
+  //       return <Route path="hr/*" element={<HrRoutes />} />;
+  //     case "developer":
+  //       return <Route path="developer/*" element={<div>Developer Dashboard</div>} />;
+  //     default:
+  //       return (
+  //         <>
+  //           <Route path="/" element={<LoginForm />} />
+  //           <Route path="*" element={<LoginForm />} /> {/* Catch-all route */}
+  //         </>
+  //       );
+  //   }
+  // };
 
 return (
   <div className="flex w-[100%]">
