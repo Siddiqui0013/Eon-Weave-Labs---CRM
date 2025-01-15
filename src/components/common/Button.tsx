@@ -12,6 +12,7 @@ export default function Button({ title, icon, onClick, className }: ButtonProps)
     >
       {icon && <span className="text-white">{icon}</span>}
       <span className="text-white">{title}</span>
+
     </div>
   )
 }
