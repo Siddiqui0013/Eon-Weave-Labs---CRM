@@ -10,9 +10,3 @@ body{
     background-color: #0F1E25;
     color: white;
 }
-
-@layer base {
-  :root {
-        --radius: 0.5rem;
-    }
-}
