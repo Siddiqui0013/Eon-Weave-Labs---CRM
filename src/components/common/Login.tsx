@@ -1,67 +1,32 @@
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "../../firebase";
-import { useNavigate } from "react-router";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setRole } from "../../redux/slices/userSlice";
 
+
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
+
+  const [name, setName] = useState("")
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); 
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const userDoc = doc(db, "userData", user.uid);
-          const userData = await getDoc(userDoc);
-          if (userData.exists()) {
-            const userRole = userData.data().role;
-            dispatch(setRole(userRole));
-            navigate(`/${userRole}/dashboard`);
-          } else {
-            console.error("User role not found");
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      }
-    });
-
-    return () => unsubscribe();
-  }, [dispatch, navigate]);
+  const userRole = name
+  dispatch(setRole(userRole));
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-    setLoading(true); 
-
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      const userDoc = doc(db, "userData", user.uid);
-      const userData = await getDoc(userDoc);
-
-      if (userData.exists()) {
-        const userRole = userData.data().role;
-        dispatch(setRole(userRole));
-        navigate(`/${userRole}/dashboard`);
-      } else {
-        setError("User role not found.");
-      }
-    } catch (error) {
-      console.error("Error logging in:", error);
-      setError("Invalid email or password.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    console.log("Name:", name);
+   
+    // const userRole = name
+    // dispatch(setRole(userRole));
+  
+    
+    // console.log("Email:", email);
+    // console.log("Password:", password);
+  }
 
   return (
     <div className="flex flex-col w-full items-center justify-center min-h-screen">
@@ -77,6 +42,20 @@ const LoginForm = () => {
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                Name
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="name"
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+                type="text"
+                placeholder="Name"
+              />
+            </div>
+
+            {/* <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                 Email
               </label>
               <input
@@ -86,11 +65,10 @@ const LoginForm = () => {
                 value={email}
                 type="email"
                 placeholder="you@example.com"
-                required
               />
-            </div>
+            </div> */}
 
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
                 Password
               </label>
@@ -101,12 +79,11 @@ const LoginForm = () => {
                 value={password}
                 type="password"
                 placeholder="**********"
-                required
               />
               <a className="inline-block align-baseline font-bold text-sm" href="#">
                 Forgot Password?
               </a>
-            </div>
+            </div> */}
 
             <div className="flex items-center justify-between">
               <label className="inline-flex items-center">
@@ -122,9 +99,8 @@ const LoginForm = () => {
               <button
                 type="submit"
                 className="w-full bg-primary text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                disabled={loading} 
               >
-                {loading ? "Signing In..." : "Sign In"}
+                Sign In
               </button>
             </div>
           </form>
@@ -140,35 +116,37 @@ export default LoginForm;
 
 
 
-
-
-
 // import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 // import { doc, getDoc } from "firebase/firestore";
 // import { auth, db } from "../../firebase";
 // import { useNavigate } from "react-router";
 // import { useState, useEffect } from "react";
-// import {  useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 // import { setRole } from "../../redux/slices/userSlice";
 
 // const LoginForm = () => {
 //   const [email, setEmail] = useState("");
 //   const [password, setPassword] = useState("");
 //   const [error, setError] = useState("");
+//   const [loading, setLoading] = useState(false); 
 //   const navigate = useNavigate();
 //   const dispatch = useDispatch();
 
 //   useEffect(() => {
 //     const unsubscribe = onAuthStateChanged(auth, async (user) => {
 //       if (user) {
-//         const userDoc = doc(db, "userData", user.uid);
-//         const userData = await getDoc(userDoc);
-//         if (userData.exists()) {
-//           const userRole = userData.data().role;
-//           dispatch(setRole(userRole));
-//           navigate(`/${userRole}/dashboard`);
-//         } else {
-//           console.error("User role not found");
+//         try {
+//           const userDoc = doc(db, "userData", user.uid);
+//           const userData = await getDoc(userDoc);
+//           if (userData.exists()) {
+//             const userRole = userData.data().role;
+//             dispatch(setRole(userRole));
+//             navigate(`/${userRole}/dashboard`);
+//           } else {
+//             console.error("User role not found");
+//           }
+//         } catch (error) {
+//           console.error("Error fetching user data:", error);
 //         }
 //       }
 //     });
@@ -179,8 +157,7 @@ export default LoginForm;
 //   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 //     e.preventDefault();
 //     setError("");
-//     console.log("Email:", email);
-//     console.log("Password:", password);
+//     setLoading(true); 
 
 //     try {
 //       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -188,12 +165,10 @@ export default LoginForm;
 
 //       const userDoc = doc(db, "userData", user.uid);
 //       const userData = await getDoc(userDoc);
-//       console.log(userData);
 
 //       if (userData.exists()) {
 //         const userRole = userData.data().role;
 //         dispatch(setRole(userRole));
-//         console.log(userRole);
 //         navigate(`/${userRole}/dashboard`);
 //       } else {
 //         setError("User role not found.");
@@ -201,9 +176,10 @@ export default LoginForm;
 //     } catch (error) {
 //       console.error("Error logging in:", error);
 //       setError("Invalid email or password.");
+//     } finally {
+//       setLoading(false);
 //     }
-
-//   }
+//   };
 
 //   return (
 //     <div className="flex flex-col w-full items-center justify-center min-h-screen">
@@ -228,6 +204,7 @@ export default LoginForm;
 //                 value={email}
 //                 type="email"
 //                 placeholder="you@example.com"
+//                 required
 //               />
 //             </div>
 
@@ -242,6 +219,7 @@ export default LoginForm;
 //                 value={password}
 //                 type="password"
 //                 placeholder="**********"
+//                 required
 //               />
 //               <a className="inline-block align-baseline font-bold text-sm" href="#">
 //                 Forgot Password?
@@ -262,8 +240,9 @@ export default LoginForm;
 //               <button
 //                 type="submit"
 //                 className="w-full bg-primary text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+//                 disabled={loading} 
 //               >
-//                 Sign In
+//                 {loading ? "Signing In..." : "Sign In"}
 //               </button>
 //             </div>
 //           </form>

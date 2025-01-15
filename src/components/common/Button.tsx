@@ -3,16 +3,18 @@ interface ButtonProps {
   className?: string
   icon?: React.ReactNode
   onClick?: () => void
+  type ?: "button" | "submit"
 }
 
-export default function Button({ title, icon, onClick, className }: ButtonProps) {
+export default function Button({ title, icon, onClick, className, type }: ButtonProps) {
   return (
-    <div className={`bg-primary px-4 py-2 flex gap-2 items-center rounded-lg ${className}`}
+    <button className={`bg-primary px-4 py-2 flex gap-2 items-center rounded-lg ${className}`}
       onClick={onClick}
+      type={type}
     >
       {icon && <span className="text-white">{icon}</span>}
       <span className="text-white">{title}</span>
 
-    </div>
+    </button>
   )
 }
