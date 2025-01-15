@@ -8,7 +8,7 @@ export default function Dashboard() {
   const [name, setName] = useState("BDO")
 
   return (
-    <div className="flex flex-col w-full items-center justify-center p-4">
+    <div className="flex flex-col w-full items-center justify-center">
 
       <div className="top flex w-full mb-8 justify-between">
         <h1 className="text-4xl" onClick={() => setName("Name Updated")} >Hi,{name} </h1>
@@ -19,7 +19,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="cards flex w-full justify-between gap-2">
+      <div className="grid lg:grid-cols-5 md:grid-cols-3 grid-cols-1 gap-5">
         <Card data={{ icon: "👋", title: "Target", val: "35/50" }} />
         <Card data={{ icon: "👋", title: "Leads", val: "3" }} />
         <Card data={{ icon: "👋", title: "Overall Payment", val: "30k" }} />

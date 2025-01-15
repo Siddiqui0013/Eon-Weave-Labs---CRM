@@ -15,7 +15,7 @@ import { Search } from 'lucide-react';
 interface Column<T> {
     key: keyof T | 'actions';
     label: string;
-    render?: (value: any, row: T) => React.ReactNode;
+    render?: (value: T[keyof T], row: T) => React.ReactNode;
 }
 
 interface ActionProps<T> {
