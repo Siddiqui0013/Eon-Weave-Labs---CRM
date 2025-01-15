@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router";
 import { useLocation } from "react-router";
 import Navbar from "./components/common/Navbar";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { RootState } from "./redux/Store"
 import { setRole } from "./redux/slices/userSlice";
@@ -12,6 +13,7 @@ import HrRoutes from "./components/modules/hr/HrRoutes";
 
 import "./App.css"
 const App = () => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,6 +22,7 @@ const App = () => {
     dispatch(setRole("bdo"));
   }, [dispatch])
 
+  
   const role = useSelector((state: RootState) => state.user.role);
   const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
 
