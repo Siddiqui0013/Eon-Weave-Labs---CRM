@@ -1,6 +1,7 @@
 import { FaVideo, FaCalendarAlt } from "react-icons/fa";
 import { MdDoNotDisturb } from "react-icons/md";
 import DataTable from "@/components/common/DataTable";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface User {
   id: number;
@@ -161,6 +162,12 @@ export default function Meeting() {
           <Card key={index} data={data} />
         ))}
       </div>
+
+      {/* <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 mt-5">
+        {cardData.map((_, index) => (
+          <Skeleton key={index} className="min-w-60 min-h-24" />
+        ))}
+      </div> */}
 
       <div className="mt-5">
         <DataTable<User> columns={columns} fetchData={fetchData} itemsPerPage={5} searchPlaceholder="Search..." />
