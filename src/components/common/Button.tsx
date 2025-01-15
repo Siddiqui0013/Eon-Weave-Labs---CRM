@@ -10,7 +10,7 @@ export default function Button( { title, icon, onClick } : ButtonProps ) {
     onClick={onClick}
     >
         {icon && <span className="text-white">{icon}</span>}
-        <span className="text-white text-lg">{title}</span>
+        <span className="text-white">{title}</span>
     </div>
   )
 }
