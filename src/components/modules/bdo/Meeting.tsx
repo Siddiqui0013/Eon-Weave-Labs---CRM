@@ -1,5 +1,6 @@
 import { FaVideo, FaCalendarAlt } from "react-icons/fa";
 import { MdDoNotDisturb } from "react-icons/md";
+import Card from "../../common/Card";
 
 export default function Meeting() {
 
@@ -7,17 +8,17 @@ export default function Meeting() {
     {
       icon: <FaVideo />,
       title: "No. of meetings",
-      val: 20
+      val: "20"
     },
     {
       icon: <FaCalendarAlt />,
       title: "Rescheduled Meetings",
-      val: 10
+      val: "10"
     },
     {
       icon: <MdDoNotDisturb />,
       title: "Cancelled Meetings",
-      val: 5
+      val: "5"
     }
   ]
 
@@ -26,13 +27,7 @@ export default function Meeting() {
 
       <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5">
         {cardData.map((data, index) => (
-          <div key={index} className="bg-card p-4 rounded-lg flex items-center gap-4">
-            <div className="text-3xl bg-white text-primary p-3 rounded-full">{data.icon}</div>
-            <div className="flex flex-col gap-1">
-              <p className="text-sm text-gray-300">{data.title}</p>
-              <p className="text-lg font-semibold">{data.val}</p>
-            </div>
-          </div>
+          <Card key={index} data={data} />
         ))}
       </div>
 

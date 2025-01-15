@@ -2,10 +2,10 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-route
 import { useLocation } from "react-router";
 import Navbar from "./components/common/Navbar";
 import { useSelector } from "react-redux";
-// import { useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { RootState } from "./redux/Store"
-// import { setRole } from "./redux/slices/userSlice";
+import { setRole } from "./redux/slices/userSlice";
 
 import LoginForm from "./components/common/Login";
 import BdoRoutes from "./components/modules/bdo/BdoRoutes";
@@ -23,8 +23,6 @@ const App = () => {
   }, [dispatch])
 
   
-
-
   const role = useSelector((state: RootState) => state.user.role);
   const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
 
