@@ -2,16 +2,30 @@ import { useState } from "react"
 import Button from "../../common/Button"
 import { TbLogout } from "react-icons/tb";
 import Card from "../../common/Card";
-import { PieChartComponent } from "@/components/common/PieChartLabel";
+import { BarChartCard } from "@/components/common/BarChart";
 
 export default function Dashboard() {
 
-  const chartData = [
-    { label: "Chrome", value: 275, fill: "hsl(var(--chart-1))" },
-    { label: "Safari", value: 200, fill: "hsl(var(--chart-2))" },
-    { label: "Firefox", value: 187, fill: "hsl(var(--chart-3))" },
-    { label: "Edge", value: 173, fill: "hsl(var(--chart-4))" },
-    { label: "Other", value: 90, fill: "hsl(var(--chart-5))" },
+  const dataChart = [
+    { month: "January", desktop: 186, mobile: 80 },
+    { month: "February", desktop: 305, mobile: 200 },
+    { month: "March", desktop: 237, mobile: 120 },
+    { month: "April", desktop: 73, mobile: 190 },
+    { month: "May", desktop: 209, mobile: 130 },
+    { month: "June", desktop: 214, mobile: 140 },
+  ];
+
+  const bars = [
+    {
+      key: "desktop",
+      label: "Desktop",
+      color: "hsl(var(--chart-1))",
+    },
+    {
+      key: "mobile",
+      label: "Mobile",
+      color: "hsl(var(--chart-2))",
+    },
   ];
 
   const salesData = [
@@ -98,14 +112,18 @@ export default function Dashboard() {
 
       <div className="mt-8 flex gap-4 w-[100%]">
 
-      <div className="div w-[70%]">
-      <PieChartComponent
-      data={chartData}
-      title="Browser Usage"
+      <div className="bg-card w-[70%] rounded-lg">
+
+    <BarChartCard
+      data={dataChart}
+      title="Bar Chart - Multiple"
       description="January - June 2024"
-      trend={{ value: 5.2, period: "month" }}
-      subtitle="Showing total visitors for the last 6 months"
-      />
+      xAxisKey="month"
+      bars={bars}
+      className="bg-card text-white border-none"
+      trendPercentage={5.2}
+      footerText="Showing total visitors for the last 6 months"
+    />
       </div>
 
       <div className="w-[30%]">
