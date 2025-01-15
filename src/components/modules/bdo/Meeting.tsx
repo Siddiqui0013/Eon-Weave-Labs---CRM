@@ -2,6 +2,7 @@ import { FaVideo, FaCalendarAlt } from "react-icons/fa";
 import { MdDoNotDisturb } from "react-icons/md";
 import DataTable from "@/components/common/DataTable";
 import { Skeleton } from "@/components/ui/skeleton";
+import CreateScheduleDialog from "./CreateSchedule";
 
 interface User {
   id: number;
@@ -169,7 +170,10 @@ export default function Meeting() {
         ))}
       </div> */}
 
-      <div className="mt-5">
+      <div className="mt-7">
+        <div className="flex justify-end w-full my-4">
+          <CreateScheduleDialog />
+        </div>
         <DataTable<User> columns={columns} fetchData={fetchData} itemsPerPage={5} searchPlaceholder="Search..." />
       </div>
 
