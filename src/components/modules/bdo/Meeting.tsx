@@ -1,7 +1,7 @@
 import { FaVideo, FaCalendarAlt } from "react-icons/fa";
 import { MdDoNotDisturb } from "react-icons/md";
 import DataTable from "@/components/common/DataTable";
-import { Skeleton } from "@/components/ui/skeleton";
+// import { Skeleton } from "@/components/ui/skeleton";
 
 interface User {
   id: number;
@@ -32,7 +32,6 @@ export default function Meeting() {
       val: "5"
     }
   ]
-
   const columns = [
     { key: 'id', label: 'ID' },
     { key: 'name', label: 'Name' },
@@ -63,12 +62,9 @@ export default function Meeting() {
     }
   ];
 
-  // Mock data fetching function
   const fetchData = async ({ page, search, limit }: { page: number; search: string; limit: number }) => {
-    // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Mock data
     const mockUsers: User[] = [
       {
         id: 1,
