@@ -1,9 +1,8 @@
 import { FaVideo, FaCalendarAlt } from "react-icons/fa";
 import { MdDoNotDisturb } from "react-icons/md";
 import DataTable from "@/components/common/DataTable";
-import { Skeleton } from "@/components/ui/skeleton";
-import CreateScheduleDialog from "./CreateSchedule";
 // import { Skeleton } from "@/components/ui/skeleton";
+import CreateScheduleDialog from "./CreateSchedule";
 
 interface User {
   id: number;
@@ -134,14 +133,12 @@ export default function Meeting() {
       }
     ];
 
-    // Filter by search term
-    let filteredUsers = mockUsers.filter(user =>
+    const filteredUsers = mockUsers.filter(user =>
       Object.values(user).some(value =>
         value.toString().toLowerCase().includes(search.toLowerCase())
       )
     );
 
-    // Calculate pagination
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
     const paginatedUsers = filteredUsers.slice(startIndex, endIndex);

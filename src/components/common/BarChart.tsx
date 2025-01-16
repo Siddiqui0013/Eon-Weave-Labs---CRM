@@ -34,21 +34,13 @@ type BarChartCardProps = {
   className?: string;
 };
 
-const defaultProps = {
-  title: "Bar Chart",
-  description: "",
-  trendPercentage: 0,
-  footerText: "Showing data visualization",
-  className: "",
-};
-
 export const BarChartCard = ({
   data,
   title,
   description,
   xAxisKey,
   bars,
-  trendPercentage,
+  trendPercentage = 0,
   footerText,
   className,
 }: BarChartCardProps) => {
