@@ -19,7 +19,7 @@ function BdoRoutes() {
             <Route path="sales-report" element={<SalesReport />} />
             <Route path="sales-report/view" element={<SaleView />} />
             <Route path="calls" element={<Calls />} />
-            <Route path="add-sale" element={<AddSale />} />
+            <Route path="sales-report/add" element={<AddSale />} />
         </Routes>
     );
 }

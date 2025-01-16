@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Trash2 , Edit } from 'lucide-react';
 import {
     Pagination,
     PaginationContent,
@@ -22,6 +22,7 @@ interface ActionProps<T> {
     row: T;
     onEdit?: (row: T) => void;
     onDelete?: (row: T) => void;
+    onRowClick?: (row: T) => void;
     renderActions?: (row: T) => React.ReactNode;
 }
 
@@ -40,9 +41,11 @@ interface DataTableProps<T> {
     columns: Column<T>[];
     fetchData: (params: FetchDataParams) => Promise<FetchDataResponse<T>>;
     itemsPerPage?: number;
+    showSearch?: boolean;
     searchPlaceholder?: string;
     onEdit?: (row: T) => void;
     onDelete?: (row: T) => void;
+    onRowClick?: (row: T) => void;
     renderActions?: (row: T) => React.ReactNode;
 }
 
@@ -52,7 +55,9 @@ function DataTable<T extends Record<string, any>>({
     itemsPerPage = 10,
     searchPlaceholder = "Search...",
     onEdit,
+    showSearch = true,
     onDelete,
+    onRowClick,
     renderActions
 }: DataTableProps<T>) {
     const [data, setData] = useState<T[]>([]);
@@ -98,24 +103,10 @@ function DataTable<T extends Record<string, any>>({
     const DefaultActions = ({ row }: ActionProps<T>) => (
         <div className="flex gap-2">
             {onEdit && (
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onEdit(row)}
-                    className="border-gray-700 hover:bg-gray-800"
-                >
-                    Edit
-                </Button>
+                <Edit className="w-4 h-4" onClick={() => onEdit(row)} />
             )}
             {onDelete && (
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onDelete(row)}
-                    className="border-gray-700 hover:bg-red-900 text-red-400"
-                >
-                    Delete
-                </Button>
+                <Trash2 color='red' className="w-4 h-4" onClick={() => onDelete(row)} />
             )}
         </div>
     );
@@ -184,6 +175,8 @@ function DataTable<T extends Record<string, any>>({
     }
     return (
         <div className="w-full space-y-4 dark">
+            {
+            showSearch &&
             <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
                 <Input
@@ -194,6 +187,8 @@ function DataTable<T extends Record<string, any>>({
                     className="pl-8 w-full bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400"
                 />
             </div>
+            }
+
        <div className="relative overflow-x-auto shadow-md sm:rounded-lg border border-gray-700">
                 <table className="w-full text-sm text-left text-gray-300">
                     <thead className="text-xs text-gray-300 uppercase bg-gray-800">
@@ -232,6 +227,12 @@ function DataTable<T extends Record<string, any>>({
                                 <tr
                                     key={index}
                                     className="bg-gray-900 border-b border-gray-700 hover:bg-gray-800 transition-colors"
+                                    onClick={(e) => {
+                                        if (!(e.target as HTMLElement).closest('.actions-column')) {
+                                            onRowClick?.(row);
+                                        }
+                                    }}
+                            
                                 >
                                     {columns.map((column) => (
                                         <td

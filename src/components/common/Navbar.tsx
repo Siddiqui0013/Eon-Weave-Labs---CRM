@@ -2,27 +2,33 @@ import { getRoleLinks } from "../../utils/roleUtils";
 import { useLocation } from "react-router";
 import { RootState } from "../../redux/Store"
 import { Link } from "react-router"
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import logo from "../../assets/logo.png"
 import { useSelector, useDispatch } from "react-redux";
 import { setRole } from "../../redux/slices/userSlice";
-// import { signOut,auth } from "../../firebase"
 
 const Navbar = () => {
 
   const role = useSelector((state: RootState) => state.user.role);
   const links = getRoleLinks(role);
   const location = useLocation()
-  const [activeLink, setActiveLink] = useState(location.pathname);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(setRole(role));
   }, [role]);
 
-  useEffect(() => {
-    setActiveLink(location.pathname);
-  }, [location.pathname]);
+  const isLinkActive = (linkPath: string) => {
+    const currentPath = location.pathname.replace(/\/$/, '');
+    const normalizedLinkPath = linkPath.replace(/\/$/, '');
+
+    if (normalizedLinkPath.endsWith('/dashboard')) {
+      return currentPath === normalizedLinkPath;
+    }
+
+    return currentPath.includes(normalizedLinkPath) && 
+           (normalizedLinkPath !== `/${role}` || currentPath === `/${role}`);
+  };
 
     return (
         <nav className="w-[20%] h-screen fixed top-0 overflow-hidden left-0 bg-[#171717] flex flex-col justify-between">
@@ -38,15 +44,14 @@ const Navbar = () => {
                 <ul className="flex flex-col">
                     {links.map((link) => (
                         <li key={link.path}>
-                            <Link
-                                to={link.path}
-                                onClick={() => setActiveLink(link.path)}
-                                className={`flex items-center mx-2 rounded-full px-6 py-3
-                                    ${activeLink === link.path
-                                        ? 'bg-primary text-white' 
-                                        : 'text-white bg-transparent'
-                                    }`}
-                            >
+              <Link
+                to={link.path}
+                className={`flex items-center mx-2 rounded-full px-6 py-3
+                  ${isLinkActive(link.path)
+                    ? 'bg-primary text-white' 
+                    : 'text-white bg-transparent'
+                  }`}
+              >
                                 <span>{link.name}</span>
                             </Link>
                         </li>

@@ -180,7 +180,7 @@ export default function Meeting() {
       data: paginatedUsers,
       total: filteredUsers.length
     };
-  };
+  }
 
   return (
     <div>
