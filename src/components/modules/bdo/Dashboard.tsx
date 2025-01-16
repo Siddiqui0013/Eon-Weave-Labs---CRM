@@ -1,6 +1,6 @@
 import { useState } from "react"
 import Button from "../../common/Button"
-import { TbLogout } from "react-icons/tb";
+import { LogIn, LogOut } from 'lucide-react';
 import Card from "../../common/Card";
 import { BarChartCard } from "@/components/common/BarChart";
 
@@ -102,8 +102,8 @@ export default function Dashboard() {
       <div className="top flex w-full mb-8 justify-between">
         <h1 className="text-4xl" onClick={() => setName("Name Updated")} >Hi,{name} </h1>
         <div className="flex gap-2">
-          <Button title="Check In" onClick={() => console.log("CheckIn")} icon={<TbLogout size={20} />} />
-          <Button title="Check Out" onClick={() => console.log("CheckOut")} icon={<TbLogout size={20} />} />
+          <Button title="Check In" onClick={() => console.log("CheckIn")} icon={<LogIn size={20} />} />
+          <Button title="Check Out" onClick={() => console.log("CheckOut")} icon={<LogOut size={20} />} />
           <div className="profileBtn h-12 w-12 rounded-full bg-secondary"></div>
         </div>
       </div>

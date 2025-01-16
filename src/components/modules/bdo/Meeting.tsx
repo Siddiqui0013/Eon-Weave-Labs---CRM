@@ -1,5 +1,4 @@
-import { FaVideo, FaCalendarAlt } from "react-icons/fa";
-import { MdDoNotDisturb } from "react-icons/md";
+import { Video, Calendar, Ban  } from 'lucide-react';
 import DataTable from "@/components/common/DataTable";
 import CreateScheduleDialog from "./CreateSchedule";
 
@@ -17,17 +16,17 @@ export default function Meeting() {
 
   const cardData = [
     {
-      icon: <FaVideo />,
+      icon: <Video />,
       title: "No. of meetings",
       val: "20"
     },
     {
-      icon: <FaCalendarAlt />,
+      icon: <Calendar />,
       title: "Rescheduled Meetings",
       val: "10"
     },
     {
-      icon: <MdDoNotDisturb />,
+      icon: <Ban />,
       title: "Cancelled Meetings",
       val: "5"
     }

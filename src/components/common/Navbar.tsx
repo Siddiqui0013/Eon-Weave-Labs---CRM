@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import logo from "../../assets/logo.png"
 import { useSelector, useDispatch } from "react-redux";
 import { setRole } from "../../redux/slices/userSlice";
-import { signOut,auth } from "../../firebase"
+// import { signOut,auth } from "../../firebase"
 
 const Navbar = () => {
 
@@ -57,7 +57,7 @@ const Navbar = () => {
             <button className="bg-primary text-white font-bold mb-12 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             // onClick={() => signOut(auth)}
             onClick={() => {
-              signOut(auth);
+            //   signOut(auth);
               dispatch(setRole(""));
             //   window.location.href = "/";
             }}
