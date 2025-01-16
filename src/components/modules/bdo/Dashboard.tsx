@@ -1,6 +1,6 @@
 import { useState } from "react"
 import Button from "../../common/Button"
-import { LogIn, LogOut } from 'lucide-react';
+import { LogIn, LogOut, Crosshair, CircleCheck, CircleDollarSign , CircleOff, CheckCheck } from 'lucide-react';
 import Card from "../../common/Card";
 import { BarChartCard } from "@/components/common/BarChart";
 
@@ -109,11 +109,11 @@ export default function Dashboard() {
       </div>
 
       <div className="grid lg:grid-cols-5 md:grid-cols-3 grid-cols-1 gap-5">
-        <Card data={{ icon: "👋", title: "Target", val: "35/50" }} />
-        <Card data={{ icon: "👋", title: "Leads", val: "3" }} />
-        <Card data={{ icon: "👋", title: "Overall Payment", val: "30k" }} />
-        <Card data={{ icon: "👋", title: "Payment Approved", val: "20k" }} />
-        <Card data={{ icon: "👋", title: "Payment Pending", val: "10k" }} />
+        <Card data={{ icon: <Crosshair /> , title: "Target", val: "35/50" }} />
+        <Card data={{ icon: <CircleCheck /> , title: "Leads", val: "3" }} />
+        <Card data={{ icon:  <CircleDollarSign /> , title: "Overall Payment", val: "30k" }} />
+        <Card data={{ icon: <CheckCheck /> , title: "Payment Approved", val: "20k" }} />
+        <Card data={{ icon: <CircleOff /> , title: "Payment Pending", val: "10k" }} />
       </div>
 
       <div className="mt-8 flex gap-4 w-[100%]">
