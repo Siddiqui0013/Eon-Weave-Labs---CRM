@@ -11,15 +11,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { Calendar } from "@/components/ui/calendar";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 
 interface ScheduleFormData {
     clientName: string;
@@ -27,7 +18,7 @@ interface ScheduleFormData {
     projectName: string;
     description: string;
     meetingLink: string;
-    scheduleDateTime: Date;
+    scheduleDate: string;
 }
 
 const CreateScheduleDialog = () => {
@@ -38,12 +29,17 @@ const CreateScheduleDialog = () => {
             projectName: "",
             description: "",
             meetingLink: "",
-            scheduleDateTime: new Date(),
+            scheduleDate: "",
         },
     });
 
     const onSubmit = (data: ScheduleFormData) => {
-        console.log(data);
+        const dateTime = new Date(data.scheduleDate);
+
+        console.log({
+            ...data,
+            scheduleDateTime: dateTime
+        });
         // Handle form submission
     };
 
@@ -139,42 +135,18 @@ const CreateScheduleDialog = () => {
 
                                 <FormField
                                     control={form.control}
-                                    name="scheduleDateTime"
+                                    name="scheduleDate"
                                     render={({ field }) => (
-                                        <FormItem className="flex flex-col">
-                                            <FormLabel className="text-gray-200">Schedule Date/Time</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant="outline"
-                                                            className={cn(
-                                                                "w-full pl-3 text-left font-normal border-gray-700 bg-gray-800 text-gray-100 hover:bg-gray-700",
-                                                                !field.value && "text-gray-400"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={(date) =>
-                                                            date < new Date() || date < new Date("1900-01-01")
-                                                        }
-                                                        initialFocus
-                                                        className="bg-gray-800 text-gray-100"
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
+                                        <FormItem>
+                                            <FormLabel className="text-gray-200">Schedule Date & Time</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="datetime-local"
+                                                    {...field}
+                                                    min={new Date().toISOString().slice(0, 16)}
+                                                    className="bg-gray-800 border-gray-700 text-gray-100 placeholder:text-gray-400"
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
