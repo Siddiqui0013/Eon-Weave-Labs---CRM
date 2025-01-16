@@ -34,14 +34,17 @@ const App = () => {
       );
   
       const role = JSON.parse(user).role;
-      if (DefinedRoles.includes(role)) {
+
+          if (DefinedRoles.includes(role)) {
+      if (!location.pathname.includes(`/${role}`)) {
         navigate(`/${role}/dashboard`);
       } else {
-        navigate("/");
+        navigate(location.pathname);
       }
     } else {
       navigate("/");
     }
+  }
   }, [dispatch, navigate]);
   
 
