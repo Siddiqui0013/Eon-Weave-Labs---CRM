@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/Store"
 import Button from "../../common/Button"
-import { LogIn, LogOut, Crosshair, CircleCheck, CircleDollarSign , CircleOff, CheckCheck } from 'lucide-react';
+import { LogIn, LogOut, Crosshair, CircleCheck, CircleDollarSign, CircleOff, CheckCheck } from 'lucide-react';
 import Card from "../../common/Card";
 import { BarChartCard } from "@/components/common/BarChart";
+import AddDailySheet from "./AddDailySheet";
 
 export default function Dashboard() {
 
@@ -65,8 +66,8 @@ export default function Dashboard() {
     <div className="flex flex-col items-center mb-8">
       <h2 className="text-xl mb-4">Most Sales</h2>
       <div className="relative mb-2">
-        <img 
-          src={person.image} 
+        <img
+          src={person.image}
           alt={person.name}
           className="w-24 h-24 rounded-full bg-yellow-300"
         />
@@ -82,14 +83,14 @@ export default function Dashboard() {
   );
   const SalesPersonListItem = ({ person }: { person: person }) => (
     <div className="flex items-center gap-3 bg-white rounded-full p-2 mb-2 shadow-sm">
-      <img 
-        src={person.image} 
+      <img
+        src={person.image}
         alt={person.name}
         className="w-10 h-10 rounded-full"
       />
       <div className="flex justify-around w-full">
-      <span className="font-medium">{person.name}</span>
-      <span className="font-bold">{person.sales.toLocaleString()}</span>
+        <span className="font-medium">{person.name}</span>
+        <span className="font-bold">{person.sales.toLocaleString()}</span>
       </div>
     </div>
   );
@@ -104,46 +105,47 @@ export default function Dashboard() {
       <div className="top flex w-full mb-8 justify-between">
         <h1 className="text-4xl">Hi , {name} </h1>
         <div className="flex gap-2">
-          <Button title="Check In" onClick={() => console.log("CheckIn")} icon={<LogIn size={20} />} />
-          <Button title="Check Out" onClick={() => console.log("CheckOut")} icon={<LogOut size={20} />} />
+          <AddDailySheet />
+          <Button title="Check In" onClick={() => console.log("CheckIn")} icon={<LogIn size={18} />} />
+          <Button title="Check Out" onClick={() => console.log("CheckOut")} icon={<LogOut size={18} />} />
           <div className="profileBtn h-12 w-12 rounded-full bg-secondary"></div>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-5 md:grid-cols-3 grid-cols-1 gap-5">
-        <Card data={{ icon: <Crosshair /> , title: "Target", val: "35/50" }} />
-        <Card data={{ icon: <CircleCheck /> , title: "Leads", val: "3" }} />
-        <Card data={{ icon:  <CircleDollarSign /> , title: "Overall Payment", val: "30k" }} />
-        <Card data={{ icon: <CheckCheck /> , title: "Payment Approved", val: "20k" }} />
-        <Card data={{ icon: <CircleOff /> , title: "Payment Pending", val: "10k" }} />
+        <Card data={{ icon: <Crosshair />, title: "Target", val: "35/50" }} />
+        <Card data={{ icon: <CircleCheck />, title: "Leads", val: "3" }} />
+        <Card data={{ icon: <CircleDollarSign />, title: "Overall Payment", val: "30k" }} />
+        <Card data={{ icon: <CheckCheck />, title: "Payment Approved", val: "20k" }} />
+        <Card data={{ icon: <CircleOff />, title: "Payment Pending", val: "10k" }} />
       </div>
 
       <div className="mt-8 flex gap-4 w-[100%]">
 
-      <div className="bg-card w-[70%] rounded-lg">
+        <div className="bg-card w-[70%] rounded-lg">
 
-    <BarChartCard
-      data={dataChart}
-      title="Bar Chart - Multiple"
-      description="January - June 2024"
-      xAxisKey="month"
-      bars={bars}
-      className="bg-card text-white border-none"
-      trendPercentage={5.2}
-      footerText="Showing total visitors for the last 6 months"
-    />
-      </div>
-
-      <div className="w-[30%]">
-        <div className=" bg-card rounded-lg flex flex-col justify-between p-2 h-full">
-        <TopSalesPerson person={topPerson} />
-      <div className="space-y-2 mb-12 text-black">
-        {otherPeople.map((person, index) => (
-          <SalesPersonListItem key={index} person={person} />
-        ))}
-      </div>
+          <BarChartCard
+            data={dataChart}
+            title="Bar Chart - Multiple"
+            description="January - June 2024"
+            xAxisKey="month"
+            bars={bars}
+            className="bg-card text-white border-none"
+            trendPercentage={5.2}
+            footerText="Showing total visitors for the last 6 months"
+          />
         </div>
-      </div>
+
+        <div className="w-[30%]">
+          <div className=" bg-card rounded-lg flex flex-col justify-between p-2 h-full">
+            <TopSalesPerson person={topPerson} />
+            <div className="space-y-2 mb-12 text-black">
+              {otherPeople.map((person, index) => (
+                <SalesPersonListItem key={index} person={person} />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
