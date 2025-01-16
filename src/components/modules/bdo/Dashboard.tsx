@@ -51,7 +51,13 @@ export default function Dashboard() {
     }
   ];
 
-  const TopSalesPerson = ({ person }) => (
+  interface person {
+    name: string;
+    sales: number;
+    image: string;
+  }
+
+  const TopSalesPerson = ({ person }: { person: person }) => (
     <div className="flex flex-col items-center mb-8">
       <h2 className="text-xl mb-4">Most Sales</h2>
       <div className="relative mb-2">
@@ -70,7 +76,7 @@ export default function Dashboard() {
       </p>
     </div>
   );
-  const SalesPersonListItem = ({ person }) => (
+  const SalesPersonListItem = ({ person }: { person: person }) => (
     <div className="flex items-center gap-3 bg-white rounded-full p-2 mb-2 shadow-sm">
       <img 
         src={person.image} 
