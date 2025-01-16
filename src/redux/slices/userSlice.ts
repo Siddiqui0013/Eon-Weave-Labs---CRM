@@ -1,57 +1,98 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-  phone: string;
-  cnic: string;
-  address: string;
-  jobTitle: string;
-  createdAt: string;
-  updatedAt: string;
-}
+const storedUser = localStorage.getItem("user");
+const storedAccessToken = localStorage.getItem("accessToken");
+const storedRefreshToken = localStorage.getItem("refreshToken");
 
-interface UserState {
-  user: User | null;
-  accessToken: string;
-  refreshToken: string;
-  isAuthenticated: boolean;
-}
-
-const initialState: UserState = {
-  user: null,
-  accessToken: "",
-  refreshToken: "",
-  isAuthenticated: false,
+const initialState = {
+  user: storedUser ? JSON.parse(storedUser) : null,
+  accessToken: storedAccessToken || "",
+  refreshToken: storedRefreshToken || "",
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUserData: (state, action: PayloadAction<{
-      user: User;
-      accessToken: string;
-      refreshToken: string;
-    }>) => {
+    setUserData(state, action: PayloadAction<any>) {
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
-      state.isAuthenticated = true;
     },
-    logout: (state) => {
+    clearUserData(state) {
       state.user = null;
       state.accessToken = "";
       state.refreshToken = "";
-      state.isAuthenticated = false;
-    }
+    },
   },
 });
 
-export const { setUserData, logout } = userSlice.actions;
+export const { setUserData, clearUserData } = userSlice.actions;
 export default userSlice.reducer;
+
+
+
+
+
+
+// import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+// interface User {
+//   _id: string;
+//   name: string;
+//   email: string;
+//   role: string;
+//   phone: string;
+//   cnic: string;
+//   address: string;
+//   jobTitle: string;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+
+// interface UserState {
+//   user: User | null;
+//   accessToken: string;
+//   refreshToken: string;
+//   isAuthenticated: boolean;
+// }
+
+// const storedUser = localStorage.getItem("user");
+// const storedAccessToken = localStorage.getItem("accessToken");
+// const storedRefreshToken = localStorage.getItem("refreshToken");
+
+// const initialState: UserState = {
+//   user: storedUser ? JSON.parse(storedUser) : null,
+//   accessToken: storedAccessToken || "",
+//   refreshToken: storedRefreshToken || "",
+//   isAuthenticated: !!storedAccessToken,
+// };
+
+// const userSlice = createSlice({
+//   name: "user",
+//   initialState,
+//   reducers: {
+//     setUserData: (state, action: PayloadAction<{
+//       user: User;
+//       accessToken: string;
+//       refreshToken: string;
+//     }>) => {
+//       state.user = action.payload.user;
+//       state.accessToken = action.payload.accessToken;
+//       state.refreshToken = action.payload.refreshToken;
+//       state.isAuthenticated = true;
+//     },
+//     logout: (state) => {
+//       state.user = null;
+//       state.accessToken = "";
+//       state.refreshToken = "";
+//       state.isAuthenticated = false;
+//     }
+//   },
+// });
+
+// export const { setUserData, logout } = userSlice.actions;
+// export default userSlice.reducer;
 
 
 

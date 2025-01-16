@@ -6,13 +6,14 @@ const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
-
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
     try {
       const response = await fetch ("https://ewlcrm-backend.vercel.app/api/user/login", {
         method : 'POST',
@@ -28,15 +29,22 @@ const LoginForm = () => {
       
       if(data.success) {
         console.log(data.data);
-        dispatch(setUserData({
-          user: data.data.user,
-          accessToken: data.data.accessToken,
-          refreshToken: data.data.refreshToken
-        }))
+        localStorage.setItem("accessToken", data.data.accessToken);
+        localStorage.setItem("refreshToken", data.data.refreshToken);
+        localStorage.setItem("user", JSON.stringify(data.data.user));
+        
+    dispatch(
+      setUserData({
+        user: data.data.user,
+        accessToken: data.data.accessToken,
+        refreshToken: data.data.refreshToken,
+      }))
       }
       setError(data.message);
   } catch (error) {
     console.error("Error logging in:", error);
+  } finally {
+    setIsLoading(false);
   }
 }
 
@@ -97,10 +105,11 @@ const LoginForm = () => {
             <div className="mt-8">
               <button
                 type="submit"
+                disabled={isLoading}
                 className="w-full bg-primary text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
-                Sign In
-              </button>
+                {isLoading ? "Signing in..." : "Sign In"}
+                </button>
             </div>
           </form>
         </div>

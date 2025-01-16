@@ -5,8 +5,8 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { RootState } from "./redux/Store"
 
-// import { setRole } from "./redux/slices/userSlice";
-// import { useDispatch } from "react-redux";
+import { setUserData } from "./redux/slices/userSlice";
+import { useDispatch } from "react-redux";
 
 import LoginForm from "./components/common/Login";
 import BdoRoutes from "./components/modules/bdo/BdoRoutes";
@@ -15,23 +15,57 @@ import HrRoutes from "./components/modules/hr/HrRoutes";
 import "./App.css"
 const App = () => {
 
-  // muhammadkhushi072242@gmail.com
-
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch()
   const navigate = useNavigate();
   const location = useLocation();
 
-  // useEffect(() => {
-  //   dispatch(setRole("bdo"));
-  // }, [dispatch])
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+  
+    if (user && accessToken && refreshToken) {
+      dispatch(
+        setUserData({
+          user: JSON.parse(user),
+          accessToken,
+          refreshToken,
+        })
+      );
+  
+      const role = JSON.parse(user).role;
+      if (DefinedRoles.includes(role)) {
+        navigate(`/${role}/dashboard`);
+      } else {
+        navigate("/");
+      }
+    } else {
+      navigate("/");
+    }
+  }, [dispatch, navigate]);
+  
 
   const { user } = useSelector((state: RootState) => state.user);
-
   const role = user ? user.role : "";
   console.log("Role from App.js: ", role);
+
+  useEffect(() => {
+    if (role && DefinedRoles.includes(role)) {
+      if (!location.pathname.includes(`/${role}`)) {
+        navigate(`/${role}/dashboard`);
+      }
+    } else {
+      navigate("/");
+    }
+  }, [role, location.pathname, navigate]);
+  
+  
+
+  /*
+muhammadkhushi072242@gmail.com
+  */
   
   const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
-
   useEffect(() => {
     // if (role == "ceo" || role == "hr" || role == "developer" || role == "bdo") {
     if (DefinedRoles.includes(role)) {
