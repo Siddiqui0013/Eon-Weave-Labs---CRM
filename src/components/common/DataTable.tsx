@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -126,13 +126,11 @@ function DataTable<T extends Record<string, any>>({
         const halfVisible = Math.floor(maxVisiblePages / 2);
 
         let startPage = Math.max(1, currentPage - halfVisible);
-        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
         if (endPage - startPage + 1 < maxVisiblePages) {
             startPage = Math.max(1, endPage - maxVisiblePages + 1);
         }
-
-        // First page
         if (startPage > 1) {
             items.push(
                 <PaginationItem key="1">
@@ -147,8 +145,6 @@ function DataTable<T extends Record<string, any>>({
                 );
             }
         }
-
-        // Page numbers
         for (let page = startPage; page <= endPage; page++) {
             items.push(
                 <PaginationItem key={page}>
@@ -161,8 +157,6 @@ function DataTable<T extends Record<string, any>>({
                 </PaginationItem>
             );
         }
-
-        // Last page
         if (endPage < totalPages) {
             if (endPage < totalPages - 1) {
                 items.push(
@@ -179,10 +173,8 @@ function DataTable<T extends Record<string, any>>({
                 </PaginationItem>
             );
         }
-
         return items;
     };
-
     if (error) {
         return (
             <div className="text-red-400 p-4 text-center dark">
@@ -190,10 +182,8 @@ function DataTable<T extends Record<string, any>>({
             </div>
         );
     }
-
     return (
         <div className="w-full space-y-4 dark">
-            {/* Search Bar */}
             <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
                 <Input
@@ -204,9 +194,7 @@ function DataTable<T extends Record<string, any>>({
                     className="pl-8 w-full bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400"
                 />
             </div>
-
-            {/* Table */}
-            <div className="relative overflow-x-auto shadow-md sm:rounded-lg border border-gray-700">
+       <div className="relative overflow-x-auto shadow-md sm:rounded-lg border border-gray-700">
                 <table className="w-full text-sm text-left text-gray-300">
                     <thead className="text-xs text-gray-300 uppercase bg-gray-800">
                         <tr>
@@ -265,8 +253,6 @@ function DataTable<T extends Record<string, any>>({
                     </tbody>
                 </table>
             </div>
-
-            {/* Pagination */}
             <Pagination>
                 <PaginationContent>
                     <PaginationItem>
@@ -289,5 +275,4 @@ function DataTable<T extends Record<string, any>>({
         </div>
     );
 }
-
 export default DataTable;

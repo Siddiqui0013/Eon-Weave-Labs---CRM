@@ -1,7 +1,6 @@
 import { FaVideo, FaCalendarAlt } from "react-icons/fa";
 import { MdDoNotDisturb } from "react-icons/md";
 import DataTable from "@/components/common/DataTable";
-// import { Skeleton } from "@/components/ui/skeleton";
 import CreateScheduleDialog from "./CreateSchedule";
 
 interface User {
@@ -33,25 +32,59 @@ export default function Meeting() {
       val: "5"
     }
   ]
-  const columns = [
+
+  // const columns = [
+  //   { key: 'id', label: 'ID' },
+  //   { key: 'name', label: 'Name' },
+  //   { key: 'email', label: 'Email' },
+  //   {
+  //     key: 'role',
+  //     label: 'Role',
+  //     render: (value: string) => (
+  //       <span className="font-medium">{value}</span>
+  //     )
+  //   },
+  //   {
+  //     key: 'status',
+  //     label: 'Status',
+  //     render: (value: string) => (
+  //       <span className={`px-2 py-1 rounded-full text-xs font-medium ${value === 'active'
+  //         ? 'bg-green-900 text-green-300'
+  //         : 'bg-red-900 text-red-300'
+  //         }`}>
+  //         {value}
+  //       </span>
+  //     )
+  //   },
+  //   {
+  //     key: 'lastActive',
+  //     label: 'Last Active',
+  //     render: (value: string) => new Date(value).toLocaleDateString()
+  //   }
+  // ];
+
+  interface Column<T> {
+    key: keyof T | 'actions';
+    label: string;
+    render?: (value: T[keyof T], row: T) => React.ReactNode;
+}
+
+  const columns: Column<User>[] = [
     { key: 'id', label: 'ID' },
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
     {
       key: 'role',
       label: 'Role',
-      render: (value: string) => (
-        <span className="font-medium">{value}</span>
-      )
+      render: (value: string | number) => <span className="font-medium">{value}</span>
     },
     {
       key: 'status',
       label: 'Status',
-      render: (value: string) => (
+      render: (value: string | number) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${value === 'active'
           ? 'bg-green-900 text-green-300'
-          : 'bg-red-900 text-red-300'
-          }`}>
+          : 'bg-red-900 text-red-300'}`}>
           {value}
         </span>
       )
@@ -59,9 +92,10 @@ export default function Meeting() {
     {
       key: 'lastActive',
       label: 'Last Active',
-      render: (value: string) => new Date(value).toLocaleDateString()
+      render: (value: string | number) => new Date(value).toLocaleDateString()
     }
   ];
+  
 
   const fetchData = async ({ page, search, limit }: { page: number; search: string; limit: number }) => {
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -151,18 +185,11 @@ export default function Meeting() {
 
   return (
     <div>
-
       <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5">
         {cardData.map((data, index) => (
           <Card key={index} data={data} />
         ))}
       </div>
-
-      {/* <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 mt-5">
-        {cardData.map((_, index) => (
-          <Skeleton key={index} className="min-w-60 min-h-24" />
-        ))}
-      </div> */}
 
       <div className="mt-7">
         <div className="flex justify-end w-full my-4">
