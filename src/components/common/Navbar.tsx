@@ -2,21 +2,18 @@ import { getRoleLinks } from "../../utils/roleUtils";
 import { useLocation } from "react-router";
 import { RootState } from "../../redux/Store"
 import { Link } from "react-router"
-import { useEffect } from "react";
 import logo from "../../assets/logo.png"
-import { useSelector, useDispatch } from "react-redux";
-import { setRole } from "../../redux/slices/userSlice";
+import { useSelector } from "react-redux";
+// import { useSelector, useDispatch } from "react-redux";
 
 const Navbar = () => {
 
-  const role = useSelector((state: RootState) => state.user.role);
+  const { user } = useSelector((state: RootState) => state.user);
+  const role = user ? user.role : "";
+
   const links = getRoleLinks(role);
   const location = useLocation()
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(setRole(role));
-  }, [role]);
+  // const dispatch = useDispatch();
 
   const isLinkActive = (linkPath: string) => {
     const currentPath = location.pathname.replace(/\/$/, '');
@@ -63,7 +60,7 @@ const Navbar = () => {
             // onClick={() => signOut(auth)}
             onClick={() => {
             //   signOut(auth);
-              dispatch(setRole(""));
+              // dispatch(setRole(""));
             //   window.location.href = "/";
             }}
             >

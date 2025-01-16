@@ -1,60 +1,81 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  phone: string;
+  cnic: string;
+  address: string;
+  jobTitle: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface UserState {
-  role: string; 
+  user: User | null;
+  accessToken: string;
+  refreshToken: string;
+  isAuthenticated: boolean;
 }
 
 const initialState: UserState = {
-  role: "", 
+  user: null,
+  accessToken: "",
+  refreshToken: "",
+  isAuthenticated: false,
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setRole: (state, action: PayloadAction<string>) => {
-      state.role = action.payload; 
+    setUserData: (state, action: PayloadAction<{
+      user: User;
+      accessToken: string;
+      refreshToken: string;
+    }>) => {
+      state.user = action.payload.user;
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+      state.isAuthenticated = true;
     },
+    logout: (state) => {
+      state.user = null;
+      state.accessToken = "";
+      state.refreshToken = "";
+      state.isAuthenticated = false;
+    }
   },
 });
 
-export const { setRole } = userSlice.actions;
+export const { setUserData, logout } = userSlice.actions;
 export default userSlice.reducer;
 
 
 
 
-
-
-
-// import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+// import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // interface UserState {
-//   role: 'CEO' | 'HR' | 'Developer' | 'BDO' | null;
-//   isAuthenticated: boolean;
+//   role: string; 
 // }
 
 // const initialState: UserState = {
-//   role: null,
-//   isAuthenticated: false,
+//   role: "", 
 // };
 
 // const userSlice = createSlice({
-//   name: 'user',
+//   name: "user",
 //   initialState,
 //   reducers: {
-//     setRole: (state, action: PayloadAction<UserState['role']>) => {
-//       state.role = action.payload;
-//     },
-//     authenticate: (state) => {
-//       state.isAuthenticated = true;
-//     },
-//     logout: (state) => {
-//       state.role = null;
-//       state.isAuthenticated = false;
+//     setRole: (state, action: PayloadAction<string>) => {
+//       state.role = action.payload; 
 //     },
 //   },
 // });
 
-// export const { setRole, authenticate, logout } = userSlice.actions;
+// export const { setRole } = userSlice.actions;
 // export default userSlice.reducer;
+

@@ -1,10 +1,14 @@
-import { useState } from "react"
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/Store"
 import Button from "../../common/Button"
 import { LogIn, LogOut, Crosshair, CircleCheck, CircleDollarSign , CircleOff, CheckCheck } from 'lucide-react';
 import Card from "../../common/Card";
 import { BarChartCard } from "@/components/common/BarChart";
 
 export default function Dashboard() {
+
+  const { user } = useSelector((state: RootState) => state.user);
+  const name = user ? user.name : "";
 
   const dataChart = [
     { month: "January", desktop: 186, mobile: 80 },
@@ -90,8 +94,6 @@ export default function Dashboard() {
     </div>
   );
 
-  const [name, setName] = useState("BDO")
-
   const sortedData = [...salesData].sort((a, b) => b.sales - a.sales);
   const topPerson = sortedData[0];
   const otherPeople = sortedData.slice(1);
@@ -100,7 +102,7 @@ export default function Dashboard() {
     <div className="flex flex-col w-full items-center justify-center">
 
       <div className="top flex w-full mb-8 justify-between">
-        <h1 className="text-4xl" onClick={() => setName("Name Updated")} >Hi,{name} </h1>
+        <h1 className="text-4xl">Hi , {name} </h1>
         <div className="flex gap-2">
           <Button title="Check In" onClick={() => console.log("CheckIn")} icon={<LogIn size={20} />} />
           <Button title="Check Out" onClick={() => console.log("CheckOut")} icon={<LogOut size={20} />} />

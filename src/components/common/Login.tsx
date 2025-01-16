@@ -1,32 +1,44 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setRole } from "../../redux/slices/userSlice";
-
+import { setUserData } from "../../redux/slices/userSlice";
 
 const LoginForm = () => {
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-
-  const [name, setName] = useState("")
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const dispatch = useDispatch();
 
-  const userRole = name
-  dispatch(setRole(userRole));
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-    console.log("Name:", name);
-   
-    // const userRole = name
-    // dispatch(setRole(userRole));
-  
-    
-    // console.log("Email:", email);
-    // console.log("Password:", password);
+    try {
+      const response = await fetch ("https://ewlcrm-backend.vercel.app/api/user/login", {
+        method : 'POST',
+        headers : {
+          "Content-Type" : "application/json"
+        },
+        body : JSON.stringify({
+          email,
+          password
+        })
+      })
+      const data = await response.json();
+      
+      if(data.success) {
+        console.log(data.data);
+        dispatch(setUserData({
+          user: data.data.user,
+          accessToken: data.data.accessToken,
+          refreshToken: data.data.refreshToken
+        }))
+      }
+      setError(data.message);
+  } catch (error) {
+    console.error("Error logging in:", error);
   }
+}
 
   return (
     <div className="flex flex-col w-full items-center justify-center min-h-screen">
@@ -40,21 +52,8 @@ const LoginForm = () => {
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
           <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                Name
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="name"
-                onChange={(e) => setName(e.target.value)}
-                value={name}
-                type="text"
-                placeholder="Name"
-              />
-            </div>
 
-            {/* <div className="mb-4">
+            <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                 Email
               </label>
@@ -66,9 +65,9 @@ const LoginForm = () => {
                 type="email"
                 placeholder="you@example.com"
               />
-            </div> */}
+            </div>
 
-            {/* <div className="mb-6">
+            <div className="mb-6">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
                 Password
               </label>
@@ -83,7 +82,7 @@ const LoginForm = () => {
               <a className="inline-block align-baseline font-bold text-sm" href="#">
                 Forgot Password?
               </a>
-            </div> */}
+            </div>
 
             <div className="flex items-center justify-between">
               <label className="inline-flex items-center">

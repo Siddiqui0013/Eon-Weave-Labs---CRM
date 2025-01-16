@@ -2,10 +2,11 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-route
 import { useLocation } from "react-router";
 import Navbar from "./components/common/Navbar";
 import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { RootState } from "./redux/Store"
-import { setRole } from "./redux/slices/userSlice";
+
+// import { setRole } from "./redux/slices/userSlice";
+// import { useDispatch } from "react-redux";
 
 import LoginForm from "./components/common/Login";
 import BdoRoutes from "./components/modules/bdo/BdoRoutes";
@@ -14,16 +15,21 @@ import HrRoutes from "./components/modules/hr/HrRoutes";
 import "./App.css"
 const App = () => {
 
-  const dispatch = useDispatch();
+  // muhammadkhushi072242@gmail.com
+
+  // const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    dispatch(setRole("bdo"));
-  }, [dispatch])
+  // useEffect(() => {
+  //   dispatch(setRole("bdo"));
+  // }, [dispatch])
 
+  const { user } = useSelector((state: RootState) => state.user);
+
+  const role = user ? user.role : "";
+  console.log("Role from App.js: ", role);
   
-  const role = useSelector((state: RootState) => state.user.role);
   const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
 
   useEffect(() => {
