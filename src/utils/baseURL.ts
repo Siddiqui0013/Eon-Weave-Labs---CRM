@@ -1,0 +1,1 @@
+export const baseURL = "https://ewlcrm-backend.vercel.app/api";
