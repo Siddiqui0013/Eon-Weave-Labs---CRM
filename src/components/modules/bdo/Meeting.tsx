@@ -184,17 +184,19 @@ export default function Meeting() {
 
   return (
     <div>
-      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5">
+      <div className="grid lg:grid-cols-3 grid-cols-2 mt-20 md:m-0 p-2 md:p-0 gap-5">
         {cardData.map((data, index) => (
           <Card key={index} data={data} />
         ))}
       </div>
 
       <div className="mt-7">
-        <div className="flex justify-end w-full my-4">
+        <div className="flex justify-end w-[95%] md:w-full my-4">
           <CreateScheduleDialog />
         </div>
+        <div className="w-[370px] md:w-full overflow-auto">
         <DataTable<User> columns={columns} fetchData={fetchData} itemsPerPage={5} searchPlaceholder="Search..." />
+      </div>
       </div>
 
     </div>

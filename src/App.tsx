@@ -35,7 +35,7 @@ const App = () => {
   
       const role = JSON.parse(user).role;
 
-          if (DefinedRoles.includes(role)) {
+      if (DefinedRoles.includes(role)) {
       if (!location.pathname.includes(`/${role}`)) {
         navigate(`/${role}/dashboard`);
       } else {
@@ -123,7 +123,9 @@ muhammadkhushi072242@gmail.com
         )}
       <div className={`flex-1 lg:p-5 md:p-4 p-2.5 ${!role ? "w-full" : ""}`}>
         {/* <div className={`flex-1 ${!DefinedRoles.includes(role) ? "w-full" : ""}`}> */}
-        <Routes>{renderRoutes()}</Routes>
+        <Routes>
+          {renderRoutes()}
+        </Routes>
       </div>
     </div>
   )
