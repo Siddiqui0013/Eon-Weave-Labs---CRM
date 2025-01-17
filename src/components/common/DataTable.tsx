@@ -240,8 +240,10 @@ function DataTable<T extends Record<string, any>>({
                                             className="px-6 py-4"
                                         >
                                             {column.key === 'actions' ? (
-                                                renderActions ? renderActions(row) : <DefaultActions row={row} />
-                                            ) : column.render ? (
+                                                        <div onClick={(e) => e.stopPropagation()}>
+                                                            {renderActions ? renderActions(row) : <DefaultActions row={row} />}
+                                                        </div>                                    
+                                                    ) : column.render ? (
                                                 column.render(row[column.key], row)
                                             ) : (
                                                 row[column.key]

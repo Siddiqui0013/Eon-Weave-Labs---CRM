@@ -16,12 +16,6 @@ interface Meeting {
   description: string;
 }
 
-interface FetchDataParams {
-  page: number;
-  search: string;
-  limit: number;
-}
-
 interface FetchDataResponse<T> {
   data: T[];
   total: number;
@@ -54,7 +48,6 @@ export default function Meeting() {
   }
 
   const columns: Column<Meeting>[] = [
-    { key: '_id', label: 'ID' },
     { key: 'projectName', label: 'Project Name' },
     { key: 'clientName', label: 'Client Name' },
     { key: 'clientEmail', label: 'Client Email' },
@@ -81,8 +74,32 @@ export default function Meeting() {
       key: 'scheduleDate',
       label: 'Schedule Date',
       render: (value: string) => new Date(value).toLocaleDateString()
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (_, row) => (
+        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+          <button 
+            onClick={() => handleEdit(row)}
+          >
+          </button>
+          <button 
+            onClick={() => handleDelete(row)}
+          >
+          </button>
+        </div>
+      )
     }
   ];
+
+  const handleEdit = (row: Meeting) => {
+    console.log('Edit:', row);
+  };
+
+  const handleDelete = (row: Meeting) => {
+    console.log('Delete:', row);
+  };
 
   const [page, setPage] = useState(1);
   const { data: response, isLoading } = useGetMeetingsByUserQuery({
@@ -114,11 +131,15 @@ export default function Meeting() {
           fetchData={fetchTableData}
           itemsPerPage={5}
           searchPlaceholder="Search..."
+          onDelete={handleDelete}
+          onRowClick={(row) => {
+            console.log('Row clicked:', row);
+            // nav(`/bdo/sales-report/view`);
+          }}
+          onEdit={handleEdit}
         />
 
       </div>
-      </div>
-
     </div>
   )
 }
