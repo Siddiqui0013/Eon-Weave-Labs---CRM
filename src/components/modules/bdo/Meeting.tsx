@@ -1,16 +1,31 @@
-import { Video, Calendar, Ban  } from 'lucide-react';
+import { Video, Calendar, Ban } from 'lucide-react';
 import DataTable from "@/components/common/DataTable";
 import CreateScheduleDialog from "./CreateSchedule";
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  status: 'active' | 'inactive';
-  lastActive: string;
-}
+import { useGetMeetingsByUserQuery } from '@/services/salesApi';
 import Card from "../../common/Card";
+import { useState } from "react";
+
+interface Meeting {
+  _id: string;
+  clientName: string;
+  clientEmail: string;
+  projectName: string;
+  meetingLink: string;
+  status: string;
+  scheduleDate: string;
+  description: string;
+}
+
+interface FetchDataParams {
+  page: number;
+  search: string;
+  limit: number;
+}
+
+interface FetchDataResponse<T> {
+  data: T[];
+  total: number;
+}
 
 export default function Meeting() {
 
@@ -32,155 +47,55 @@ export default function Meeting() {
     }
   ]
 
-  // const columns = [
-  //   { key: 'id', label: 'ID' },
-  //   { key: 'name', label: 'Name' },
-  //   { key: 'email', label: 'Email' },
-  //   {
-  //     key: 'role',
-  //     label: 'Role',
-  //     render: (value: string) => (
-  //       <span className="font-medium">{value}</span>
-  //     )
-  //   },
-  //   {
-  //     key: 'status',
-  //     label: 'Status',
-  //     render: (value: string) => (
-  //       <span className={`px-2 py-1 rounded-full text-xs font-medium ${value === 'active'
-  //         ? 'bg-green-900 text-green-300'
-  //         : 'bg-red-900 text-red-300'
-  //         }`}>
-  //         {value}
-  //       </span>
-  //     )
-  //   },
-  //   {
-  //     key: 'lastActive',
-  //     label: 'Last Active',
-  //     render: (value: string) => new Date(value).toLocaleDateString()
-  //   }
-  // ];
-
   interface Column<T> {
-    key: keyof T | 'actions';
+    key: any;
     label: string;
-    render?: (value: T[keyof T], row: T) => React.ReactNode;
-}
+    render?: (value: any, row: T) => React.ReactNode;
+  }
 
-  const columns: Column<User>[] = [
-    { key: 'id', label: 'ID' },
-    { key: 'name', label: 'Name' },
-    { key: 'email', label: 'Email' },
+  const columns: Column<Meeting>[] = [
+    { key: '_id', label: 'ID' },
+    { key: 'projectName', label: 'Project Name' },
+    { key: 'clientName', label: 'Client Name' },
+    { key: 'clientEmail', label: 'Client Email' },
     {
-      key: 'role',
-      label: 'Role',
-      render: (value: string | number) => <span className="font-medium">{value}</span>
+      key: 'meetingLink',
+      label: 'Meeting Link',
+      render: (value: string) => <a href={value} className="font-medium">{value}</a>
     },
     {
       key: 'status',
       label: 'Status',
-      render: (value: string | number) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${value === 'active'
+      render: (value: string) => (
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${value === 'Active'
           ? 'bg-green-900 text-green-300'
-          : 'bg-red-900 text-red-300'}`}>
+          : value === 'Cancelled'
+            ? 'bg-red-900 text-red-300'
+            : 'bg-yellow-900 text-yellow-300'
+          }`}>
           {value}
         </span>
       )
     },
     {
-      key: 'lastActive',
-      label: 'Last Active',
-      render: (value: string | number) => new Date(value).toLocaleDateString()
+      key: 'scheduleDate',
+      label: 'Schedule Date',
+      render: (value: string) => new Date(value).toLocaleDateString()
     }
   ];
-  
 
-  const fetchData = async ({ page, search, limit }: { page: number; search: string; limit: number }) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
+  const [page, setPage] = useState(1);
+  const { data: response, isLoading } = useGetMeetingsByUserQuery({
+    page,
+    limit: 5
+  });
 
-    const mockUsers: User[] = [
-      {
-        id: 1,
-        name: "John Doe",
-        email: "john.doe@example.com",
-        role: "Administrator",
-        status: "active",
-        lastActive: "2024-01-15T10:30:00"
-      },
-      {
-        id: 2,
-        name: "Jane Smith",
-        email: "jane.smith@example.com",
-        role: "Editor",
-        status: "active",
-        lastActive: "2024-01-14T15:45:00"
-      },
-      {
-        id: 3,
-        name: "Mike Johnson",
-        email: "mike.j@example.com",
-        role: "User",
-        status: "inactive",
-        lastActive: "2024-01-10T09:20:00"
-      },
-      {
-        id: 4,
-        name: "Sarah Wilson",
-        email: "sarah.w@example.com",
-        role: "Editor",
-        status: "active",
-        lastActive: "2024-01-15T08:15:00"
-      },
-      {
-        id: 5,
-        name: "Tom Brown",
-        email: "tom.b@example.com",
-        role: "User",
-        status: "inactive",
-        lastActive: "2024-01-13T16:30:00"
-      },
-      {
-        id: 6,
-        name: "Emily Davis",
-        email: "emily.d@example.com",
-        role: "Administrator",
-        status: "active",
-        lastActive: "2024-01-15T11:45:00"
-      },
-      {
-        id: 7,
-        name: "Chris Anderson",
-        email: "chris.a@example.com",
-        role: "User",
-        status: "active",
-        lastActive: "2024-01-14T14:20:00"
-      },
-      {
-        id: 8,
-        name: "Lisa Moore",
-        email: "lisa.m@example.com",
-        role: "Editor",
-        status: "active",
-        lastActive: "2024-01-15T09:10:00"
-      }
-    ];
-
-    const filteredUsers = mockUsers.filter(user =>
-      Object.values(user).some(value =>
-        value.toString().toLowerCase().includes(search.toLowerCase())
-      )
-    );
-
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
-
+  const fetchTableData = async (): Promise<FetchDataResponse<Meeting>> => {
     return {
-      data: paginatedUsers,
-      total: filteredUsers.length
+      data: response?.data?.meetings || [],
+      total: response?.data?.pagination?.total || 0
     };
-  }
+  };
 
   return (
     <div>
@@ -194,8 +109,13 @@ export default function Meeting() {
         <div className="flex justify-end w-[95%] md:w-full my-4">
           <CreateScheduleDialog />
         </div>
-        <div className="w-[370px] md:w-full overflow-auto">
-        <DataTable<User> columns={columns} fetchData={fetchData} itemsPerPage={5} searchPlaceholder="Search..." />
+        <DataTable<Meeting>
+          columns={columns}
+          fetchData={fetchTableData}
+          itemsPerPage={5}
+          searchPlaceholder="Search..."
+        />
+
       </div>
       </div>
 
