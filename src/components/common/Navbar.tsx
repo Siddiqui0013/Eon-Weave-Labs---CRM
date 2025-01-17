@@ -4,16 +4,27 @@ import { RootState } from "../../redux/Store"
 import { Link } from "react-router"
 import logo from "../../assets/logo.png"
 import { useSelector } from "react-redux";
-// import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
+import { X, Menu } from 'lucide-react';
+import TopButtons from "./TopButtons";
 
 const Navbar = () => {
-
+  const [isOpen, setIsOpen] = useState(false);
   const { user } = useSelector((state: RootState) => state.user);
   const role = user ? user.role : "";
-
   const links = getRoleLinks(role);
-  const location = useLocation()
-  // const dispatch = useDispatch();
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const isLinkActive = (linkPath: string) => {
     const currentPath = location.pathname.replace(/\/$/, '');
@@ -27,47 +38,79 @@ const Navbar = () => {
            (normalizedLinkPath !== `/${role}` || currentPath === `/${role}`);
   };
 
-    return (
-        <nav className="w-[20%] h-screen fixed top-0 overflow-hidden left-0 bg-[#171717] flex flex-col justify-between">
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
 
-            <div className="box1">
-                <div className="p-4 my-8 flex justify-between">
-                <Link to={role ? `/${role}/dashboard` : "/"} className="text-xl font-bold text-white">
-                Eon Weave Labs
-                    </Link>
-                    <img src={logo} alt="EWL" className="h-8" />
-                </div>
+  return (
+    <>
+    <div 
+    className="md:hidden flex justify-between fixed top-0 left-0 w-full z-50 p-2 h-16 bg-card text-white"
+    >
+    <button 
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? <X size={28} /> : <Menu size={28} />}
+      </button>
 
-                <ul className="flex flex-col">
-                    {links.map((link) => (
-                        <li key={link.path}>
-              <Link
-                to={link.path}
-                className={`flex items-center mx-2 rounded-full px-6 py-3
-                  ${isLinkActive(link.path)
-                    ? 'bg-primary text-white' 
-                    : 'text-white bg-transparent'
-                  }`}
-              >
-                                <span>{link.name}</span>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+      <TopButtons />
 
-            <button className="bg-primary text-white font-bold mb-12 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            // onClick={() => signOut(auth)}
-            onClick={() => {
-            //   signOut(auth);
-              // dispatch(setRole(""));
-            //   window.location.href = "/";
-            }}
+    </div>
+      {isOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      <nav className={`
+        fixed top-0 left-0 h-screen bg-[#171717] flex flex-col justify-between
+        transform transition-transform duration-300 ease-in-out z-40
+        w-64 md:w-[20%]
+        ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}>
+        <div className="mt-12">
+          <div className="p-4 mt-8 md:m-0 flex justify-between items-center">
+            <Link 
+              to={role ? `/${role}/dashboard` : "/"} 
+              className="text-xl font-bold text-white"
+              onClick={handleLinkClick}
             >
-            Sign out</button>
+              Eon Weave Labs
+            </Link>
+            <img src={logo} alt="EWL" className="h-8" />
+          </div>
 
-        </nav>
-    );
+          <ul className="flex flex-col">
+            {links.map((link) => (
+              <li key={link.path}>
+                <Link
+                  to={link.path}
+                  onClick={handleLinkClick}
+                  className={`flex items-center mx-2 rounded-full px-6 py-3
+                    ${isLinkActive(link.path)
+                      ? 'bg-primary text-white' 
+                      : 'text-white bg-transparent hover:bg-gray-800'
+                    }`}
+                >
+                  <span>{link.name}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <button 
+          className="bg-primary text-white font-bold mb-12 mx-4 py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-primary/90"
+          onClick={() => {
+            handleLinkClick();
+          }}
+        >
+          Sign out
+        </button>
+      </nav>
+    </>
+  );
 };
 
 export default Navbar;

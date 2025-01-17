@@ -117,7 +117,7 @@ muhammadkhushi072242@gmail.com
       {
         // role && (
         DefinedRoles.includes(role) && (
-          <div className="w-[20%]">
+          <div className="md:w-[20%]">
             <Navbar />
           </div>
         )}

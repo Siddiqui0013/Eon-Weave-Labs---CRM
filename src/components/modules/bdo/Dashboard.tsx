@@ -1,11 +1,10 @@
 import { useSelector } from "react-redux";
+import TopButtons from "@/components/common/TopButtons"; 
 import { RootState } from "../../../redux/Store"
-import Button from "../../common/Button"
-import { LogIn, LogOut, Crosshair, CircleCheck, CircleDollarSign, CircleOff, CheckCheck } from 'lucide-react';
+import { Crosshair, CircleCheck, CircleDollarSign, CircleOff, CheckCheck } from 'lucide-react';
 import Card from "../../common/Card";
 import { BarChartCard } from "@/components/common/BarChart";
 import AddDailySheet from "./AddDailySheet";
-import EmployeeProfilePreview from "@/components/common/ProfileDrawer";
 
 export default function Dashboard() {
 
@@ -57,18 +56,6 @@ export default function Dashboard() {
     }
   ];
 
-  const employeeData = {
-    name: "John Smith",
-    status: "New",
-    email: "jane.doe@example.com",
-    phone: "555-5678",
-    location: "Islamabad, Pakistan",
-    jobTitle: "Software Engineer",
-    department: "Development",
-    employmentType: "Full-time",
-    joiningDate: "2020-01-15",
-  };
-
   interface person {
     name: string;
     sales: number;
@@ -94,6 +81,7 @@ export default function Dashboard() {
       </p>
     </div>
   );
+
   const SalesPersonListItem = ({ person }: { person: person }) => (
     <div className="flex items-center gap-3 bg-white rounded-full p-2 mb-2 shadow-sm">
       <img
@@ -113,19 +101,19 @@ export default function Dashboard() {
   const otherPeople = sortedData.slice(1);
 
   return (
-    <div className="flex flex-col w-full items-center justify-center">
+    <div className="flex flex-col items-center m-0 p-0 justify-center">
 
-      <div className="top flex w-full mb-8 justify-between">
+      <div className="top flex w-[100%] md:mt-4 mt-20 my-4 p-0 justify-between">
         <h1 className="text-4xl">Hi , {name} </h1>
         <div className="flex gap-2">
           <AddDailySheet />
-          <Button title="Check In" onClick={() => console.log("CheckIn")} icon={<LogIn size={18} />} />
-          <Button title="Check Out" onClick={() => console.log("CheckOut")} icon={<LogOut size={18} />} />
-          <EmployeeProfilePreview employee={employeeData} side="right" />
+          <div className="hidden md:block">
+          <TopButtons/>
+          </div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-5 md:grid-cols-3 grid-cols-1 gap-5">
+      <div className=" my-4 grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 gap-5">
         <Card data={{ icon: <Crosshair />, title: "Target", val: "35/50" }} />
         <Card data={{ icon: <CircleCheck />, title: "Leads", val: "3" }} />
         <Card data={{ icon: <CircleDollarSign />, title: "Overall Payment", val: "30k" }} />
@@ -133,10 +121,9 @@ export default function Dashboard() {
         <Card data={{ icon: <CircleOff />, title: "Payment Pending", val: "10k" }} />
       </div>
 
-      <div className="mt-8 flex gap-4 w-[100%]">
+      <div className="mt-8 flex gap-4 w-[100%] flex-col md:flex-row">
 
-        <div className="bg-card w-[70%] rounded-lg">
-
+        <div className="bg-card md:w-[70%] w-full rounded-lg">
           <BarChartCard
             data={dataChart}
             title="Bar Chart - Multiple"
@@ -149,7 +136,7 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="w-[30%]">
+        <div className="w-full md:w-[30%]">
           <div className=" bg-card rounded-lg flex flex-col justify-between p-2 h-full">
             <TopSalesPerson person={topPerson} />
             <div className="space-y-2 mb-12 text-black">
