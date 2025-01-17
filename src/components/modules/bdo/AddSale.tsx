@@ -74,7 +74,8 @@ export default function AddSaleForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-[90%] bg-card rounded-xl mx-auto p-6">
+    <div className="mt-20 md:m-0">
+    <form onSubmit={handleSubmit} className="md:w-[90%] w-[98%] bg-card rounded-xl mx-auto p-6">
       <h2 className="text-2xl font-semibold mb-6">Add Sale</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -251,6 +252,8 @@ export default function AddSaleForm() {
         <Button title="Save" type="submit" />        
       </div>
     </form>
+    </div>
+
   );
 }
 

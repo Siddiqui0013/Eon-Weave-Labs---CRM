@@ -117,10 +117,11 @@ export default function SalesReport() {
   };
 
   return (
-    <div className="mt-8">
+    <div className="md:mt-8 mt-20">
 
       <Button title="Add New Sale" onClick={() => nav('/bdo/sales-report/add')} className="mb-4 items-end" />
 
+      <div className="w-[370px] md:w-full overflow-auto">
       <DataTable<SalesReportData> 
         columns={columns} 
         showSearch={true} 
@@ -134,6 +135,8 @@ export default function SalesReport() {
         }}
         onEdit={handleEdit}
       />
+      </div>
+
     </div>
   );
 }

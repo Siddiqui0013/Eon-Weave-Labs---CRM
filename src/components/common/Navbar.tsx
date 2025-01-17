@@ -58,7 +58,7 @@ const Navbar = () => {
     </div>
       {isOpen && (
         <div 
-          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          className="md:hidden fixed inset-0 mb-20  z-30"
           onClick={() => setIsOpen(false)}
         />
       )}

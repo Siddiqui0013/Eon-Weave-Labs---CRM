@@ -8,6 +8,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mail, Phone, MapPin, Edit } from "lucide-react";
+import { RootState } from "@/redux/Store"
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
+
 
 interface EmployeeProfileProps {
     employee: {
@@ -26,6 +30,13 @@ interface EmployeeProfileProps {
 }
 
 export default function EmployeeProfilePreview({ employee, side = "right" }: EmployeeProfileProps) {
+
+    const { user } = useSelector((state: RootState) => state.user);
+
+    useEffect(() => {
+        console.log("User:", user);
+    }, [user]);
+
     return (
         <Sheet>
             <SheetTrigger asChild>
@@ -36,7 +47,7 @@ export default function EmployeeProfilePreview({ employee, side = "right" }: Emp
                 className="max-w-xl bg-gray-900 border-gray-800 p-0"
             >
                 <SheetHeader className="border-b border-gray-800 p-6">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between mt-8 items-center">
                         <SheetTitle className="text-gray-100">Employee Profile</SheetTitle>
                         <Button
                             size="sm"
@@ -59,10 +70,7 @@ export default function EmployeeProfilePreview({ employee, side = "right" }: Emp
                             </AvatarFallback>
                         </Avatar>
                         <div>
-                            <h2 className="text-xl font-semibold text-gray-100">{employee.name}</h2>
-                            <span className="inline-block px-2 py-1 text-sm rounded-full bg-green-900 text-green-300">
-                                {employee.status}
-                            </span>
+                            <h2 className="text-xl font-semibold text-gray-100">{ user.name}</h2>
                         </div>
                     </div>
 
@@ -70,15 +78,15 @@ export default function EmployeeProfilePreview({ employee, side = "right" }: Emp
                     <div className="space-y-4 p-4 rounded-lg bg-gray-800 mb-6">
                         <div className="flex items-center gap-3 text-gray-300">
                             <Mail className="h-5 w-5 text-gray-400" />
-                            <span>{employee.email}</span>
+                            <span>{user.email}</span>
                         </div>
                         <div className="flex items-center gap-3 text-gray-300">
                             <Phone className="h-5 w-5 text-gray-400" />
-                            <span>{employee.phone}</span>
+                            <span>{user.phone}</span>
                         </div>
                         <div className="flex items-center gap-3 text-gray-300">
                             <MapPin className="h-5 w-5 text-gray-400" />
-                            <span>{employee.location}</span>
+                            <span>{user.address}</span>
                         </div>
                     </div>
 
@@ -86,7 +94,7 @@ export default function EmployeeProfilePreview({ employee, side = "right" }: Emp
                     <div className="space-y-4">
                         <div className="p-4 rounded-lg bg-gray-800">
                             <h3 className="text-sm font-medium text-gray-400 mb-1">Job Title</h3>
-                            <p className="text-gray-100">{employee.jobTitle}</p>
+                            <p className="text-gray-100">{user.jobTitle}</p>
                         </div>
                         <div className="p-4 rounded-lg bg-gray-800">
                             <h3 className="text-sm font-medium text-gray-400 mb-1">Employment Type</h3>
@@ -98,7 +106,7 @@ export default function EmployeeProfilePreview({ employee, side = "right" }: Emp
                         </div>
                         <div className="p-4 rounded-lg bg-gray-800">
                             <h3 className="text-sm font-medium text-gray-400 mb-1">Joining Date</h3>
-                            <p className="text-gray-100">{employee.joiningDate}</p>
+                            <p className="text-gray-100">{user.createdAt}</p>
                         </div>
                     </div>
                 </div>

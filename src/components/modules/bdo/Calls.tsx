@@ -100,7 +100,7 @@ export default function Calls() {
   }
 
   return (
-    <div className="mt-8">
+    <div className="w-[370px] md:w-full md:mt-8 mt-20 overflow-auto">
      <DataTable<CallsData> columns={columns} showSearch ={false} fetchData={fetchData} itemsPerPage={15} searchPlaceholder="Search..." />
     </div>
   )
