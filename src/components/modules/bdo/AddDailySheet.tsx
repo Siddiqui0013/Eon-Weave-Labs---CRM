@@ -36,7 +36,7 @@ export default function AddDailySheet() {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button className="bg-primary hover:bg-primary/90 px-4 py-6 flex gap-2 items-center rounded-lg">
+                <Button className="bg-primary text-md hover:bg-primary/90 px-4 py-6 flex gap-2 items-center rounded-lg">
                     Daily Worksheet
                     <Check className="h-4 w-4" />
                 </Button>
@@ -49,6 +49,7 @@ export default function AddDailySheet() {
                             <label className="text-sm text-gray-300">Target</label>
                             <Input
                                 type="number"
+                                disabled={true}
                                 {...form.register('target')}
                                 className="bg-gray-800 border-gray-700 text-gray-100"
                             />

@@ -3,12 +3,8 @@ import Dashboard from "./Dashboard";
 import Calls from "./Calls";
 import Meetings from "./Meeting";
 import SalesReport from "./SalesReport";
-
 import SaleView from "./SaleView";
-
 import AddSale from "./AddSale";
-
-
 
 function BdoRoutes() {
     return (
