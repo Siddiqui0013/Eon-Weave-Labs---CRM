@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
-import { Trash2 , Edit } from 'lucide-react';
+import { Trash2, Edit } from 'lucide-react';
 import {
     Pagination,
     PaginationContent,
@@ -58,7 +58,7 @@ function DataTable<T extends Record<string, any>>({
     showSearch = true,
     onDelete,
     onRowClick,
-    renderActions
+    renderActions,
 }: DataTableProps<T>) {
     const [data, setData] = useState<T[]>([]);
     const [loading, setLoading] = useState(false);
@@ -176,20 +176,20 @@ function DataTable<T extends Record<string, any>>({
     return (
         <div className="w-full space-y-4 dark">
             {
-            showSearch &&
-            <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
-                <Input
-                    type="text"
-                    placeholder={searchPlaceholder}
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    className="pl-8 w-full bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400"
-                />
-            </div>
+                showSearch &&
+                <div className="relative">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+                    <Input
+                        type="text"
+                        placeholder={searchPlaceholder}
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        className="pl-8 w-full bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400"
+                    />
+                </div>
             }
 
-       <div className="relative overflow-x-auto shadow-md sm:rounded-lg border border-gray-700">
+            <div className="relative overflow-x-auto shadow-md sm:rounded-lg border border-gray-700">
                 <table className="w-full text-sm text-left text-gray-300">
                     <thead className="text-xs text-gray-300 uppercase bg-gray-800">
                         <tr>
@@ -232,7 +232,7 @@ function DataTable<T extends Record<string, any>>({
                                             onRowClick?.(row);
                                         }
                                     }}
-                            
+
                                 >
                                     {columns.map((column) => (
                                         <td
@@ -240,10 +240,10 @@ function DataTable<T extends Record<string, any>>({
                                             className="px-6 py-4"
                                         >
                                             {column.key === 'actions' ? (
-                                                        <div onClick={(e) => e.stopPropagation()}>
-                                                            {renderActions ? renderActions(row) : <DefaultActions row={row} />}
-                                                        </div>                                    
-                                                    ) : column.render ? (
+                                                <div onClick={(e) => e.stopPropagation()}>
+                                                    {renderActions ? renderActions(row) : <DefaultActions row={row} />}
+                                                </div>
+                                            ) : column.render ? (
                                                 column.render(row[column.key], row)
                                             ) : (
                                                 row[column.key]
