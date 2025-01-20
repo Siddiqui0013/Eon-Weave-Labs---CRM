@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,7 @@ const formSchema = z.object({
 type ScheduleFormData = z.infer<typeof formSchema>;
 
 const CreateScheduleDialog = () => {
-    const [isOpen, setIsOpen] = useState(false);
+
     const [addMeetingSchedule] = useAddMeetingScheduleMutation();
 
     const form = useForm<ScheduleFormData>({
@@ -48,7 +47,6 @@ const CreateScheduleDialog = () => {
                 ...data,
                 scheduleDate: formattedDate
             }).unwrap();
-            setIsOpen(false);
             form.reset();
         } catch (error) {
             console.error('Failed to schedule meeting:', error);
@@ -182,7 +180,6 @@ const CreateScheduleDialog = () => {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => setIsOpen(false)}
                                 className="border-gray-700 bg-gray-800 text-gray-100 hover:bg-gray-700"
                             >
                                 Cancel

@@ -1,24 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Input } from "@/components/ui/input";
 import { Trash2, Edit, Search, X } from 'lucide-react';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger,SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination";
-import { useGetMeetingsByUserQuery } from '@/services/salesApi';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { useGetMeetingsByUserQuery } from "@/services/meetingApi"
 import { useDebounce } from '@/hooks/useDebounce';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -38,7 +24,11 @@ interface FilterOptions {
     createdAt: string;
 }
 
-export default function MeetingsTable() {
+interface MeetingProps {
+    onTotalChange : (total: string) => void
+}
+
+export default function MeetingsTable( { onTotalChange } : MeetingProps) {
     const [data, setData] = useState<Meeting[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -71,8 +61,9 @@ export default function MeetingsTable() {
         if (response?.data) {
             setData(response.data.meetings);
             setTotalPages(response.data.pagination.totalPages);
+            onTotalChange (response.data.pagination.total);
         }
-    }, [response]);
+    }, [response, onTotalChange]);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
@@ -96,12 +87,10 @@ export default function MeetingsTable() {
 
     const handleEdit = (row: Meeting) => {
         console.log('Edit:', row);
-        // Add your edit logic here
     };
 
     const handleDelete = (row: Meeting) => {
         console.log('Delete:', row);
-        // Add your delete logic here
     };
 
     const renderPaginationItems = () => {
@@ -167,7 +156,6 @@ export default function MeetingsTable() {
         <div className="w-full space-y-4 dark">
 
             <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                {/* Search */}
                 <div className="relative flex-1">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
                     <Input
@@ -178,8 +166,6 @@ export default function MeetingsTable() {
                         className="pl-8 w-full bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400"
                     />
                 </div>
-
-                {/* Filters */}
                 <div className="flex gap-2">
                     <Select
                         value={filters.status}

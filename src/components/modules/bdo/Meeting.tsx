@@ -3,16 +3,22 @@ import CreateScheduleDialog from "./CreateSchedule";
 import Card from "../../common/Card";
 // import { Skeleton } from '@/components/ui/skeleton';
 import MeetingsTable from './MeetingsTable';
-
+import { useState } from 'react';
 
 
 export default function Meeting() {
+
+  const [ totalMeetings, setTotalMeetings ] = useState("0");
+  
+  const handleTotalMeetingsChange = (total: string) => {
+    setTotalMeetings(total);
+};
 
   const cardData = [
     {
       icon: <Video />,
       title: "No. of meetings",
-      val: "20"
+      val: totalMeetings
     },
     {
       icon: <Calendar />,
@@ -39,7 +45,7 @@ export default function Meeting() {
         <div className="flex justify-end w-[95%] md:w-full my-4">
           <CreateScheduleDialog />
         </div>
-        <MeetingsTable />
+        <MeetingsTable onTotalChange={handleTotalMeetingsChange} />
       </div>
     </div>
   )
