@@ -5,6 +5,8 @@ interface QueryParams {
     page?: number
     limit?: number
     search?: string
+    status?: string
+    createdAt?: string
 }
 
 export const SalesApi = createApi({
@@ -13,12 +15,14 @@ export const SalesApi = createApi({
     tagTypes: ['Sales'],
     endpoints: (builder) => ({
         getSalesByUser: builder.query({
-            query: ({ page = 1, limit = 10, search }: QueryParams) => {
+            query: ({ page = 1, limit = 10, search, status, createdAt }: QueryParams) => {
                 const query: Record<string, string | number | undefined> = {
                     page,
                     limit
                 }
                 if (search) query.search = search
+                if (status) query.status = status
+                if (createdAt) query.createdAt = createdAt
                 return {
                     url: `/sales/getSalesByUser`,
                     method: 'GET',
