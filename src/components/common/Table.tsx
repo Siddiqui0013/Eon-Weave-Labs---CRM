@@ -172,7 +172,7 @@ export default function ReusableTable({
           </thead>
           <tbody>
             {isLoading ? (
-              Array.from({ length: 5 }).map((_, index) => (
+              Array.from({ length: 10 }).map((_, index) => (
                 <tr key={index}>
                   <td colSpan={columns.length} className="px-3 py-2 text-center bg-gray-900">
                     <Skeleton className="w-full h-10" />
