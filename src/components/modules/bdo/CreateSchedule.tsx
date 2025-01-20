@@ -1,28 +1,31 @@
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import { useAddMeetingScheduleMutation } from "@/services/meetingApi"
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
-interface ScheduleFormData {
-    clientName: string;
-    clientEmail: string;
-    projectName: string;
-    description: string;
-    meetingLink: string;
-    scheduleDate: string;
-}
+const formSchema = z.object({
+    clientName: z.string().min(1, "Client name is required"),
+    clientEmail: z.string().email("Invalid email address"),
+    projectName: z.string().min(1, "Project name is required"),
+    description: z.string().min(1, "Description is required"),
+    meetingLink: z.string().min(1, "Meeting link is required"),
+    scheduleDate: z.string().min(1, "Schedule date is required"),
+});
+
+type ScheduleFormData = z.infer<typeof formSchema>;
 
 const CreateScheduleDialog = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [addMeetingSchedule] = useAddMeetingScheduleMutation();
+
     const form = useForm<ScheduleFormData>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             clientName: "",
             clientEmail: "",
@@ -33,14 +36,23 @@ const CreateScheduleDialog = () => {
         },
     });
 
-    const onSubmit = (data: ScheduleFormData) => {
-        const dateTime = new Date(data.scheduleDate);
-
-        console.log({
-            ...data,
-            scheduleDateTime: dateTime
-        });
-        // Handle form submission
+    const onSubmit = async (data: ScheduleFormData) => {
+        try {
+            const formattedDate = new Date(data.scheduleDate)
+                .toLocaleDateString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: '2-digit'
+                });
+            await addMeetingSchedule({
+                ...data,
+                scheduleDate: formattedDate
+            }).unwrap();
+            setIsOpen(false);
+            form.reset();
+        } catch (error) {
+            console.error('Failed to schedule meeting:', error);
+        }
     };
 
     return (
@@ -55,7 +67,6 @@ const CreateScheduleDialog = () => {
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* Left Column */}
                             <div className="space-y-4">
                                 <FormField
                                     control={form.control}
@@ -112,8 +123,6 @@ const CreateScheduleDialog = () => {
                                     )}
                                 />
                             </div>
-
-                            {/* Right Column */}
                             <div className="space-y-4">
                                 <FormField
                                     control={form.control}
@@ -132,7 +141,6 @@ const CreateScheduleDialog = () => {
                                         </FormItem>
                                     )}
                                 />
-
                                 <FormField
                                     control={form.control}
                                     name="scheduleDate"
@@ -151,7 +159,6 @@ const CreateScheduleDialog = () => {
                                         </FormItem>
                                     )}
                                 />
-
                                 <FormField
                                     control={form.control}
                                     name="description"
@@ -171,21 +178,21 @@ const CreateScheduleDialog = () => {
                                 />
                             </div>
                         </div>
-
                         <div className="flex justify-end space-x-2 pt-4">
-                            <DialogTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="border-gray-700 bg-gray-800 text-gray-100 hover:bg-gray-700"
-                                >
-                                    Cancel
-                                </Button>
-                            </DialogTrigger>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsOpen(false)}
+                                className="border-gray-700 bg-gray-800 text-gray-100 hover:bg-gray-700"
+                            >
+                                Cancel
+                            </Button>
                             <Button
                                 type="submit"
                                 className="bg-primary hover:bg-primary/90"
+                                disabled={form.formState.isSubmitting}
                             >
-                                Schedule
+                                {form.formState.isSubmitting ? 'Scheduling...' : 'Schedule'}
                             </Button>
                         </div>
                     </form>

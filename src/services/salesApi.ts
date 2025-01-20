@@ -5,33 +5,37 @@ interface QueryParams {
     page?: number
     limit?: number
     search?: string
-    status?: string
-    createdAt?: string
 }
 
-export const salesApi = createApi({
-    reducerPath: 'salesApi',
+export const SalesApi = createApi({
+    reducerPath: 'SalesApi',
     baseQuery: customBaseQuery,
     tagTypes: ['Sales'],
     endpoints: (builder) => ({
-        getMeetingsByUser: builder.query({
-            query: ({ page = 1, limit = 10, search, status, createdAt }: QueryParams) => {
+        getSalesByUser: builder.query({
+            query: ({ page = 1, limit = 10, search }: QueryParams) => {
                 const query: Record<string, string | number | undefined> = {
                     page,
                     limit
                 }
                 if (search) query.search = search
-                if (status) query.status = status
-                if (createdAt) query.createdAt = createdAt
                 return {
-                    url: `/sales/getMeetingsByUser`,
+                    url: `/sales/getSalesByUser`,
                     method: 'GET',
                     params: query
                 }
             },
             providesTags: ['Sales']
+        }),
+        addSale: builder.mutation({
+            query: (data) => ({
+                url: `/sales/addSale`,
+                method: 'POST',
+                body: data
+            }),
+            invalidatesTags: ['Sales']
         })
     }),
 })
 
-export const { useGetMeetingsByUserQuery } = salesApi
+export const { useGetSalesByUserQuery, useAddSaleMutation } = SalesApi

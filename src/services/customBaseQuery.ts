@@ -1,9 +1,8 @@
 import { BaseQueryFn } from '@reduxjs/toolkit/query';
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { baseURL } from '../utils/baseURL';
-import useLogout from '../hooks/useLogout';
+import UseLogout from '../hooks/useLogout';
 
-// Define types for the function parameters
 type Args = {
     url: string;
     method?: string;
@@ -63,7 +62,7 @@ const customBaseQueryWithReauth: BaseQueryFn = async (
             result = await customBaseQuery(args, api, extraOptions);
         } catch (refreshError) {
             console.error('Refresh token failed:', refreshError);
-            useLogout();
+            UseLogout();
             window.location.href = '/login';
         }
     }

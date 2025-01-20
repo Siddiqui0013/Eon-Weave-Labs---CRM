@@ -1,6 +1,17 @@
 import { useState } from 'react';
 import Button from '@/components/common/Button';
+import { useAddSaleMutation } from '@/services/salesApi'
 
+interface FormData {
+  clientName: string;
+  clientEmail: string;
+  description: string;
+  projectName: string;
+  startDate: string;
+  endDate: string;
+  projectAmount: string;
+  numberOfMilestones: string;
+}
 type Milestone = {
   name: string;
   description: string;
@@ -10,13 +21,16 @@ type Milestone = {
 }
 
 export default function AddSaleForm() {
-  const [formData, setFormData] = useState({
-    customerName: '',
-    customerEmail: '',
+
+  const [addSale] = useAddSaleMutation();
+
+  const [formData, setFormData] = useState<FormData>({
+    clientName: '',
+    clientEmail: '',
     description: '',
     projectName: '',
-    date: '',
-    projectTimeline: '',
+    startDate: '',
+    endDate: '',
     projectAmount: '',
     numberOfMilestones: '1',
   });
@@ -68,9 +82,33 @@ export default function AddSaleForm() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Form submitted:', { ...formData, milestones });
+    try {
+
+      const formattedData = {
+        clientName: formData.clientName,
+        clientEmail: formData.clientEmail,
+        projectName: formData.projectName,
+        description: formData.description,
+        startDate: formData.startDate, 
+        endDate: formData.endDate,
+        totalAmount: Number(formData.projectAmount),
+        milestones: milestones.map(milestone => ({
+          name: milestone.name,
+          description: milestone.description,
+          startDate: milestone.startDate, 
+          endDate: milestone.endDate, 
+          amount: Number(milestone.amount) 
+        }))
+      };
+      console.log("Formatted Data:", formattedData);
+      const response = await addSale(formattedData).unwrap();
+      console.log("Response:", response);
+    } catch (error) {
+      console.error('Error adding sale:', error);
+    }
+    // console.log('Form submitted:', { ...formData, milestones });
   };
 
   return (
@@ -84,8 +122,8 @@ export default function AddSaleForm() {
             <label className="block text-sm mb-1">Customer name</label>
             <input
               type="text"
-              name="customerName"
-              value={formData.customerName}
+              name="clientName"
+              value={formData.clientName}
               onChange={handleInputChange}
               className="w-full px-3 text-black py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
@@ -95,8 +133,8 @@ export default function AddSaleForm() {
             <label className="block text-sm mb-1">Customer email</label>
             <input
               type="email"
-              name="customerEmail"
-              value={formData.customerEmail}
+              name="clientEmail"
+              value={formData.clientEmail}
               onChange={handleInputChange}
               className="w-full px-3 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
@@ -132,8 +170,8 @@ export default function AddSaleForm() {
               <label className="block text-sm mb-1">Start Date</label>
               <input
                 type="date"
-                name="date"
-                value={formData.date}
+                name="startDate"
+                value={formData.startDate}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 text-black focus:ring-primary"
               />
@@ -142,8 +180,8 @@ export default function AddSaleForm() {
               <label className="block text-sm mb-1">End Date</label>
               <input
                 type="date"
-                name="projectTimeline"
-                value={formData.projectTimeline}
+                name="endDate"
+                value={formData.endDate}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 text-black focus:ring-primary"
               />

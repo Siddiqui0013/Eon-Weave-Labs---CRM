@@ -3,26 +3,26 @@ export const getRoleLinks = (role: string) => {
         ceo: [
             { name: "Dashboard", path: "/ceo/dashboard" },
             { name: "Employee Data", path: "/ceo/employeeData" },
-            { name: "Chat", path: "/chat" },
+            { name: "Chat", path: "/bdo/chat" },
         ],
         hr: [
             { name: "Dashboard", path: "/hr/dashboard" },
             { name: "Employees", path: "/hr/employees" },
             { name: "Attendance", path: "/hr/attendance" },
-            { name: "Chat", path: "/chat" },
+            { name: "Chat", path: "/bdo/chat" },
         ],
         developer: [
             { name: "Dashboard", path: "/developer/dashboard" },
             { name: "Projects", path: "/developer/projects" },
             { name: "Tasks", path: "/developer/tasks" },
-            { name: "Chat", path: "/chat" },
+            { name: "Chat", path: "/bdo/chat" },
         ],
         bdo: [
             { name: "Dashboard", path: "/bdo/dashboard" },
             { name: "Meetings", path: "/bdo/meetings" },
             { name: "Sales Report", path: "/bdo/sales-report" },
             { name: "Calls", path: "/bdo/calls" },
-            { name: "Chat", path: "/chat" },
+            { name: "Chat", path: "/bdo/chat" },
         ],
     };
 

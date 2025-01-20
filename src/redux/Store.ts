@@ -1,15 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './slices/userSlice';
-import { salesApi } from '@/services/salesApi';
+import { MeetingApi } from '@/services/meetingApi';
+import { SalesApi } from '@/services/salesApi';
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    [salesApi.reducerPath]: salesApi.reducer
+    [MeetingApi.reducerPath]: MeetingApi.reducer,
+    [SalesApi.reducerPath]: SalesApi.reducer
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(
-    salesApi.middleware
-  )
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(
+      MeetingApi.middleware,
+      SalesApi.middleware
+    ),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
