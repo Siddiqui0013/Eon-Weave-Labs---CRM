@@ -5,8 +5,23 @@ import { Crosshair, CircleCheck, CircleDollarSign, CircleOff, CheckCheck } from 
 import Card from "../../common/Card";
 import { BarChartCard } from "@/components/common/BarChart";
 import AddDailySheet from "./AddDailySheet";
+import { useGetCallsByUserQuery } from "@/services/callsApi";
+import { useState, useEffect } from "react";
 
 export default function Dashboard() {
+
+  const { data: response } = useGetCallsByUserQuery({
+  })
+
+  const [ todayUpdate, setTodayUpdate ] = useState<string | null>(null);
+
+  useEffect(() => {
+    if(response?.data?.calls?.length > 0) {
+      // const today = new Date().toISOString().split('T')[0];
+      const latestCallDate = new Date(response.data.calls[0].createdAt).toISOString().split('T')[0];
+      setTodayUpdate(latestCallDate);
+    }
+  }, [response]);
 
   const { user } = useSelector((state: RootState) => state.user);
   const name = user ? user.name : "";
@@ -21,21 +36,6 @@ export default function Dashboard() {
       day: "Tuesday",
       target: 3000,
       connectedCalls: 1398,
-    },
-    {
-      day: "Wednesday",
-      target: 2000,
-      connectedCalls: 9800,
-    },
-    {
-      day: "Thursday",
-      target: 2780,
-      connectedCalls: 3908,
-    },
-    {
-      day: "Friday",
-      target: 1890,
-      connectedCalls: 4800,
     },
     {
       day: "Saturday",
@@ -135,14 +135,18 @@ export default function Dashboard() {
       <div className="top flex w-[100%] md:mt-4 mt-20 my-4 p-0 justify-between">
         <h1 className="text-4xl">Hi , {name} </h1>
         <div className="flex gap-2">
-          <AddDailySheet />
+
+        {todayUpdate !== new Date().toISOString().split('T')[0] && (
+  <AddDailySheet />
+)}
+
           <div className="hidden md:block">
           <TopButtons/>
           </div>
         </div>
       </div>
 
-      <div className=" my-4 grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 gap-5">
+      <div className=" my-4 grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 gap-5 grid-flow-row w-[100%]">
         <Card data={{ icon: <Crosshair />, title: "Target", val: "35/50" }} />
         <Card data={{ icon: <CircleCheck />, title: "Leads", val: "3" }} />
         <Card data={{ icon: <CircleDollarSign />, title: "Overall Payment", val: "30k" }} />

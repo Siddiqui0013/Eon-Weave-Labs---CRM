@@ -25,7 +25,7 @@ export default function TopButtons() {
 
   return (
     <div className="flex gap-2">
-    <Button title="Check In" onClick={() => console.log("CheckIn")} icon={<LogIn size={18} />} />
+    <Button title="Check In" onClick={() => console.log("CheckIn")} disabled={true} icon={<LogIn size={18} />} />
     <Button title="Check Out" onClick={() => console.log("CheckOut")} icon={<LogOut size={18} />} />
     <EmployeeProfilePreview employee={employeeData} side="right" />
   </div>

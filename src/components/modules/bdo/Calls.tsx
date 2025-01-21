@@ -1,12 +1,14 @@
-import DataTable from "@/components/common/DataTable";
+import ReusableTable from "@/components/common/Table";
+import { useState } from "react";
+import { useGetCallsByUserQuery } from "@/services/callsApi";
 
 interface CallsData {
-  date: string | number;
+  createdAt: string ;
   target: string;
   totalCalls: string;
-  connectedCalls: string;
+  connected: string;
   leads: string;
-  comments: string;
+  comment: string;
 }
 
 interface Column<T> {
@@ -14,94 +16,40 @@ interface Column<T> {
   label: string;
   render?: (value: T[keyof T], row: T) => React.ReactNode;
 }
+
 export default function Calls() {
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const { data: response, isLoading } = useGetCallsByUserQuery({
+    page: currentPage,
+    limit: itemsPerPage,
+  });
 
   const columns: Column<CallsData>[] = [
     {
-      key: 'date',
+      key: 'createdAt',
       label: 'Date',
       render: (value: string | number) => new Date(value).toLocaleDateString()
     },
     { key: 'target', label: 'Target' },
     { key: 'totalCalls', label: 'Total Calls' },
-    { key: 'connectedCalls', label: 'Connected Calls' },
+    { key: 'connected', label: 'Connected Calls' },
     { key: 'leads', label: 'Leads' },
-    { key: 'comments', label: 'Comments' }
+    { key: 'comment', label: 'Comments' }
   ];
-
-  const fetchData = async ({ page, search, limit }: { page: number; search: string; limit: number }) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    const mockUsers: CallsData[] = [
-      {
-        date: "2024-01-15T10:30:00",
-        target : "100",
-        totalCalls: "20",
-        connectedCalls: "10",
-        leads: "5",
-        comments: "this is a comment, with a very good day. "
-      },
-      {
-        date: "2024-01-15T10:30:00",
-        target : "100",
-        totalCalls: "20",
-        connectedCalls: "10",
-        leads: "5",
-        comments: "Good"
-      },
-      {
-        date: "2024-01-15T10:30:00",
-        target : "100",
-        totalCalls: "20",
-        connectedCalls: "10",
-        leads: "5",
-        comments: "Good"
-      },
-      {
-        date: "2024-01-15T10:30:00",
-        target : "100",
-        totalCalls: "20",
-        connectedCalls: "10",
-        leads: "5",
-        comments: "Good"
-      },
-      {
-        date: "2024-01-15T10:30:00",
-        target : "100",
-        totalCalls: "20",
-        connectedCalls: "10",
-        leads: "5",
-        comments: "Good"
-      },
-      {
-        date: "2024-01-15T10:30:00",
-        target : "100",
-        totalCalls: "20",
-        connectedCalls: "10",
-        leads: "5",
-        comments: "Good"
-      },
-    ]
-
-    const filteredUsers = mockUsers.filter(user =>
-      Object.values(user).some(value =>
-        value.toString().toLowerCase().includes(search.toLowerCase())
-      )
-    );
-
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
-
-    return {
-      data: paginatedUsers,
-      total: filteredUsers.length
-    };
-  }
 
   return (
     <div className="w-[370px] md:w-full md:mt-8 mt-20 overflow-auto">
-     <DataTable<CallsData> columns={columns} showSearch ={false} fetchData={fetchData} itemsPerPage={15} searchPlaceholder="Search..." />
+        <ReusableTable
+          columns={columns}
+          data={response?.data?.calls || []}
+          isLoading={isLoading}
+          totalPages={response?.data?.pagination?.totalPages || 1}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
     </div>
   )
 }

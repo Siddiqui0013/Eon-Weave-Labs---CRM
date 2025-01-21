@@ -20,7 +20,7 @@ export const CallsApi = createApi({
                 }
                 if (createdAt) query.createdAt = createdAt
                 return {
-                    url: `/sales/getCallsByUser`,
+                    url: `/sales/fetchCallsByUser`,
                     method: 'GET',
                     params: query
                 }
