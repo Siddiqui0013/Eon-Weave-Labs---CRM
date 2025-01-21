@@ -217,7 +217,6 @@ export default function Meeting() {
           <CreateScheduleDialog />
         </div>
         
-        <div className='max-w-full overflow-auto'>
         <ReusableTable
           columns={columns}
           data={response?.data?.meetings || []}
@@ -233,7 +232,7 @@ export default function Meeting() {
           onRowClick={rowClick}
           onPageChange={setCurrentPage}
         />
-        </div>
+        
       </div>
     </div>
   );
