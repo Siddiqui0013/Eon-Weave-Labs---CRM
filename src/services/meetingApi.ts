@@ -51,11 +51,20 @@ export const MeetingApi = createApi({
             }),
             providesTags: ['Meetings'],
         }),
+
+        removeMeeting: builder.mutation({
+            query: (id) => ({
+                url: `/sales/removeMeeting/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Meetings'],
+        }),
     }),
 })
 
 export const {
     useGetMeetingsByUserQuery,
     useAddMeetingScheduleMutation,
-    useMeetingAnalyticsQuery
+    useMeetingAnalyticsQuery,
+    useRemoveMeetingMutation
 } = MeetingApi

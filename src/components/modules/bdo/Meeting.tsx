@@ -3,11 +3,24 @@ import { useState, useMemo } from 'react';
 import CreateScheduleDialog from "./CreateSchedule";
 import Card from "../../common/Card";
 import ReusableTable from '../../common/Table';
-import { useGetMeetingsByUserQuery, useMeetingAnalyticsQuery } from "@/services/meetingApi";
+import { useGetMeetingsByUserQuery, useMeetingAnalyticsQuery, useRemoveMeetingMutation } from "@/services/meetingApi";
 import { useDebounce } from '@/hooks/useDebounce';
 import { Edit, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEffect } from 'react';
+import { formatDateWithTime } from '@/utils/formatDate';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useToast } from '@/hooks/use-toast';
 
 export default function Meeting() {
 
@@ -27,6 +40,7 @@ export default function Meeting() {
     status: 'all',
     createdAt: 'all'
   });
+  const { toast } = useToast();
 
   const itemsPerPage = 10;
   const debouncedSearch = useDebounce(searchQuery, 500);
@@ -104,7 +118,7 @@ export default function Meeting() {
     {
       key: 'scheduleDate',
       label: 'Schedule Date',
-      render: (value: string) => new Date(value).toLocaleDateString()
+      render: (value: string) => formatDateWithTime(value, true)
     },
     {
       key: 'actions',
@@ -115,10 +129,24 @@ export default function Meeting() {
             className="w-4 h-4 cursor-pointer"
             onClick={() => handleEdit(row)}
           />
-          <Trash2
-            className="w-4 h-4 cursor-pointer text-red-400"
-            onClick={() => handleDelete(row)}
-          />
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <Trash2 className="w-4 h-4 cursor-pointer text-red-500" />
+            </AlertDialogTrigger>
+           <AlertDialogContent className='bg-dark'>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently this meeting.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className='bg-transparent border border-slate-50 text-white'>Cancel</AlertDialogCancel>
+             <AlertDialogAction className='bg-red-700' onClick={() => handleDelete(row)}>Delete</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         </div>
       )
     }
@@ -144,8 +172,28 @@ export default function Meeting() {
     console.log('Edit:', row);
   };
 
-  const handleDelete = (row: Meeting ) => {
-    console.log('Delete:', row);
+  const [removeMeeting] = useRemoveMeetingMutation();
+
+  const handleDelete = async (row: Meeting ) => {
+    if(!row) return;
+    try {
+      await removeMeeting(row._id);
+      toast({
+        variant: 'default',
+        title: 'Success',
+        description: 'Meeting deleted successfully',
+        duration: 1500
+      })
+    } catch (error) {
+      console.error('Failed to delete meeting:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to delete meeting',
+        duration: 1500
+      })
+    }
+        
   };
 
   const rowClick = (row: Meeting) => {
