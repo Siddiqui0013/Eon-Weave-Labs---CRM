@@ -72,7 +72,11 @@ const CreateScheduleDialog = () => {
             <DialogTrigger asChild>
                 <Button className="text-sm bg-primary hover:bg-primary/90">Create Schedule</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[800px] bg-gray-900 border-gray-800">
+            <DialogContent
+                className="sm:max-w-[800px] bg-gray-900 border-gray-800"
+                onPointerDownOutside={(e) => e.preventDefault()}
+                onEscapeKeyDown={(e) => e.preventDefault()}
+            >
                 <DialogHeader>
                     <DialogTitle className="text-gray-100">Schedule Meeting</DialogTitle>
                 </DialogHeader>
