@@ -170,7 +170,7 @@ export default function Meeting() {
     }
   ]);
 
-  const {data: analyticsRes, isLoading: analyticsLoading} = useMeetingAnalyticsQuery();
+  const {data: analyticsRes, isLoading: analyticsLoading} = useMeetingAnalyticsQuery({});
   const analytics = analyticsRes?.data || {};
 
   useEffect(() => {
