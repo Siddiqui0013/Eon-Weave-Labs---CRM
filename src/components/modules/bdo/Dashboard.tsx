@@ -5,30 +5,59 @@ import { Crosshair, CircleCheck, CircleDollarSign, CircleOff, CheckCheck } from 
 import Card from "../../common/Card";
 import { BarChartCard } from "@/components/common/BarChart";
 import AddDailySheet from "./AddDailySheet";
+import { useGetCallsByUserQuery } from "@/services/callsApi";
+import { useState, useEffect } from "react";
 
 export default function Dashboard() {
+
+  const { data: response } = useGetCallsByUserQuery({
+  })
+
+  const [ todayUpdate, setTodayUpdate ] = useState<string | null>(null);
+
+  useEffect(() => {
+    if(response?.data?.calls?.length > 0) {
+      // const today = new Date().toISOString().split('T')[0];
+      const latestCallDate = new Date(response.data.calls[0].createdAt).toISOString().split('T')[0];
+      setTodayUpdate(latestCallDate);
+    }
+  }, [response]);
 
   const { user } = useSelector((state: RootState) => state.user);
   const name = user ? user.name : "";
 
   const dataChart = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
+    {
+      day: "Monday",
+      target: 4000,
+      connectedCalls: 2400,
+    },
+    {
+      day: "Tuesday",
+      target: 3000,
+      connectedCalls: 1398,
+    },
+    {
+      day: "Saturday",
+      target: 2390,
+      connectedCalls: 3800,
+    },
+    {
+      day: "Sunday",
+      target: 3490,
+      connectedCalls: 4300,
+    },
   ];
 
   const bars = [
     {
-      key: "desktop",
-      label: "Desktop",
+      key: "target",
+      label: "Target",
       color: "hsl(var(--chart-1))",
     },
     {
-      key: "mobile",
-      label: "Mobile",
+      key: "connectedCalls",
+      label: "Connected Calls",
       color: "hsl(var(--chart-2))",
     },
   ];
@@ -106,14 +135,18 @@ export default function Dashboard() {
       <div className="top flex w-[100%] md:mt-4 mt-20 my-4 p-0 justify-between">
         <h1 className="text-4xl">Hi , {name} </h1>
         <div className="flex gap-2">
-          <AddDailySheet />
+
+        {todayUpdate !== new Date().toISOString().split('T')[0] && (
+  <AddDailySheet />
+)}
+
           <div className="hidden md:block">
           <TopButtons/>
           </div>
         </div>
       </div>
 
-      <div className=" my-4 grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 gap-5">
+      <div className=" my-4 grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 gap-5 grid-flow-row w-[100%]">
         <Card data={{ icon: <Crosshair />, title: "Target", val: "35/50" }} />
         <Card data={{ icon: <CircleCheck />, title: "Leads", val: "3" }} />
         <Card data={{ icon: <CircleDollarSign />, title: "Overall Payment", val: "30k" }} />
@@ -126,13 +159,13 @@ export default function Dashboard() {
         <div className="bg-card md:w-[70%] w-full rounded-lg">
           <BarChartCard
             data={dataChart}
-            title="Bar Chart - Multiple"
-            description="January - June 2024"
-            xAxisKey="month"
+            title="Daily Calls Report"
+            description="Total calls made by the You"
+            xAxisKey="day"
             bars={bars}
             className="bg-card text-white border-none"
             trendPercentage={5.2}
-            footerText="Showing total visitors for the last 6 months"
+            // footerText="Showing total visitors for the last 6 months"
           />
         </div>
 

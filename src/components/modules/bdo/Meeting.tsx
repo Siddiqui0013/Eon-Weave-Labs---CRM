@@ -61,7 +61,7 @@ export default function Meeting() {
       placeholder: 'Status',
       options: [
         { label: 'All Status', value: 'all' },
-        { label: 'Active', value: 'Active' },
+        { label: 'Completed', value: 'completed' },
         { label: 'Cancelled', value: 'Cancelled' },
         { label: 'Pending', value: 'Pending' }
       ]

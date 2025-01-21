@@ -42,6 +42,7 @@ export default function AddDailySheet() {
         // }, 1000 )
 
         try {
+            if( data.totalCalls > 1 && data.connected > 1 && data.leads > 1 && data.comment.length > 1) {
             const response =  await addCall(data).unwrap();
             console.log(response);
             form.reset();
@@ -52,6 +53,16 @@ export default function AddDailySheet() {
                 description: 'Daily Worksheet added successfully',
                 duration: 1500
             })
+        }
+        else {
+            toast({
+                variant : 'destructive',
+                title: 'Error',
+                description: 'Please fill all the fields',
+                duration: 1500
+            })
+            setloading(false)
+        }
         }
         catch (error) {
             console.log(error);

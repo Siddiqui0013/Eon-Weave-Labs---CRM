@@ -22,8 +22,8 @@ interface TableProps {
   isLoading: boolean;
   totalPages: number;
   currentPage: number;
-  searchQuery: string;
-  filters: Record<string, string>;
+  searchQuery?: string;
+  filters?: Record<string, string>;
   filterOptions?: {
     [key: string]: {
       placeholder: string;
@@ -31,12 +31,11 @@ interface TableProps {
     };
   };
   dateFilters?: FilterOption[];
-  onSearch: (value: string) => void;
-  onFilterChange: (key: string, value: string) => void;
-  onClearFilters: () => void;
+  onSearch?: (value: string) => void;
+  onFilterChange?: (key: string, value: string) => void;
+  onClearFilters?: () => void;
   onPageChange: (page: number) => void;
   onRowClick?: (row: any) => void;
-  
 }
 
 export default function ReusableTable({
@@ -116,48 +115,52 @@ export default function ReusableTable({
 
   return (
     <div className="w-full space-y-4 dark">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => onSearch(e.target.value)}
-            className="pl-8 w-full bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400"
-          />
-        </div>
-        <div className="flex gap-2">
-          {filterOptions && Object.entries(filterOptions).map(([key, filter]) => (
-            <Select
-              key={key}
-              value={filters[key]}
-              onValueChange={(value) => onFilterChange(key, value)}
-            >
-              <SelectTrigger className="w-[160px] bg-gray-800 border-gray-700 text-gray-100">
-                <SelectValue placeholder={filter.placeholder} />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
-                {filter.options.map(option => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ))}
-          {(Object.values(filters).some(f => f !== 'all') || searchQuery) && (
-            <Button
-              variant="outline"
-              onClick={onClearFilters}
-              className="bg-gray-800 border-gray-700 text-gray-100"
-            >
-              <X className="h-4 w-4 mr-2" />
-              Clear
-            </Button>
-          )}
-        </div>
-      </div>
+      {
+        filterOptions && onSearch && (
+          <div className="flex flex-col gap-4 md:flex-row md:items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => onSearch(e.target.value)}
+              className="pl-8 w-full bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400"
+            />
+          </div>
+          <div className="flex gap-2">
+            {filterOptions && Object.entries(filterOptions).map(([key, filter]) => (
+              <Select
+                key={key}
+                value={ filters && filters[key]}
+                onValueChange={(value) => onFilterChange && onFilterChange(key, value)}
+              >
+                <SelectTrigger className="w-[160px] bg-gray-800 border-gray-700 text-gray-100">
+                  <SelectValue placeholder={filter.placeholder} />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-700">
+                  {filter.options.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ))}
+            {(filters && Object.values(filters).some(f => f !== 'all') || searchQuery) && (
+              <Button
+                variant="outline"
+                onClick={onClearFilters}
+                className="bg-gray-800 border-gray-700 text-gray-100"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Clear
+              </Button>
+            )}
+          </div>
+        </div>  
+        )
+      }
 
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg border border-gray-700">
         <table className="w-full text-sm text-left text-gray-300">
