@@ -43,7 +43,19 @@ export const MeetingApi = createApi({
             }),
             invalidatesTags: ['Meetings'],
         }),
+
+        meetingAnalytics: builder.query({
+            query: () => ({
+                url: '/sales/meetingAnalytics',
+                method: 'GET',
+            }),
+            providesTags: ['Meetings'],
         }),
+    }),
 })
 
-export const { useGetMeetingsByUserQuery, useAddMeetingScheduleMutation } = MeetingApi
+export const {
+    useGetMeetingsByUserQuery,
+    useAddMeetingScheduleMutation,
+    useMeetingAnalyticsQuery
+} = MeetingApi

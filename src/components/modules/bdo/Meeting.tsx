@@ -3,9 +3,10 @@ import { useState, useMemo } from 'react';
 import CreateScheduleDialog from "./CreateSchedule";
 import Card from "../../common/Card";
 import ReusableTable from '../../common/Table';
-import { useGetMeetingsByUserQuery } from "@/services/meetingApi";
+import { useGetMeetingsByUserQuery, useMeetingAnalyticsQuery } from "@/services/meetingApi";
 import { useDebounce } from '@/hooks/useDebounce';
 import { Edit, Trash2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useEffect } from 'react';
 
 export default function Meeting() {
@@ -151,7 +152,7 @@ export default function Meeting() {
     console.log('Row clicked:', row);
   }
 
-  const cardData = [
+  const [cardData, setCardData] = useState([
     {
       icon: <Video />,
       title: "No. of meetings",
@@ -159,29 +160,64 @@ export default function Meeting() {
     },
     {
       icon: <Calendar />,
-      title: "Rescheduled Meetings",
-      val: "10"
+      title: "Completed Meetings",
+      val: "0"
     },
     {
       icon: <Ban />,
       title: "Cancelled Meetings",
-      val: "5"
+      val: "0"
     }
-  ];
+  ]);
+
+  const {data: analyticsRes, isLoading: analyticsLoading} = useMeetingAnalyticsQuery();
+  const analytics = analyticsRes?.data || {};
+
+  useEffect(() => {
+    if (analyticsRes) {
+      setCardData([
+        {
+          icon: <Video />,
+          title: "No. of meetings",
+          val: analytics.totalMeetings || "0"
+        },
+        {
+          icon: <Calendar />,
+          title: "Completed Meetings",
+          val: analytics.statusWiseCounts?.Completed || "0"
+        },
+        {
+          icon: <Ban />,
+          title: "Cancelled Meetings",
+          val: analytics.statusWiseCounts?.Cancelled || "0"
+        }
+      ]);
+    }
+  }, [analyticsRes]);
 
   return (
     <div>
+      
+      {analyticsLoading ? (
+        <div className="grid lg:grid-cols-3 grid-cols-2 mt-20 md:m-0 p-2 md:p-0 gap-5">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Skeleton key={index} className='h-20 md:min-w-48 w-full' />
+          ))}
+        </div>
+      ) : (
       <div className="grid lg:grid-cols-3 grid-cols-2 mt-20 md:m-0 p-2 md:p-0 gap-5">
         {cardData.map((data, index) => (
           <Card key={index} data={data} />
         ))}
       </div>
+      )}
 
       <div className="mt-7">
         <div className="flex justify-end w-[95%] md:w-full my-4">
           <CreateScheduleDialog />
         </div>
         
+        <div className='max-w-full overflow-auto'>
         <ReusableTable
           columns={columns}
           data={response?.data?.meetings || []}
@@ -197,6 +233,7 @@ export default function Meeting() {
           onRowClick={rowClick}
           onPageChange={setCurrentPage}
         />
+        </div>
       </div>
     </div>
   );
