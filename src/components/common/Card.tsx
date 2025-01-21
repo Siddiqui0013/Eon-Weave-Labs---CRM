@@ -2,7 +2,7 @@ interface CardProps {
     data: {
         icon: React.ReactNode;
         title: string;
-        val: string;
+        val: number | string;
     };
 }
 

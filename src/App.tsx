@@ -50,7 +50,7 @@ const App = () => {
 
   const { user } = useSelector((state: RootState) => state.user);
   const role = user ? user.role : "";
-  console.log("Role from App.js: ", role);
+  // console.log("Role from App.js: ", role);
 
   useEffect(() => {
     if (role && DefinedRoles.includes(role)) {

@@ -10,12 +10,12 @@ export default function TopButtons() {
   const { user } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-      console.log("User:", user);
+      // console.log("User:", user);
   }, [user]);
 
     const employeeData = {
         name: user?.name || "John Doe",
-        profileImage : user?.profileImage || "https://via.placeholder.com/150",
+        profileImage : user?.profileImage || "https://avatar.iran.liara.run/public",
         email: user?.email || "jane.doe@example.com",
         phone: user?.phone || "555-5678",
         address: user?.address || "Islamabad, Pakistan",
@@ -25,8 +25,8 @@ export default function TopButtons() {
 
   return (
     <div className="flex gap-2">
-    <Button title="Check In" onClick={() => console.log("CheckIn")} disabled={true} icon={<LogIn size={18} />} />
-    <Button title="Check Out" onClick={() => console.log("CheckOut")} icon={<LogOut size={18} />} />
+    <Button title="Check In" onClick={() => console.log("CheckIn")} disabled={false} icon={<LogIn size={18} />} />
+    <Button title="Check Out" onClick={() => console.log("CheckOut")} disabled={false} icon={<LogOut size={18} />} />
     <EmployeeProfilePreview employee={employeeData} side="right" />
   </div>
 )

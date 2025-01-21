@@ -217,7 +217,7 @@ export default function Meeting() {
           <CreateScheduleDialog />
         </div>
         
-        <div className="w-[370px] md:w-full md:mt-8 mt-20 overflow-auto">
+        <div className="w-[370px] p-2 md:w-full md:mt-8 mt-20 overflow-auto">
         <ReusableTable
           columns={columns}
           data={response?.data?.meetings || []}
