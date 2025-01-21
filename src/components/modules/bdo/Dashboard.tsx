@@ -12,23 +12,52 @@ export default function Dashboard() {
   const name = user ? user.name : "";
 
   const dataChart = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
+    {
+      day: "Monday",
+      target: 4000,
+      connectedCalls: 2400,
+    },
+    {
+      day: "Tuesday",
+      target: 3000,
+      connectedCalls: 1398,
+    },
+    {
+      day: "Wednesday",
+      target: 2000,
+      connectedCalls: 9800,
+    },
+    {
+      day: "Thursday",
+      target: 2780,
+      connectedCalls: 3908,
+    },
+    {
+      day: "Friday",
+      target: 1890,
+      connectedCalls: 4800,
+    },
+    {
+      day: "Saturday",
+      target: 2390,
+      connectedCalls: 3800,
+    },
+    {
+      day: "Sunday",
+      target: 3490,
+      connectedCalls: 4300,
+    },
   ];
 
   const bars = [
     {
-      key: "desktop",
-      label: "Desktop",
+      key: "target",
+      label: "Target",
       color: "hsl(var(--chart-1))",
     },
     {
-      key: "mobile",
-      label: "Mobile",
+      key: "connectedCalls",
+      label: "Connected Calls",
       color: "hsl(var(--chart-2))",
     },
   ];
@@ -126,13 +155,13 @@ export default function Dashboard() {
         <div className="bg-card md:w-[70%] w-full rounded-lg">
           <BarChartCard
             data={dataChart}
-            title="Bar Chart - Multiple"
-            description="January - June 2024"
-            xAxisKey="month"
+            title="Daily Calls Report"
+            description="Total calls made by the You"
+            xAxisKey="day"
             bars={bars}
             className="bg-card text-white border-none"
             trendPercentage={5.2}
-            footerText="Showing total visitors for the last 6 months"
+            // footerText="Showing total visitors for the last 6 months"
           />
         </div>
 
