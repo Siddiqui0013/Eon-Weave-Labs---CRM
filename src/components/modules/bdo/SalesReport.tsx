@@ -58,9 +58,8 @@ export default function SalesReport() {
       placeholder: 'Status',
       options: [
         { label: 'All Status', value: 'all' },
-        { label: 'Active', value: 'Active' },
-        { label: 'Cancelled', value: 'Cancelled' },
-        { label: 'Pending', value: 'Pending' }
+        { label: 'Pending', value: 'Pending' },
+        { label: 'Completed', value: 'Completed' }
       ]
     },
     createdAt: {
@@ -174,7 +173,7 @@ export default function SalesReport() {
         />
       </div>
 
-      <div className="w-[370px] md:w-full overflow-auto">
+      <div className="w-[370px] p-2 md:w-full overflow-auto">
         <ReusableTable
           columns={columns}
           data={response?.data?.sales || []}

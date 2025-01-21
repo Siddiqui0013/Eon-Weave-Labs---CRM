@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { useAddMeetingScheduleMutation } from "@/services/meetingApi"
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
     clientName: z.string().min(1, "Client name is required"),
@@ -21,6 +22,7 @@ type ScheduleFormData = z.infer<typeof formSchema>;
 
 const CreateScheduleDialog = () => {
 
+    const { toast } = useToast();
     const [addMeetingSchedule] = useAddMeetingScheduleMutation();
 
     const form = useForm<ScheduleFormData>({
@@ -48,8 +50,20 @@ const CreateScheduleDialog = () => {
                 scheduleDate: formattedDate
             }).unwrap();
             form.reset();
+            toast({
+                variant: 'default',
+                title: 'Success',
+                description: 'Meeting scheduled successfully',
+                duration: 1500
+            });
         } catch (error) {
             console.error('Failed to schedule meeting:', error);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Something went wrong',
+                duration: 1500
+            });
         }
     };
 
@@ -177,13 +191,6 @@ const CreateScheduleDialog = () => {
                             </div>
                         </div>
                         <div className="flex justify-end space-x-2 pt-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="border-gray-700 bg-gray-800 text-gray-100 hover:bg-gray-700"
-                            >
-                                Cancel
-                            </Button>
                             <Button
                                 type="submit"
                                 className="bg-primary hover:bg-primary/90"

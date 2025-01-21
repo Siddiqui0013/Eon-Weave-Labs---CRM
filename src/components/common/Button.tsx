@@ -2,7 +2,7 @@ interface ButtonProps {
   title: string
   className?: string
   icon?: React.ReactNode
-  onClick?: () => void
+  onClick?: (e : React.MouseEvent<HTMLButtonElement>) => void
   type ?: "button" | "submit"
 }
 

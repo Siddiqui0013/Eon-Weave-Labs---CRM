@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import Button from '@/components/common/Button';
 import { useAddSaleMutation } from '@/services/salesApi'
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router';
 
 interface FormData {
   clientName: string;
@@ -21,8 +23,10 @@ type Milestone = {
 }
 
 export default function AddSaleForm() {
-
+  const { toast } = useToast();
   const [addSale] = useAddSaleMutation();
+  const [loading, setLoading] = useState(false);
+  const nav = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
     clientName: '',
@@ -84,8 +88,8 @@ export default function AddSaleForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     try {
-
       const formattedData = {
         clientName: formData.clientName,
         clientEmail: formData.clientEmail,
@@ -105,17 +109,47 @@ export default function AddSaleForm() {
       console.log("Formatted Data:", formattedData);
       const response = await addSale(formattedData).unwrap();
       console.log("Response:", response);
+      setFormData({
+        clientName: '',
+        clientEmail: '',
+        description: '',
+        projectName: '',
+        startDate: '',
+        endDate: '',
+        projectAmount: '',
+        numberOfMilestones: '1',
+      });
+      setMilestones([{
+        description: '',
+        name : '',
+        amount: '',
+        startDate: '',
+        endDate: ''
+      }])
+      toast({
+        variant: 'default',
+        title: 'Success',
+        description: 'Sale added successfully', 
+        duration: 1500
+      })
+      nav('/bdo/sales-report');
     } catch (error) {
       console.error('Error adding sale:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Something went wrong',
+        duration: 1500
+      });
+    } finally {
+      setLoading(false);
     }
-    // console.log('Form submitted:', { ...formData, milestones });
   };
 
   return (
     <div className="mt-20 md:m-0">
     <form onSubmit={handleSubmit} className="md:w-[90%] w-[98%] bg-card rounded-xl mx-auto p-6">
       <h2 className="text-2xl font-semibold mb-6">Add Sale</h2>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div>
@@ -128,7 +162,6 @@ export default function AddSaleForm() {
               className="w-full px-3 text-black py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-
           <div>
             <label className="block text-sm mb-1">Customer email</label>
             <input
@@ -139,7 +172,6 @@ export default function AddSaleForm() {
               className="w-full px-3 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-
           <div>
             <label className="block text-sm mb-1">Description</label>
             <textarea
@@ -150,9 +182,7 @@ export default function AddSaleForm() {
             />
           </div>
         </div>
-
         <div className="space-y-4">
-            
           <div>
             <label className="block text-sm mb-1">Project name</label>
             <input
@@ -163,9 +193,7 @@ export default function AddSaleForm() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none text-black focus:ring-2 focus:ring-primary"
             />
           </div>
-
           <div className="grid grid-cols-2 gap-4">
-            
             <div>
               <label className="block text-sm mb-1">Start Date</label>
               <input
@@ -187,7 +215,6 @@ export default function AddSaleForm() {
               />
             </div>
           </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm mb-1">Project amount</label>
@@ -199,7 +226,6 @@ export default function AddSaleForm() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 text-black focus:ring-primary"
               />
             </div>
-
             <div>
               <label className="block text-sm mb-1">No of milestones</label>
               <select 
@@ -216,16 +242,13 @@ export default function AddSaleForm() {
           </div>
         </div>
       </div>
-
       <div className="mt-8">
         <h3 className="text-xl font-semibold mb-4">Milestone Details</h3>
         <div className="space-y-6">
           {milestones.map((milestone, index) => (
             <div key={index} className="p-4 border border-gray-300 rounded-lg">
               <h4 className="text-lg font-medium mb-3">Milestone {index + 1}</h4>
-              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -237,7 +260,6 @@ export default function AddSaleForm() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 text-black focus:ring-primary"
                     />
                   </div>
-
                 <div>
                     <label className="block text-sm mb-1">Amount</label>
                     <input
@@ -269,7 +291,6 @@ export default function AddSaleForm() {
                     </div>
                   </div>
                 </div>
-                
                 <div>
                   <label className="block text-sm mb-1">Description</label>
                   <textarea
@@ -278,22 +299,29 @@ export default function AddSaleForm() {
                     className="w-full h-32 px-3 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                   />
                 </div>
-
-
               </div>
             </div>
           ))}
         </div>
       </div>
-
-      <div className="flex justify-end mt-6">
-        <Button title="Save" type="submit" />        
+      <div className="flex justify-end gap-2 mt-6">
+      <Button
+  title="Cancel"
+  onClick={(e) => {
+    e.preventDefault();
+    nav('/bdo/sales-report');
+  }}
+  type="button"
+/>
+        <Button title={loading ? 'Saving...' : 'Save'} type="submit" />        
       </div>
     </form>
     </div>
-
   );
 }
+
+
+
 
 // import { useState } from 'react';
 // import Button from '@/components/common/Button';
