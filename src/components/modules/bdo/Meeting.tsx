@@ -25,6 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 export default function Meeting() {
 
   interface Meeting { 
+    _id: string;
     projectName: string; 
     clientName: string; 
     clientEmail: string; 
