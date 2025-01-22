@@ -2,9 +2,9 @@ interface ButtonProps {
   title: string
   className?: string
   icon?: React.ReactNode
-  onClick?: (e : React.MouseEvent<HTMLButtonElement>) => void
-  type ?: "button" | "submit"
-  disabled ?: boolean
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  type?: "button" | "submit"
+  disabled?: boolean
 }
 
 export default function Button({ title, icon, onClick, className, disabled = false, type }: ButtonProps) {
@@ -13,7 +13,7 @@ export default function Button({ title, icon, onClick, className, disabled = fal
       onClick={onClick}
       type={type}
       disabled={disabled}
-      {...(disabled && { style: { cursor: 'not-allowed' } })}
+      {...(disabled && { style: { cursor: 'not-allowed', opacity: 0.5 } })}
     >
       {icon && <span className="text-white">{icon}</span>}
       <span className="text-white">{title}</span>

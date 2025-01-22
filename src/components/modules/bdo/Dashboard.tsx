@@ -1,6 +1,5 @@
-import { useSelector } from "react-redux";
+import useAuth from "@/hooks/useAuth";
 import TopButtons from "@/components/common/TopButtons";
-import { RootState } from "../../../redux/Store";
 import { Crosshair, CircleCheck, CircleDollarSign, CircleOff, CheckCheck } from "lucide-react";
 import Card from "../../common/Card";
 import { BarChartCard } from "@/components/common/BarChart";
@@ -16,10 +15,10 @@ interface ChartData {
 }
 
 interface CallDetails {
-  connected: number;
-  leads: number;
-  day: string;
-  target: number;
+	connected: number;
+	leads: number;
+	day: string;
+	target: number;
 }
 
 export default function Dashboard() {
@@ -30,32 +29,32 @@ export default function Dashboard() {
 
 	const [todayUpdate, setTodayUpdate] = useState<string | null>(null);
 	const [chartData, setChartData] = useState<ChartData[]>([]);
-  const [callsDetails, setCallsDetails] = useState<CallDetails>({
-    connected: 0,
-    leads: 0,
-    target: 0,
-    day: ''
-  });
-  
+	const [callsDetails, setCallsDetails] = useState<CallDetails>({
+		connected: 0,
+		leads: 0,
+		target: 0,
+		day: ''
+	});
+
 
 	useEffect(() => {
 		if (response?.data?.calls?.length > 0) {
 
-      const latestCall = response.data.calls[0];
+			const latestCall = response.data.calls[0];
 			// const today = new Date().toISOString().split('T')[0];
 			const latestCallDate = new Date(response.data.calls[0].createdAt)
 				.toISOString()
 				.split("T")[0];
 			setTodayUpdate(latestCallDate);
-      // setCallsDetails(response.data.calls[0]);
+			// setCallsDetails(response.data.calls[0]);
 
-      setCallsDetails({
-        connected: latestCall.connected,
-        leads: latestCall.leads,
-        target: latestCall.target,
-        day: new Date(latestCall.createdAt).toLocaleDateString()
-      });
-  
+			setCallsDetails({
+				connected: latestCall.connected,
+				leads: latestCall.leads,
+				target: latestCall.target,
+				day: new Date(latestCall.createdAt).toLocaleDateString()
+			});
+
 
 			const transformedData = response.data.calls.map((call: ChartData) => ({
 				day: new Date(call.createdAt).toLocaleDateString("en-US", {
@@ -76,11 +75,11 @@ export default function Dashboard() {
 		}
 	}, [response]);
 
-  useEffect(() => {
-    console.log("Calls Details: ", callsDetails);
-  }, [callsDetails]);
+	useEffect(() => {
+		console.log("Calls Details: ", callsDetails);
+	}, [callsDetails]);
 
-	const { user } = useSelector((state: RootState) => state.user);
+	const { user } = useAuth();
 	const name = user ? user.name : "";
 
 	const bars = [
@@ -206,8 +205,8 @@ export default function Dashboard() {
 						xAxisKey="day"
 						bars={bars}
 						className="bg-card text-white border-none"
-						// trendPercentage={5.2}
-						// footerText="Showing total visitors for the last 6 months"
+					// trendPercentage={5.2}
+					// footerText="Showing total visitors for the last 6 months"
 					/>
 				</div>
 
