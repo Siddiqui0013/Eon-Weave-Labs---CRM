@@ -51,7 +51,7 @@ const Navbar = () => {
   const [logout, { isLoading }] = useLogoutMutation();
   const handleLogout = async () => {
     try {
-      await logout().unwrap();
+      await logout({}).unwrap();
       useLogout();
       toast({
         variant: "default",
