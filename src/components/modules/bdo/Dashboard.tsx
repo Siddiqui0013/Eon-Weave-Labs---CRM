@@ -27,7 +27,7 @@ export default function Dashboard() {
 		limit: 7,
 	});
 
-	const [todayUpdate, setTodayUpdate] = useState<string | null>(null);
+	// const [todayUpdate, setTodayUpdate] = useState<string | null>(null);
 	const [chartData, setChartData] = useState<ChartData[]>([]);
 	const [callsDetails, setCallsDetails] = useState<CallDetails>({
 		connected: 0,
@@ -42,10 +42,10 @@ export default function Dashboard() {
 
 			const latestCall = response.data.calls[0];
 			// const today = new Date().toISOString().split('T')[0];
-			const latestCallDate = new Date(response.data.calls[0].createdAt)
-				.toISOString()
-				.split("T")[0];
-			setTodayUpdate(latestCallDate);
+			// const latestCallDate = new Date(response.data.calls[0].createdAt)
+			// 	.toISOString()
+			// 	.split("T")[0];
+			// setTodayUpdate(latestCallDate);
 			// setCallsDetails(response.data.calls[0]);
 
 			setCallsDetails({
@@ -116,7 +116,7 @@ export default function Dashboard() {
 			sales: 38000,
 			image: "https://avatar.iran.liara.run/public",
 		},
-	];
+	];		
 
 	interface person {
 		name: string;
@@ -165,11 +165,11 @@ export default function Dashboard() {
 			<div className="top flex w-[100%] md:mt-4 mt-20 my-4 p-0 justify-between">
 				<h1 className="text-4xl">Hi , {name} </h1>
 				<div className="flex gap-2">
-					{todayUpdate !== new Date().toISOString().split("T")[0] && (
+					{/* {todayUpdate !== new Date().toISOString().split("T")[0] && (
 						<AddDailySheet />
-					)}
+					)} */}
 
-					{/* <AddDailySheet /> */}
+					<AddDailySheet />
 
 					<div className="hidden md:block">
 						<TopButtons />
