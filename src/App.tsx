@@ -1,13 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router";
 import { useLocation } from "react-router";
 import Navbar from "./components/common/Navbar";
-import { useSelector } from "react-redux";
 import { useEffect } from "react";
-import { RootState } from "./redux/Store"
-
-import { setUserData } from "./redux/slices/userSlice";
-import { useDispatch } from "react-redux";
-
+import useAuth from "./hooks/useAuth";
 import LoginForm from "./components/common/Login";
 import BdoRoutes from "./components/modules/bdo/BdoRoutes";
 import HrRoutes from "./components/modules/hr/HrRoutes";
@@ -15,40 +10,30 @@ import HrRoutes from "./components/modules/hr/HrRoutes";
 import "./App.css"
 const App = () => {
 
-  const dispatch = useDispatch()
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    const accessToken = localStorage.getItem("accessToken");
-    const refreshToken = localStorage.getItem("refreshToken");
-  
-    if (user && accessToken && refreshToken) {
-      dispatch(
-        setUserData({
-          user: JSON.parse(user),
-          accessToken,
-          refreshToken,
-        })
-      );
-  
-      const role = JSON.parse(user).role;
+    const { user, accessToken } = useAuth();
+
+    if (user && accessToken) {
+
+      const role = user.role;
 
       if (DefinedRoles.includes(role)) {
-      if (!location.pathname.includes(`/${role}`)) {
-        navigate(`/${role}/dashboard`);
+        if (!location.pathname.includes(`/${role}`)) {
+          navigate(`/${role}/dashboard`);
+        } else {
+          navigate(location.pathname);
+        }
       } else {
-        navigate(location.pathname);
+        navigate("/");
       }
-    } else {
-      navigate("/");
     }
-  }
-  }, [dispatch, navigate]);
-  
+  }, [navigate]);
 
-  const { user } = useSelector((state: RootState) => state.user);
+
+  const { user } = useAuth();
   const role = user ? user.role : "";
   // console.log("Role from App.js: ", role);
 
@@ -61,13 +46,13 @@ const App = () => {
       navigate("/");
     }
   }, [role, location.pathname, navigate]);
-  
-  
+
+
 
   /*
 muhammadkhushi072242@gmail.com
   */
-  
+
   const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
   useEffect(() => {
     // if (role == "ceo" || role == "hr" || role == "developer" || role == "bdo") {

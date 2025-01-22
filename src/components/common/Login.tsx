@@ -1,63 +1,65 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { setUserData } from "../../redux/slices/userSlice";
+import { useLoginMutation } from "@/services/userApi";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router";
+import Button from "./Button";
+import { Loader2 } from "lucide-react";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const [login, { isLoading }] = useLoginMutation();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
-    setIsLoading(true);
+    if (!email || !password) {
+      return toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please fill all the fields",
+        duration: 1500,
+      });
+    }
     try {
-      const response = await fetch ("https://ewlcrm-backend.vercel.app/api/user/login", {
-        method : 'POST',
-        headers : {
-          "Content-Type" : "application/json"
-        },
-        body : JSON.stringify({
-          email,
-          password
-        })
-      })
-      const data = await response.json();
-      
-      if(data.success) {
-        console.log(data.data);
-        localStorage.setItem("accessToken", data.data.accessToken);
-        localStorage.setItem("refreshToken", data.data.refreshToken);
-        localStorage.setItem("user", JSON.stringify(data.data.user));
-        
-    dispatch(
-      setUserData({
-        user: data.data.user,
-        accessToken: data.data.accessToken,
-        refreshToken: data.data.refreshToken,
-      }))
-      }
-      setError(data.message);
-  } catch (error) {
-    console.error("Error logging in:", error);
-  } finally {
-    setIsLoading(false);
+      const credentials = { email, password };
+      const response = await login(credentials).unwrap();
+      const data = response.data;
+
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      navigate(`/${data.user.role}/dashboard`);
+
+      toast({
+        variant: "default",
+        title: "Success",
+        description: "Login successful",
+        duration: 1500,
+      });
+
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error?.data?.message || "Invalid email or password",
+        duration: 1500,
+      });
+    }
   }
-}
 
   return (
-    <div className="flex flex-col w-full items-center justify-center min-h-screen">
+    <div className="flex flex-col w-full items-center justify-center lg:min-h-[90vh] min-h-screen">
       <div className="max-w-md">
-        <div className="shadow-md rounded-lg px-8 pt-6 pb-8">
+        <div className="shadow-md rounded-lg sm:px-8 px-4 pt-4 pb-5 md:pt-0 md:pb-0">
           <h2 className="text-2xl font-bold mb-6 text-center">Login to Account</h2>
           <p className="text-gray-600 text-sm text-center mb-6">
             Please enter your email and password to continue
           </p>
-
-          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
           <form onSubmit={handleSubmit}>
 
@@ -103,13 +105,13 @@ const LoginForm = () => {
             </div>
 
             <div className="mt-8">
-              <button
-                type="submit"
+              <Button
+                title={isLoading ? "Signing in..." : "Sign In"}
                 disabled={isLoading}
-                className="w-full bg-primary text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                {isLoading ? "Signing in..." : "Sign In"}
-                </button>
+                icon={isLoading && <Loader2 className="animate-spin" />}
+                type="submit"
+                className="w-full justify-center font-semibold text-lg"
+              />
             </div>
           </form>
         </div>
@@ -136,7 +138,7 @@ export default LoginForm;
 //   const [email, setEmail] = useState("");
 //   const [password, setPassword] = useState("");
 //   const [error, setError] = useState("");
-//   const [loading, setLoading] = useState(false); 
+//   const [loading, setLoading] = useState(false);
 //   const navigate = useNavigate();
 //   const dispatch = useDispatch();
 
@@ -165,7 +167,7 @@ export default LoginForm;
 //   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 //     e.preventDefault();
 //     setError("");
-//     setLoading(true); 
+//     setLoading(true);
 
 //     try {
 //       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -248,7 +250,7 @@ export default LoginForm;
 //               <button
 //                 type="submit"
 //                 className="w-full bg-primary text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-//                 disabled={loading} 
+//                 disabled={loading}
 //               >
 //                 {loading ? "Signing In..." : "Sign In"}
 //               </button>

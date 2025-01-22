@@ -63,7 +63,7 @@ const customBaseQueryWithReauth: BaseQueryFn = async (
         } catch (refreshError) {
             console.error('Refresh token failed:', refreshError);
             UseLogout();
-            window.location.href = '/login';
+            window.location.href = '/';
         }
     }
 
