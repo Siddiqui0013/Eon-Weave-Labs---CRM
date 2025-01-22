@@ -73,7 +73,7 @@ const CreateScheduleDialog = () => {
                 <Button className="text-sm bg-primary hover:bg-primary/90">Create Schedule</Button>
             </DialogTrigger>
             <DialogContent
-                className="sm:max-w-[800px] bg-gray-900 border-gray-800"
+                className="sm:max-w-[800px]"
                 onPointerDownOutside={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => e.preventDefault()}
             >

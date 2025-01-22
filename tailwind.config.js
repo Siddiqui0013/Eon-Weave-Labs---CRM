@@ -10,7 +10,8 @@ module.exports = {
 				primary: '#E75B10',
 				secondary: '#6379F4',
 				dark: '#0F1E25',
-				card: '#3F3F3F'
+				card: '#3F3F3F',
+				modal: '#000814'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

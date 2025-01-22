@@ -118,53 +118,53 @@ export default function ReusableTable({
       {
         filterOptions && onSearch && (
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
-          <div className="relative flex-1">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => onSearch(e.target.value)}
-              className="pl-8 w-full bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400"
-            />
+            <div className="relative flex-1">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => onSearch(e.target.value)}
+                className="pl-8 w-full bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400"
+              />
+            </div>
+            <div className="flex gap-2">
+              {filterOptions && Object.entries(filterOptions).map(([key, filter]) => (
+                <Select
+                  key={key}
+                  value={filters && filters[key]}
+                  onValueChange={(value) => onFilterChange && onFilterChange(key, value)}
+                >
+                  <SelectTrigger className="w-[160px]">
+                    <SelectValue placeholder={filter.placeholder} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filter.options.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ))}
+              {(filters && Object.values(filters).some(f => f !== 'all') || searchQuery) && (
+                <Button
+                  variant="outline"
+                  onClick={onClearFilters}
+                  className="bg-gray-800 border-gray-700 text-gray-100"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Clear
+                </Button>
+              )}
+            </div>
           </div>
-          <div className="flex gap-2">
-            {filterOptions && Object.entries(filterOptions).map(([key, filter]) => (
-              <Select
-                key={key}
-                value={ filters && filters[key]}
-                onValueChange={(value) => onFilterChange && onFilterChange(key, value)}
-              >
-                <SelectTrigger className="w-[160px] bg-gray-800 border-gray-700 text-gray-100">
-                  <SelectValue placeholder={filter.placeholder} />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
-                  {filter.options.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ))}
-            {(filters && Object.values(filters).some(f => f !== 'all') || searchQuery) && (
-              <Button
-                variant="outline"
-                onClick={onClearFilters}
-                className="bg-gray-800 border-gray-700 text-gray-100"
-              >
-                <X className="h-4 w-4 mr-2" />
-                Clear
-              </Button>
-            )}
-          </div>
-        </div>  
         )
       }
 
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg border border-gray-700">
         <table className="w-full text-sm text-left text-gray-300">
-          <thead className="text-xs text-gray-300 uppercase bg-gray-800">
+          <thead className="text-xs text-gray-300 uppercase bg-gray-900">
             <tr>
               {columns.map((column) => (
                 <th key={column.key} className="px-6 py-3 border-b border-gray-700">
@@ -190,9 +190,9 @@ export default function ReusableTable({
               </tr>
             ) : (
               data.map((row) => (
-                <tr key={row._id} 
-                className="bg-gray-900 border-b border-gray-700 hover:bg-gray-800 transition-colors"
-                onClick={() => onRowClick?.(row)}
+                <tr key={row._id}
+                  className="bg-transparent border-b border-gray-500 hover:bg-card/80 transition-colors"
+                  onClick={() => onRowClick?.(row)}
                 >
                   {columns.map((column) => (
                     <td key={column.key} className="px-6 py-4">

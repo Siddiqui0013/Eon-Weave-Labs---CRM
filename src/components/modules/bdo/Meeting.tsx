@@ -134,7 +134,7 @@ export default function Meeting() {
             <AlertDialogTrigger>
               <Trash2 className="w-4 h-4 cursor-pointer text-red-500" />
             </AlertDialogTrigger>
-           <AlertDialogContent className='bg-dark'>
+           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
