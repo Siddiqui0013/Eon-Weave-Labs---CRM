@@ -130,7 +130,7 @@ const Navbar = () => {
           title={isLoading ? "Logging out..." : "Logout"}
           onClick={handleLogout}
           disabled={isLoading}
-          icon={isLoading && <Loader2 size={16} />}
+          icon={isLoading && <Loader2 className="animate-spin" size={16} />}
           className="m-4 justify-center font-semibold"
         />
       </nav>
