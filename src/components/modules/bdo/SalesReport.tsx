@@ -1,10 +1,25 @@
-import { useNavigate } from "react-router";
 import Button from "@/components/common/Button";
 import ReusableTable from '../../common/Table';
-import { useGetSalesByUserQuery } from "@/services/salesApi";
+import { useGetSalesByUserQuery, useRemoveSaleMutation } from "@/services/salesApi";
 import { useDebounce } from '@/hooks/useDebounce';
 import { Edit, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import UpdateSale from "./UpdateSale";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useToast } from '@/hooks/use-toast';
+import AddSaleForm from "./AddSale";
+
 
 interface Milestone {
   _id: string;
@@ -19,20 +34,27 @@ interface Sale {
   _id: string;
   projectName: string;
   clientName: string;
+  clientEmail : string,
+  description : string,
+  startDate : string, 
+  endDate: string;
   totalAmount: string;
   milestones: Milestone[];
-  status: 'Active' | 'Cancelled' | 'Pending';
+  status: 'Completed' | 'Cancelled' | 'Pending';
   createdAt: string;
 }
 
 export default function SalesReport() {
-  const nav = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [saleToEdit, setSaleToEdit] = useState<Sale | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
     status: 'all',
     createdAt: 'all'
   });
+  const { toast } = useToast();
 
   const itemsPerPage = 10;
   const debouncedSearch = useDebounce(searchQuery, 500);
@@ -59,7 +81,8 @@ export default function SalesReport() {
       options: [
         { label: 'All Status', value: 'all' },
         { label: 'Pending', value: 'Pending' },
-        { label: 'Completed', value: 'Completed' }
+        { label: 'Completed', value: 'Completed' },
+        { label: 'Cancelled', value: 'Cancelled' }
       ]
     },
     createdAt: {
@@ -99,7 +122,7 @@ export default function SalesReport() {
       label: 'Status',
       render: (value: Sale['status']) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === 'Active'
+          value === 'Completed'
             ? 'bg-green-900 text-green-300'
             : value === 'Cancelled'
               ? 'bg-red-900 text-red-300'
@@ -116,12 +139,30 @@ export default function SalesReport() {
         <div className="flex gap-2" onClick={e => e.stopPropagation()}>
           <Edit
             className="w-4 h-4 cursor-pointer hover:text-blue-400 transition-colors"
-            onClick={() => handleEdit(row)}
+            onClick={() => {
+              handleEdit(row)
+            }}
+
           />
-          <Trash2
-            className="w-4 h-4 cursor-pointer text-red-400 hover:text-red-300 transition-colors"
-            onClick={() => handleDelete(row)}
-          />
+
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <Trash2 className="w-4 h-4 cursor-pointer text-red-500" />
+            </AlertDialogTrigger>
+           <AlertDialogContent className='bg-dark'>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently this Sale
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className='bg-transparent border border-slate-50 text-white'>Cancel</AlertDialogCancel>
+             <AlertDialogAction className='bg-red-700' onClick={() => handleDelete(row)}>Delete</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         </div>
       )
     }
@@ -145,11 +186,33 @@ export default function SalesReport() {
 
   const handleEdit = (row: Sale) => {
     console.log('Edit:', row);
-    // nav(`/bdo/sales-report/edit/${row._id}`);
+    setSaleToEdit(row);
+    setIsEditDialogOpen(true);
   };
 
-  const handleDelete = (row: Sale) => {
-    console.log('Delete:', row);
+  const [removeSale] = useRemoveSaleMutation();
+
+  const handleDelete = async (row: Sale ) => {
+    if(!row) return;
+    try {
+      const response = await removeSale(row._id);
+      console.log('Delete Sale:', response);
+      toast({
+        variant: 'default',
+        title: 'Success',
+        description: 'Sale deleted successfully',
+        duration: 1500
+      })
+    } catch (error) {
+      console.error('Failed to delete Sale:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to delete Sale',
+        duration: 1500
+      })
+    }
+        
   };
 
   const rowClick = (row: Sale) => {
@@ -160,15 +223,47 @@ export default function SalesReport() {
     if (response?.data?.sales) {
       console.log('Sales data:', response.data.sales);
     }
-  }, [response]);
+  }, [ response?.data?.sales ]);
 
   return (
     <div className="md:mt-8 mt-20">
+
+{saleToEdit && (
+  <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+    <DialogContent className="sm:max-w-[800px] bg-gray-900 border-gray-800">
+    <DialogHeader>
+                    <DialogTitle className="text-gray-100">Update Sale</DialogTitle>
+                </DialogHeader>
+      <UpdateSale 
+        sale={saleToEdit} 
+        onClose={() => {
+          setIsEditDialogOpen(false);
+          setSaleToEdit(null);
+        }} 
+      />
+    </DialogContent>
+  </Dialog>
+)}
+
+{isAddDialogOpen && (
+  <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+    <DialogContent className="sm:max-w-[800px] bg-gray-900 border-gray-800">
+    <DialogHeader>
+                    <DialogTitle className="text-gray-100">Add New Sale</DialogTitle>
+                </DialogHeader>
+      <AddSaleForm 
+        onClose={() => setIsAddDialogOpen(false)} 
+      />
+    </DialogContent>
+  </Dialog>
+)}
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-200">Sales Report</h1>
         <Button 
           title="Add New Sale" 
-          onClick={() => nav('/bdo/sales-report/add')} 
+          // onClick={() => nav('/bdo/sales-report/add')} 
+          onClick={() => setIsAddDialogOpen(true)}
           className="items-end" 
         />
       </div>
@@ -193,127 +288,3 @@ export default function SalesReport() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-// import { useNavigate } from "react-router";
-// import DataTable from "@/components/common/DataTable";
-// import Button from "@/components/common/Button";
-// // import { useGetSalesByUserQuery } from "@/services/salesApi";
-
-// interface SalesReportData {
-//   projectName: string;
-//   customerName: string;
-//   projectAmount: string;
-//   milestonesCount: number;
-//   status: string;
-// }
-
-// interface Column<T> {
-//   key: keyof T | 'actions';
-//   label: string;
-//   render?: (value: T[keyof T], row: T) => React.ReactNode;
-// }
-
-// export default function SalesReport() {
-
-//    const nav = useNavigate();
-
-//   const columns: Column<SalesReportData>[] = [
-//     { key: 'projectName', label: 'Project Name' },
-//     { key: 'customerName', label: 'Customer Name' },
-//     { key: 'projectAmount', label: 'Project Amount' },
-//     { key: 'milestonesCount', label: 'Number of Milestones' },
-//     { key: 'status', label: 'Status' },
-//     {
-//       key: 'actions',
-//       label: 'Actions',
-//       render: (_, row) => (
-//         <div className="flex gap-2">
-//           <button 
-//             onClick={() => handleEdit(row)}
-//           >
-//           </button>
-//           <button 
-//             onClick={() => handleDelete(row)}
-//           >
-//           </button>
-//         </div>
-//       )
-//     }
-//   ];
-
-//   const handleEdit = (row: SalesReportData) => {
-//     console.log('Edit:', row);
-//   };
-
-//   const handleDelete = (row: SalesReportData) => {
-//     console.log('Delete:', row);
-//   };
-
-//   const fetchData = async ({ page, search, limit }: { page: number; search: string; limit: number }) => {
-//     await new Promise(resolve => setTimeout(resolve, 500));
-
-//     const mockData: SalesReportData[] = [
-//       {
-//         projectName: "E-commerce Platform",
-//         customerName: "Tech Solutions Inc",
-//         projectAmount: "$50,000",
-//         milestonesCount: 5,
-//         status: "In Progress"
-//       },
-//       {
-//         projectName: "Mobile App Development",
-//         customerName: "Digital Innovations",
-//         projectAmount: "$75,000",
-//         milestonesCount: 4,
-//         status: "Pending"
-//       }
-//     ];
-
-//     const filteredData = mockData.filter(item =>
-//       Object.values(item).some(value =>
-//         value.toString().toLowerCase().includes(search.toLowerCase())
-//       )
-//     );
-
-//     const startIndex = (page - 1) * limit;
-//     const endIndex = startIndex + limit;
-//     const paginatedData = filteredData.slice(startIndex, endIndex);
-
-//     return {
-//       data: paginatedData,
-//       total: filteredData.length
-//     };
-//   };
-
-//   return (
-//     <div className="md:mt-8 mt-20">
-
-//       <Button title="Add New Sale" onClick={() => nav('/bdo/sales-report/add')} className="mb-4 items-end" />
-
-//       <div className="w-[370px] md:w-full overflow-auto">
-//       <DataTable<SalesReportData> 
-//         columns={columns} 
-//         showSearch={true} 
-//         fetchData={fetchData} 
-//         searchPlaceholder="Search Projects..." 
-//         onDelete={handleDelete}
-//         onRowClick={(row) => {
-//           console.log('Row clicked:', row);
-//           // nav(`/bdo/salesReport/${row.projectName}`);
-//           nav(`/bdo/sales-report/view`);
-//         }}
-//         onEdit={handleEdit}
-//       />
-//       </div>
-
-//     </div>
-//   );
-// }

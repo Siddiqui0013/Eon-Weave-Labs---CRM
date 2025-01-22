@@ -1,19 +1,22 @@
 import { useState } from 'react';
 import Button from '@/components/common/Button';
-import { useAddSaleMutation } from '@/services/salesApi'
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router';
+import { useUpdateSaleMutation } from '@/services/salesApi';
+import { Milestone } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface FormData {
+  _id?: string;
   clientName: string;
   clientEmail: string;
   description: string;
+  status?: string;
   projectName: string;
   startDate: string;
   endDate: string;
-  projectAmount: string;
-  numberOfMilestones: string;
+  totalAmount: string;
+  milestones: Milestone[];
+  milestonesCount?: number;
 }
 type Milestone = {
   name: string;
@@ -23,34 +26,40 @@ type Milestone = {
   endDate: string;
 }
 
-interface AddSaleProps {
-  onClose: () => void;
-}
+interface UpdateSaleProps {
+    sale: FormData;
+    onClose: () => void;
+  }
+  
+  export default function UpdateSale({ sale, onClose }: UpdateSaleProps) {
 
-export default function AddSaleForm( { onClose }: AddSaleProps) {
   const { toast } = useToast();
-  const [addSale] = useAddSaleMutation();
   const [loading, setLoading] = useState(false);
-  const nav = useNavigate();
+  const [updateSale] = useUpdateSaleMutation();
 
   const [formData, setFormData] = useState<FormData>({
-    clientName: '',
-    clientEmail: '',
-    description: '',
-    projectName: '',
-    startDate: '',
-    endDate: '',
-    projectAmount: '',
-    numberOfMilestones: '1',
+    _id: sale._id,
+    clientName: sale.clientName,
+    clientEmail: sale.clientEmail,
+    description: sale.description,
+    projectName: sale.projectName,
+    status: sale.status,
+    startDate: new Date(sale.startDate).toISOString().split('T')[0],
+    endDate: new Date(sale.endDate).toISOString().split('T')[0],
+    totalAmount: sale.totalAmount,
+    milestones: sale.milestones,
+    milestonesCount: sale.milestones.length
   });
-
-  const [milestones, setMilestones] = useState<Milestone[]>([{
-    description: '',
-    name : '',
-    amount: '',
-    startDate: '',
-    endDate: ''
-  }]);
+  
+  const [milestones, setMilestones] = useState(
+    sale.milestones.map((milestone: Milestone) => ({
+      name: milestone.name,
+      description: milestone.description,
+      amount: milestone.amount.toString(),
+      startDate: new Date(milestone.startDate).toISOString().split('T')[0],
+      endDate: new Date(milestone.endDate).toISOString().split('T')[0]
+    }))
+  )
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -59,9 +68,9 @@ export default function AddSaleForm( { onClose }: AddSaleProps) {
       [name]: value
     }));
 
-    if (name === 'numberOfMilestones') {
+    if (name === 'milestonesCount') {
       const newCount = parseInt(value);
-      setMilestones(prev => {
+      setMilestones(( prev: Milestone[] ) => {
         const newMilestones = [...prev];
         while (newMilestones.length < newCount) {
           newMilestones.push({
@@ -81,7 +90,7 @@ export default function AddSaleForm( { onClose }: AddSaleProps) {
   };
 
   const handleMilestoneChange = (index: number, field: keyof Milestone, value: string) => {
-    setMilestones(prev => {
+    setMilestones(( prev: Milestone[] ) => {
       const newMilestones = [...prev];
       newMilestones[index] = {
         ...newMilestones[index],
@@ -96,14 +105,16 @@ export default function AddSaleForm( { onClose }: AddSaleProps) {
     setLoading(true);
     try {
       const formattedData = {
+        _id: formData._id,
         clientName: formData.clientName,
         clientEmail: formData.clientEmail,
         projectName: formData.projectName,
         description: formData.description,
         startDate: formData.startDate, 
         endDate: formData.endDate,
-        totalAmount: Number(formData.projectAmount),
-        milestones: milestones.map(milestone => ({
+        status: formData.status,
+        totalAmount: Number(formData.totalAmount),
+        milestones: milestones.map((milestone: Milestone) => ({
           name: milestone.name,
           description: milestone.description,
           startDate: milestone.startDate, 
@@ -112,7 +123,7 @@ export default function AddSaleForm( { onClose }: AddSaleProps) {
         }))
       };
       console.log("Formatted Data:", formattedData);
-      const response = await addSale(formattedData).unwrap();
+      const response = await updateSale(formattedData).unwrap();
       console.log("Response:", response);
       setFormData({
         clientName: '',
@@ -121,8 +132,8 @@ export default function AddSaleForm( { onClose }: AddSaleProps) {
         projectName: '',
         startDate: '',
         endDate: '',
-        projectAmount: '',
-        numberOfMilestones: '1',
+        totalAmount: '',
+        milestones: []
       });
       setMilestones([{
         description: '',
@@ -153,7 +164,7 @@ export default function AddSaleForm( { onClose }: AddSaleProps) {
 
   return (
     <div className="flex items-center justify-center h-[80vh]">
-    <ScrollArea className="h-full">
+      <ScrollArea className="h-full">
     <form onSubmit={handleSubmit} className="rounded-xl mt-6 overflow-auto h-full mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
@@ -225,17 +236,35 @@ export default function AddSaleForm( { onClose }: AddSaleProps) {
               <label className="block text-sm mb-1">Project amount</label>
               <input
                 type="number"
-                name="projectAmount"
-                value={formData.projectAmount}
+                name="totalAmount"
+                value={formData.totalAmount}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 text-black focus:ring-primary"
               />
             </div>
             <div>
+              <label className="block text-sm mb-1">Project Status</label>
+              <select 
+                name="status"
+                value={formData.status}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+              >
+                {['Pending', 'Completed', 'Cancelled'].map(num => (
+                  <option 
+                  key={num} 
+                  value={num}
+                  >
+                 {num}
+                 </option>
+                ))}
+              </select>
+            </div>
+            <div>
               <label className="block text-sm mb-1">No of milestones</label>
               <select 
-                name="numberOfMilestones"
-                value={formData.numberOfMilestones}
+                name="milestonesCount"
+                value={formData.milestonesCount}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-white"
               >
@@ -247,10 +276,11 @@ export default function AddSaleForm( { onClose }: AddSaleProps) {
           </div>
         </div>
       </div>
+      
       <div className="mt-8">
         <h3 className="text-xl font-semibold mb-4">Milestone Details</h3>
         <div className="space-y-6">
-          {milestones.map((milestone, index) => (
+          {milestones.map((milestone : Milestone, index : number) => (
             <div key={index} className="p-4 border border-gray-300 rounded-lg">
               <h4 className="text-lg font-medium mb-3">Milestone {index + 1}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -308,17 +338,11 @@ export default function AddSaleForm( { onClose }: AddSaleProps) {
             </div>
           ))}
         </div>
+      
       </div>
+
       <div className="flex justify-end gap-2 mt-6">
-      <Button
-  title="Cancel"
-  onClick={(e) => {
-    e.preventDefault();
-    nav('/bdo/sales-report');
-  }}
-  type="button"
-/>
-        <Button title={loading ? 'Saving...' : 'Save'} type="submit" />        
+        <Button title={loading ? 'Updating...' : 'Update'} type="submit" />        
       </div>
     </form>
     </ScrollArea>

@@ -4,7 +4,6 @@ import Calls from "./Calls";
 import Meetings from "./Meeting";
 import SalesReport from "./SalesReport";
 import SaleView from "./SaleView";
-import AddSale from "./AddSale";
 import ChatScreen from "@/components/common/ChatScreen";
 
 function BdoRoutes() {
@@ -16,7 +15,6 @@ function BdoRoutes() {
             <Route path="sales-report" element={<SalesReport />} />
             <Route path="sales-report/view" element={<SaleView />} />
             <Route path="calls" element={<Calls />} />
-            <Route path="sales-report/add" element={<AddSale />} />
             <Route path="chat" element={<ChatScreen />} />
         </Routes>
     );

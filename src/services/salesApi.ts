@@ -31,6 +31,7 @@ export const SalesApi = createApi({
             },
             providesTags: ['Sales']
         }),
+
         addSale: builder.mutation({
             query: (data) => ({
                 url: `/sales/addSale`,
@@ -38,8 +39,25 @@ export const SalesApi = createApi({
                 body: data
             }),
             invalidatesTags: ['Sales']
-        })
+        }),
+
+        updateSale: builder.mutation({
+            query: (data) => ({
+                url: `/sales/updateSale/${data._id}`,
+                method: 'PUT',
+                body: data,
+        }),
+        invalidatesTags: ['Sales']
+        }),
+
+        removeSale: builder.mutation({
+            query: (id) => ({
+                url: `/sales/removeSale/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Sales']
+        }),
     }),
 })
 
-export const { useGetSalesByUserQuery, useAddSaleMutation } = SalesApi
+export const { useGetSalesByUserQuery, useAddSaleMutation, useRemoveSaleMutation, useUpdateSaleMutation } = SalesApi

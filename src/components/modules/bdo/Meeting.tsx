@@ -5,7 +5,7 @@ import Card from "../../common/Card";
 import ReusableTable from '../../common/Table';
 import { useGetMeetingsByUserQuery, useMeetingAnalyticsQuery, useRemoveMeetingMutation } from "@/services/meetingApi";
 import { useDebounce } from '@/hooks/useDebounce';
-import { Edit, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEffect } from 'react';
 import { formatDateWithTime } from '@/utils/formatDate';
@@ -21,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useToast } from '@/hooks/use-toast';
+import EditSchedule from './EditSchedule';
 
 export default function Meeting() {
 
@@ -30,6 +31,7 @@ export default function Meeting() {
     clientName: string; 
     clientEmail: string; 
     meetingLink: string; 
+    description: string;
     status: string; 
     scheduleDate: string; 
   }
@@ -76,7 +78,7 @@ export default function Meeting() {
       placeholder: 'Status',
       options: [
         { label: 'All Status', value: 'all' },
-        { label: 'Completed', value: 'completed' },
+        { label: 'Completed', value: 'Completed' },
         { label: 'Cancelled', value: 'Cancelled' },
         { label: 'Pending', value: 'Pending' }
       ]
@@ -94,19 +96,19 @@ export default function Meeting() {
     { key: 'projectName', label: 'Project Name' },
     { key: 'clientName', label: 'Client Name' },
     { key: 'clientEmail', label: 'Client Email' },
-    { 
-      key: 'meetingLink', 
-      label: 'Meeting Link',
-      render: (value: string) => (
-        <a href={value} className="font-medium">{value}</a>
-      )
-    },
+    // { 
+    //   key: 'meetingLink', 
+    //   label: 'Meeting Link',
+    //   render: (value: string) => (
+    //     <a href={value} className="font-medium">{value}</a>
+    //   )
+    // },
     {
       key: 'status',
       label: 'Status',
       render: (value: string) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === 'Active'
+          value === 'Completed'
             ? 'bg-green-900 text-green-300'
             : value === 'Cancelled'
               ? 'bg-red-900 text-red-300'
@@ -126,10 +128,9 @@ export default function Meeting() {
       label: 'Actions',
       render: (_: unknown, row: Meeting) => (
         <div className="flex gap-2" onClick={e => e.stopPropagation()}>
-          <Edit
-            className="w-4 h-4 cursor-pointer"
-            onClick={() => handleEdit(row)}
-          />
+          <div className="edit">
+            <EditSchedule meetingData={row} />
+          </div>
           <AlertDialog>
             <AlertDialogTrigger>
               <Trash2 className="w-4 h-4 cursor-pointer text-red-500" />
@@ -169,9 +170,9 @@ export default function Meeting() {
     setCurrentPage(1);
   };
 
-  const handleEdit = (row: Meeting) => {
-    console.log('Edit:', row);
-  };
+  // const handleEdit = (row: Meeting) => {
+  //   console.log('Edit:', row);
+  // };
 
   const [removeMeeting] = useRemoveMeetingMutation();
 
