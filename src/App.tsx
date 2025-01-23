@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-route
 import { useLocation } from "react-router";
 import Navbar from "./components/common/Navbar";
 import { useEffect } from "react";
+import useTheme from "./hooks/useTheme";
 import useAuth from "./hooks/useAuth";
 import LoginForm from "./components/common/Login";
 import BdoRoutes from "./components/modules/bdo/BdoRoutes";
@@ -12,6 +13,7 @@ const App = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const { user, accessToken } = useAuth();
@@ -78,6 +80,10 @@ muhammadkhushi072242@gmail.com
         return <Route path="/" element={<LoginForm />} />;
     }
   }
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   // const renderRoutes = () => {
   //   switch (role) {

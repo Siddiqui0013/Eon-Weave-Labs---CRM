@@ -91,7 +91,7 @@ const Navbar = () => {
 
       <nav className={`
         fixed top-0 left-0 h-screen bg-[#171717] flex flex-col justify-between
-        transform transition-transform duration-300 ease-in-out z-40
+        transform border-r border-slate-600 transition-transform duration-300 ease-in-out z-40
         w-64 md:w-[20%]
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
