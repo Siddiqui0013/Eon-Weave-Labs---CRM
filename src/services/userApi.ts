@@ -56,9 +56,29 @@ export const UserApi = createApi({
                 method: "POST",
             }),
             invalidatesTags: ["Users"],
-        })
+        }),
+
+        startBreak: builder.mutation({
+            query: () => ({
+                url: `/attendance/startBreak`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Users"],
+        }),
+
+        endBreak: builder.mutation({
+            query: () => ({
+                url: `/attendance/endBreak`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Users"],
+        }),
+
 
     }),
 });
 
-export const { useLogoutMutation, useLoginMutation, useRegisterMutation, useInviteMutation, useCheckInMutation, useCheckOutMutation } = UserApi;
+export const { useLogoutMutation, useLoginMutation, useRegisterMutation, useInviteMutation, 
+    useCheckInMutation, useCheckOutMutation, 
+    useStartBreakMutation, useEndBreakMutation
+} = UserApi;

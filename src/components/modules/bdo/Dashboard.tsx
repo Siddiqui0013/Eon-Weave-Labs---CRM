@@ -126,7 +126,6 @@ export default function Dashboard() {
 		sales: number;
 		image: string;
 	}
-
 	const TopSalesPerson = ({ person }: { person: person }) => (
 		<div className="flex flex-col items-center mb-8">
 			<h2 className="text-xl mb-4">Most Sales</h2>
