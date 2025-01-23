@@ -25,11 +25,11 @@ export default function TopButtons() {
           description: "You have successfully started a break.",
           duration: 2000,
         })
-      } catch (error: unknown | any) {
+      } catch (error) {
         toast({
           title: "Error",
           variant: "destructive",
-          description: error.data.message || "An error occurred while starting a break.",
+          // description: error.data.message || "An error occurred while starting a break.",
           duration: 2000,
         })
         console.log("Error starting break:", error);
@@ -49,7 +49,7 @@ export default function TopButtons() {
         toast({
           title: "Error",
           variant: "destructive",
-          description: error.data.message || "An error occurred while ending a break.",
+          // description: error.data.message || "An error occurred while ending a break.",
           duration: 2000,
         })
         console.log("Error ending break:", error);
@@ -69,7 +69,7 @@ export default function TopButtons() {
         toast({
           title: "Error",
           variant: "destructive",
-          description: error.data.message || "An error occurred while checking in.",
+          // description: error.data.message || "An error occurred while checking in.",
           duration: 2000,
         })
         console.log("Error checking in:", error);
@@ -89,7 +89,7 @@ export default function TopButtons() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: error.data.message || "An error occurred while checking out.",
+          // description: error.data.message || "An error occurred while checking out.",
           duration: 2000,
         })
         console.log("Error checking out:", error);
