@@ -41,7 +41,24 @@ export const UserApi = createApi({
             }),
             invalidatesTags: ["Users"],
         }),
-    })
+
+        checkIn: builder.mutation({
+            query: () => ({
+                url: `/attendance/checkIn`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Users"],
+        }),
+
+        checkOut: builder.mutation({
+            query: () => ({
+                url: `/attendance/checkOut`,                
+                method: "POST",
+            }),
+            invalidatesTags: ["Users"],
+        })
+
+    }),
 });
 
-export const { useLogoutMutation, useLoginMutation, useRegisterMutation, useInviteMutation } = UserApi;
+export const { useLogoutMutation, useLoginMutation, useRegisterMutation, useInviteMutation, useCheckInMutation, useCheckOutMutation } = UserApi;

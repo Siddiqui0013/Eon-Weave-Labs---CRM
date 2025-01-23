@@ -55,21 +55,21 @@ const LoginForm = () => {
 
   return (
     <div className="flex flex-col w-full items-center justify-center lg:min-h-[90vh] min-h-screen">
-      <div className="max-w-md">
-        <div className="shadow-md rounded-lg sm:px-8 px-4 pt-4 pb-5 md:pt-0 md:pb-0">
+      <div className="max-w-md shadow-lg bg-card px-4 py-8 rounded-lg">
+        <div className=" sm:px-8 px-4 pt-4 pb-5 md:pt-0 md:pb-0">
           <h2 className="text-2xl font-bold mb-6 text-center">Login to Account</h2>
-          <p className="text-gray-600 text-sm text-center mb-6">
+          <p className="text-gray-300 text-sm text-center mb-6">
             Please enter your email and password to continue
           </p>
 
           <form onSubmit={handleSubmit}>
 
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+              <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="email">
                 Email
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 leading-tight focus:outline-none focus:shadow-outline"
                 id="email"
                 onChange={(e) => setEmail(e.target.value)}
                 value={email}
@@ -79,11 +79,11 @@ const LoginForm = () => {
             </div>
 
             <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+              <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="password">
                 Password
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="password"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
@@ -101,7 +101,7 @@ const LoginForm = () => {
                   type="checkbox"
                   className="form-checkbox h-4 w-4 transition duration-150 ease-in-out"
                 />
-                <span className="ml-2 text-gray-700 text-sm">Remember me</span>
+                <span className="ml-2 text-gray-200 text-sm">Remember me</span>
               </label>
             </div>
 
@@ -205,11 +205,11 @@ export default LoginForm;
 
 //           <form onSubmit={handleSubmit}>
 //             <div className="mb-4">
-//               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+//               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="email">
 //                 Email
 //               </label>
 //               <input
-//                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+//                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 leading-tight focus:outline-none focus:shadow-outline"
 //                 id="email"
 //                 onChange={(e) => setEmail(e.target.value)}
 //                 value={email}
@@ -220,11 +220,11 @@ export default LoginForm;
 //             </div>
 
 //             <div className="mb-6">
-//               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+//               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="password">
 //                 Password
 //               </label>
 //               <input
-//                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+//                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
 //                 id="password"
 //                 onChange={(e) => setPassword(e.target.value)}
 //                 value={password}
@@ -243,7 +243,7 @@ export default LoginForm;
 //                   type="checkbox"
 //                   className="form-checkbox h-4 w-4 transition duration-150 ease-in-out"
 //                 />
-//                 <span className="ml-2 text-gray-700 text-sm">Remember me</span>
+//                 <span className="ml-2 text-gray-200 text-sm">Remember me</span>
 //               </label>
 //             </div>
 

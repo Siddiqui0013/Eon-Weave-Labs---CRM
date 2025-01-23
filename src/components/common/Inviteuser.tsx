@@ -42,7 +42,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 }
   return (
     <div className="flex w-full items-center justify-center lg:min-h-[90vh] min-h-screen">
-        <div className="shadow-md rounded-lg sm:px-8 px-4 pt-4 pb-5 md:pt-0 md:pb-0">
+        <div className="shadow-lg mx-2 mt-6 bg-card px-4 py-8 rounded-lg">
           <h2 className="text-2xl font-bold mb-6 text-center">Invite a User to Eon Weave Labs</h2>
           <p className="text-gray-400 text-sm text-center mb-6">
             Fill in the form below to invite
@@ -51,7 +51,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           <form onSubmit={handleSubmit}>
             <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <div className="md:mb-4 mb-2 ">
+            <div className="md:mb-4">
               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="name">
                 Name
               </label>
@@ -66,7 +66,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               />
             </div>
 
-            <div className="md:mb-4 mb-2 ">
+            <div className="md:mb-4">
               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="email">
                 Email
               </label>
@@ -81,7 +81,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               />
             </div>
 
-            <div className="md:mb-4 mb-2 ">
+            <div className="md:mb-4">
               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="role">
                 Role
               </label>
@@ -97,7 +97,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               </select>
             </div>
 
-            <div className="md:mb-4 mb-2 ">
+            <div className="md:mb-4">
               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="jobTitle">
                 Job Title
               </label>
@@ -112,7 +112,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               />
             </div>
 
-            <div className="md:mb-4 mb-2 ">
+            <div className="md:mb-4">
               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="salary">
                 Salary
               </label>
@@ -127,7 +127,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               />
             </div>
 
-            <div className="md:mb-4 mb-2 ">
+            <div className="md:mb-4">
               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="type">
                 Type
               </label>
@@ -146,7 +146,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             </div>
 
             </div>
-            <div className="mt-6">
+            <div className="mt-8">
               <Button
                 title={isLoading ? "Inviting..." : "Invite"}
                 disabled={isLoading}

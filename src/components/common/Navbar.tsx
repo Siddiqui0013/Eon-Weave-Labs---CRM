@@ -65,6 +65,7 @@ const Navbar = () => {
         title: "Error",
         description: "Something went wrong. Please try again",
       });
+      console.log("Error logging out:", error);
     }
   }
 
@@ -92,19 +93,19 @@ const Navbar = () => {
       <nav className={`
         fixed top-0 left-0 h-screen bg-[#171717] flex flex-col justify-between
         transform border-r border-slate-600 transition-transform duration-300 ease-in-out z-40
-        w-64 md:w-[20%]
+        w-64 md:w-[18%]
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
-        <div className="mt-12">
-          <div className="p-4 mt-8 md:m-0 flex justify-between items-center">
+        <div className="">
+          <div className="p-4 md:my-6 mt-20 mb-8 flex justify-between items-center">
             <Link
               to={role ? `/${role}/dashboard` : "/"}
               className="text-xl font-bold text-white"
               onClick={handleLinkClick}
             >
-              Eon Weave Labs
-            </Link>
             <img src={logo} alt="EWL" className="h-8" />
+            </Link>
+
           </div>
 
           <ul className="flex flex-col">
@@ -131,7 +132,7 @@ const Navbar = () => {
           onClick={handleLogout}
           disabled={isLoading}
           icon={isLoading && <Loader2 className="animate-spin" size={16} />}
-          className="m-4 justify-center font-semibold"
+          className="m-4 justify-center font-semibold md:mb-4 mb-20"
         />
       </nav>
     </>

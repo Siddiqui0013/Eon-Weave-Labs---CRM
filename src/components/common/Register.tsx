@@ -69,7 +69,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
   return (
     <div className="flex w-full items-center justify-center lg:min-h-[90vh] min-h-screen">
-        <div className="shadow-md rounded-lg sm:px-8 px-4 pt-4 pb-5 md:pt-0 md:pb-0">
+        <div className="shadow-lg bg-card px-6 py-8 rounded-lg">
           <h2 className="text-2xl font-bold mb-6 text-center">Register your Account</h2>
           <p className="text-gray-400 text-sm text-center mb-6">
             Fill in the form below to create an account
@@ -78,7 +78,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           <form onSubmit={handleSubmit}>
             <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <div className="md:mb-4 mb-2 ">
+            <div className="md:mb-4 ">
               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="password">
                 Password
               </label>
@@ -92,7 +92,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               />
             </div>
 
-            <div className="md:mb-4 mb-2 ">
+            <div className="md:mb-4 ">
               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="password">
                Confirm Password
               </label>
@@ -106,7 +106,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               />
             </div>
 
-            <div className="md:mb-4 mb-2 ">
+            <div className="md:mb-4 ">
               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="cnic">
                 CNIC
               </label>
@@ -120,7 +120,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               />
             </div>
 
-            <div className="md:mb-4 mb-2 ">
+            <div className="md:mb-4 ">
               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="phone">
                 Phone Number
               </label>
@@ -134,7 +134,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               />
             </div>
 
-            <div className="md:mb-4 mb-2 ">
+            <div className="md:mb-4 ">
               <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="address">
                 Address
               </label>
