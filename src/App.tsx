@@ -62,7 +62,7 @@ const App = () => {
           <Route path="/" element={<RedirectHome />} />
 
           <Route path="/login" element={<LoginForm />} />
-          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/register/:inviteId" element={<RegisterForm />} />
 
           <Route element={<ProtectedRoute allowedRoles={DefinedRoles} />}>
             <Route path="bdo/*" element={<BdoRoutes />} />

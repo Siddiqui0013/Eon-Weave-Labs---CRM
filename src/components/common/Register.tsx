@@ -1,9 +1,10 @@
-import { useState } from "react";
-// import { useRegisterMutation } from "@/services/userApi";
-// import { useToast } from "@/hooks/use-toast";
-// import { useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useRegisterMutation } from "@/services/userApi";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate, useLocation } from "react-router";
 import Button from "./Button";
-// import { Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+
 
 export const RegisterForm = () => {
   
@@ -13,54 +14,58 @@ const [cnic, setCnic] = useState("");
 const [phone, setPhone] = useState("");
 const [address, setAddress] = useState("");
 
-//   const navigate = useNavigate();
-//   const { toast } = useToast();
+const location = useLocation();
+const inviteId = location.pathname.split("/")[2];
 
-//   const [login, { isLoading }] = useLoginMutation();
+useEffect(() => {
+    console.log("Invite ID:", inviteId);
+}, [inviteId]);
 
-//   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-//     if (!email || !password) {
-//       return toast({
-//         variant: "destructive",
-//         title: "Error",
-//         description: "Please fill all the fields",
-//         duration: 1500,
-//       });
-//     }
-//     try {
-//       const credentials = { email, password };
-//       const response = await login(credentials).unwrap();
-//       const data = response.data;
+const navigate = useNavigate();
+const { toast } = useToast();
+const [register, { isLoading }] = useRegisterMutation();
 
-//       localStorage.setItem("accessToken", data.accessToken);
-//       localStorage.setItem("refreshToken", data.refreshToken);
-//       localStorage.setItem("user", JSON.stringify(data.user));
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  if (password !== confirmPassword) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description: "Passwords do not match",
+      duration: 1500,
+    });
+    return;
+  }
+  try {
+    const data = { password, confirmPassword, cnic, phone, address };
+    console.log("Data:", data);
 
-//       navigate(`/${data.user.role}/dashboard`);
+    const response = await register({ data, inviteId }).unwrap();
+    const user = response.data;
 
-//       toast({
-//         variant: "default",
-//         title: "Success",
-//         description: "Login successful",
-//         duration: 1500,
-//       });
+    localStorage.setItem("accessToken", user.accessToken);
+    localStorage.setItem("refreshToken", user.refreshToken);
+    localStorage.setItem("user", JSON.stringify(user.user));
 
-//     } catch (error: unknown) {
-//       toast({
-//         variant: "destructive",
-//         title: "Error",
-//         description:  "Invalid email or password",
-//         duration: 1500,
-//       });
-//       console.log("Error logging in:", error);
-//     }
-//   }
+    navigate(`/${user.user.role}/dashboard`);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Form submitted");
+    toast({
+      variant: "default",
+      title: "Success",
+      description: "Account created successfully",
+      duration: 1500,
+    });
+  } catch (error: unknown) {
+        toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An error occurred",
+        duration: 1500,
+        });
+        console.log("Error registering:", error);
+    }
   };
+
 
   return (
     <div className="flex w-full items-center justify-center lg:min-h-[90vh] min-h-screen">
@@ -147,10 +152,9 @@ const [address, setAddress] = useState("");
 
             <div className="mt-6">
               <Button
-                title={"Register"}
-                // title={isLoading ? "Signing in..." : "Sign In"}
-                // disabled={isLoading}
-                // icon={isLoading && <Loader2 className="animate-spin" />}
+                title={isLoading ? "Registering..." : "Register"}
+                disabled={isLoading}
+                icon={isLoading && <Loader2 className="animate-spin" />}
                 type="submit"
                 className="w-full justify-center font-semibold text-lg"
               />
