@@ -42,13 +42,14 @@ const LoginForm = () => {
         duration: 1500,
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error?.data?.message || "Invalid email or password",
+        description:  "Invalid email or password",
         duration: 1500,
       });
+      console.log("Error logging in:", error);
     }
   }
 
