@@ -1,12 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { AuthApi, UserApi } from '@/services/userApi';
+import { UserApi } from '@/services/userApi';
 import { MeetingApi } from '@/services/meetingApi';
 import { SalesApi } from '@/services/salesApi';
 import { CallsApi } from '@/services/callsApi';
 
 export const store = configureStore({
   reducer: {
-    [AuthApi.reducerPath]: AuthApi.reducer,
     [UserApi.reducerPath]: UserApi.reducer,
     [MeetingApi.reducerPath]: MeetingApi.reducer,
     [SalesApi.reducerPath]: SalesApi.reducer,
@@ -14,7 +13,6 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
-      AuthApi.middleware,
       UserApi.middleware,
       MeetingApi.middleware,
       SalesApi.middleware,

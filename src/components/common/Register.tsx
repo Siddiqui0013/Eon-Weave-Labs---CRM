@@ -1,98 +1,162 @@
-// import { useState } from "react";
+import { useState } from "react";
+// import { useRegisterMutation } from "@/services/userApi";
+// import { useToast } from "@/hooks/use-toast";
+// import { useNavigate } from "react-router";
+import Button from "./Button";
+// import { Loader2 } from "lucide-react";
 
-// const Register = () => {
-//   // const [email, setEmail] = useState("");
-//   // const [password, setPassword] = useState("");
+export const RegisterForm = () => {
+  
+const [password, setPassword] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
+const [cnic, setCnic] = useState("");
+const [phone, setPhone] = useState("");
+const [address, setAddress] = useState("");
 
-//   const [name, setName] = useState("")
-//   const [error, setError] = useState("");
+//   const navigate = useNavigate();
+//   const { toast } = useToast();
+
+//   const [login, { isLoading }] = useLoginMutation();
 
 //   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 //     e.preventDefault();
-//     setError("");
-//     console.log("Name:", name);
+//     if (!email || !password) {
+//       return toast({
+//         variant: "destructive",
+//         title: "Error",
+//         description: "Please fill all the fields",
+//         duration: 1500,
+//       });
+//     }
+//     try {
+//       const credentials = { email, password };
+//       const response = await login(credentials).unwrap();
+//       const data = response.data;
+
+//       localStorage.setItem("accessToken", data.accessToken);
+//       localStorage.setItem("refreshToken", data.refreshToken);
+//       localStorage.setItem("user", JSON.stringify(data.user));
+
+//       navigate(`/${data.user.role}/dashboard`);
+
+//       toast({
+//         variant: "default",
+//         title: "Success",
+//         description: "Login successful",
+//         duration: 1500,
+//       });
+
+//     } catch (error: unknown) {
+//       toast({
+//         variant: "destructive",
+//         title: "Error",
+//         description:  "Invalid email or password",
+//         duration: 1500,
+//       });
+//       console.log("Error logging in:", error);
+//     }
 //   }
 
-//   return (
-//     <div className="flex flex-col w-full items-center justify-center min-h-screen">
-//       <div className="max-w-md">
-//         <div className="shadow-md rounded-lg px-8 pt-6 pb-8">
-//           <h2 className="text-2xl font-bold mb-6 text-center">Login to Account</h2>
-//           <p className="text-gray-600 text-sm text-center mb-6">
-//             Please enter your email and password to continue
-//           </p>
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Form submitted");
+  };
 
-//           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+  return (
+    <div className="flex w-full items-center justify-center lg:min-h-[90vh] min-h-screen">
+        <div className="shadow-md rounded-lg sm:px-8 px-4 pt-4 pb-5 md:pt-0 md:pb-0">
+          <h2 className="text-2xl font-bold mb-6 text-center">Register your Account</h2>
+          <p className="text-gray-400 text-sm text-center mb-6">
+            Fill in the form below to create an account
+          </p>
 
-//           <form onSubmit={handleSubmit}>
-//             <div className="mb-4">
-//               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-//                 Name
-//               </label>
-//               <input
-//                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-//                 id="name"
-//                 onChange={(e) => setName(e.target.value)}
-//                 value={name}
-//                 type="text"
-//                 placeholder="Name"
-//               />
-//             </div>
+          <form onSubmit={handleSubmit}>
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
 
-//             {/* <div className="mb-4">
-//               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-//                 Email
-//               </label>
-//               <input
-//                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-//                 id="email"
-//                 onChange={(e) => setEmail(e.target.value)}
-//                 value={email}
-//                 type="email"
-//                 placeholder="you@example.com"
-//               />
-//             </div> */}
+            <div className="md:mb-4 mb-2 ">
+              <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="password">
+                Password
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                id="password"
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                type="password"
+                placeholder="**********"
+              />
+            </div>
 
-//             {/* <div className="mb-6">
-//               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-//                 Password
-//               </label>
-//               <input
-//                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-//                 id="password"
-//                 onChange={(e) => setPassword(e.target.value)}
-//                 value={password}
-//                 type="password"
-//                 placeholder="**********"
-//               />
-//               <a className="inline-block align-baseline font-bold text-sm" href="#">
-//                 Forgot Password?
-//               </a>
-//             </div> */}
+            <div className="md:mb-4 mb-2 ">
+              <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="password">
+               Confirm Password
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                id="Confirmpassword"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                value={confirmPassword}
+                type="password"
+                placeholder="**********"
+              />
+            </div>
 
-//             <div className="flex items-center justify-between">
-//               <label className="inline-flex items-center">
-//                 <input
-//                   type="checkbox"
-//                   className="form-checkbox h-4 w-4 transition duration-150 ease-in-out"
-//                 />
-//                 <span className="ml-2 text-gray-700 text-sm">Remember me</span>
-//               </label>
-//             </div>
+            <div className="md:mb-4 mb-2 ">
+              <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="cnic">
+                CNIC
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                id="cnic"
+                onChange={(e) => setCnic(e.target.value)}
+                value={cnic}
+                type="text"
+                placeholder="XXXXX-XXXXXXX-X"
+              />
+            </div>
 
-//             <div className="mt-8">
-//               <button
-//                 type="submit"
-//                 className="w-full bg-primary text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-//               >
-//                 Sign In
-//               </button>
-//             </div>
-//           </form>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
+            <div className="md:mb-4 mb-2 ">
+              <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="phone">
+                Phone Number
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                id="phone"
+                onChange={(e) => setPhone(e.target.value)}
+                value={phone}
+                type="text"
+                placeholder="03XXXXXXXXX"
+              />
+            </div>
 
-// export default LoginForm;
+            <div className="md:mb-4 mb-2 ">
+              <label className="block text-gray-200 text-sm font-bold mb-2" htmlFor="address">
+                Address
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                id="address"
+                onChange={(e) => setAddress(e.target.value)}
+                value={address}
+                type="text"
+                placeholder="Enter your address"
+              />
+            </div>
+
+            </div>
+
+            <div className="mt-6">
+              <Button
+                title={"Register"}
+                // title={isLoading ? "Signing in..." : "Sign In"}
+                // disabled={isLoading}
+                // icon={isLoading && <Loader2 className="animate-spin" />}
+                type="submit"
+                className="w-full justify-center font-semibold text-lg"
+              />
+            </div>
+          </form>
+        </div>
+      </div>
+  );
+};

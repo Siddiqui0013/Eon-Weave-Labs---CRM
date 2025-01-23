@@ -1,13 +1,20 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { baseURL } from "../utils/baseURL";
 import customBaseQuery from "./customBaseQuery";
 
-export const AuthApi = createApi({
-    reducerPath: "AuthApi",
-    baseQuery: fetchBaseQuery({ baseUrl: baseURL }),
+export const UserApi = createApi({
+    reducerPath: "UserApi",
+    baseQuery: customBaseQuery,
     tagTypes: ["Users"],
     endpoints: (builder) => ({
+        
+        logout: builder.mutation({
+            query: () => ({
+                url: `/user/logout`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Users"],
+        }),
+
         login: builder.mutation({
             query: (data) => ({
                 url: `/user/login`,
@@ -17,24 +24,24 @@ export const AuthApi = createApi({
             invalidatesTags: ["Users"],
         }),
 
-    }),
-});
-
-export const UserApi = createApi({
-    reducerPath: "UserApi",
-    baseQuery: customBaseQuery,
-    tagTypes: ["Users"],
-    endpoints: (builder) => ({
-        logout: builder.mutation({
-            query: () => ({
-                url: `/user/logout`,
+        register: builder.mutation({
+            query: (data) => ({
+                url: `/user/register`,
                 method: "POST",
+                body: data,
+            }),
+            invalidatesTags: ["Users"],
+        }),
+
+        invite: builder.mutation({
+            query: (data) => ({
+                url: `/user/invite`,
+                method: "POST",
+                body: data,
             }),
             invalidatesTags: ["Users"],
         }),
     })
 });
 
-export const { useLoginMutation } = AuthApi;
-
-export const { useLogoutMutation } = UserApi;
+export const { useLogoutMutation, useLoginMutation, useRegisterMutation, useInviteMutation } = UserApi;

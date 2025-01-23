@@ -1,125 +1,79 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router";
-import { useLocation } from "react-router";
-import Navbar from "./components/common/Navbar";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from "react-router";
 import { useEffect } from "react";
 import useTheme from "./hooks/useTheme";
 import useAuth from "./hooks/useAuth";
+import Navbar from "./components/common/Navbar";
 import LoginForm from "./components/common/Login";
+import { RegisterForm } from "./components/common/Register";
 import BdoRoutes from "./components/modules/bdo/BdoRoutes";
 import HrRoutes from "./components/modules/hr/HrRoutes";
 
-import "./App.css"
+import "./App.css";
+
 const App = () => {
-
-  const navigate = useNavigate();
-  const location = useLocation();
   const { theme } = useTheme();
-
-  useEffect(() => {
-    const { user, accessToken } = useAuth();
-
-    if (user && accessToken) {
-
-      const role = user.role;
-
-      if (DefinedRoles.includes(role)) {
-        if (!location.pathname.includes(`/${role}`)) {
-          navigate(`/${role}/dashboard`);
-        } else {
-          navigate(location.pathname);
-        }
-      } else {
-        navigate("/");
-      }
-    }
-  }, [navigate]);
-
-
-  const { user } = useAuth();
-  const role = user ? user.role : "";
-  // console.log("Role from App.js: ", role);
-
-  useEffect(() => {
-    if (role && DefinedRoles.includes(role)) {
-      if (!location.pathname.includes(`/${role}`)) {
-        navigate(`/${role}/dashboard`);
-      }
-    } else {
-      navigate("/");
-    }
-  }, [role, location.pathname, navigate]);
-
-
-
-  /*
-muhammadkhushi072242@gmail.com
-  */
+  const { user, accessToken } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
-  useEffect(() => {
-    // if (role == "ceo" || role == "hr" || role == "developer" || role == "bdo") {
-    if (DefinedRoles.includes(role)) {
-      if (!location.pathname.includes(`/${role}`)) {
-        navigate(`/${role}/dashboard`);
-      } else {
-        navigate(location.pathname);
-      }
-    } else {
-      navigate("/");
-    }
-  }, [role]);
-
-  const renderRoutes = () => {
-
-    switch (role) {
-      case "bdo":
-        return <Route path="bdo/*" element={<BdoRoutes />} />;
-      case "hr":
-        return <Route path="hr/*" element={<HrRoutes />} />;
-      default:
-        return <Route path="/" element={<LoginForm />} />;
-    }
-  }
+  const role = user?.role || "";
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  // const renderRoutes = () => {
-  //   switch (role) {
-  //     case "bdo":
-  //       return <Route path="bdo/*" element={<BdoRoutes />} />;
-  //     case "hr":
-  //       return <Route path="hr/*" element={<HrRoutes />} />;
-  //     case "developer":
-  //       return <Route path="developer/*" element={<div>Developer Dashboard</div>} />;
-  //     default:
-  //       return (
-  //         <>
-  //           <Route path="/" element={<LoginForm />} />
-  //           <Route path="*" element={<LoginForm />} /> {/* Catch-all route */}
-  //         </>
-  //       );
-  //   }
-  // };
+  useEffect(() => {
+    if (user && accessToken) {
+      if (DefinedRoles.includes(role) && !location.pathname.includes(`/${role}`)) {
+        navigate(`/${role}/dashboard`);
+      }
+    } else if (!user) {
+      if (location.pathname === "/register" || location.pathname === "/login") {
+        return;
+      }
+      // navigate("/login");
+    }
+  }, [user, accessToken, role, location.pathname, navigate]);
+
+  const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
+    if (!user || !accessToken || !allowedRoles.includes(role)) {
+      return <Navigate to="/login" replace />;
+    }
+    return <Outlet />;
+  };
+
+  const RedirectHome = () => {
+    if (user && accessToken) {
+      return <Navigate to={`/${role}/dashboard`} replace />;
+    }
+    return <Navigate to="/login" replace />;
+  };
 
   return (
     <div className="flex w-[100%]">
-      {
-        // role && (
-        DefinedRoles.includes(role) && (
-          <div className="md:w-[20%]">
-            <Navbar />
-          </div>
-        )}
+      {DefinedRoles.includes(role) && (
+        <div className="md:w-[20%]">
+          <Navbar />
+        </div>
+      )}
       <div className={`flex-1 lg:p-5 md:p-4 p-2.5 ${!role ? "w-full" : ""}`}>
-        {/* <div className={`flex-1 ${!DefinedRoles.includes(role) ? "w-full" : ""}`}> */}
         <Routes>
-          {renderRoutes()}
+          <Route path="/" element={<RedirectHome />} />
+
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<RegisterForm />} />
+
+          <Route element={<ProtectedRoute allowedRoles={DefinedRoles} />}>
+            <Route path="bdo/*" element={<BdoRoutes />} />
+            <Route path="hr/*" element={<HrRoutes />} />
+          </Route>
+
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </div>
-  )
+  );
 };
 
 function AppWrapper() {
@@ -137,33 +91,279 @@ export default AppWrapper;
 
 
 
-
-
-// import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from "react-router";
-// import Navbar from "./components/common/Navbar"
-// import { useDispatch } from "react-redux";
+// import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from "react-router";
 // import { useEffect } from "react";
-// import { setRole } from "./redux/slices/userSlice";
-// import "./App.css"
-
+// import useTheme from "./hooks/useTheme";
+// import useAuth from "./hooks/useAuth";
+// import Navbar from "./components/common/Navbar";
+// import LoginForm from "./components/common/Login";
+// import { RegisterForm } from "./components/common/Register";
 // import BdoRoutes from "./components/modules/bdo/BdoRoutes";
 // import HrRoutes from "./components/modules/hr/HrRoutes";
 
-// const App = () => {
+// import "./App.css";
 
-//   const dispatch = useDispatch();
+// const App = () => {
+//   const { theme } = useTheme();
+//   const { user, accessToken } = useAuth();
+//   const location = useLocation();
+//   const navigate = useNavigate();
+
+//   const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
+//   const role = user?.role || "";
 
 //   useEffect(() => {
-//     dispatch(setRole("hr"));
-//   }, [dispatch]);
+//     document.documentElement.setAttribute("data-theme", theme);
+//   }, [theme]);
 
-//     return (
-//         <Router>
-//             <Navbar />
-//               <Routes>
-//               </Routes>
-//         </Router>
-//     );
+//   // useEffect(() => {
+//   //   if (user && accessToken) {
+//   //     if (DefinedRoles.includes(role) && !location.pathname.includes(`/${role}`)) {
+//   //       navigate(`/${role}/dashboard`);
+//   //     }
+//   //   } else if (location.pathname == "/register") {
+//   //     navigate("/register");
+//   //     return
+//   //   } else if (!user) {
+//   //     navigate("/");
+//   //   }
+//   // }, []);
+
+//   // Protected routes
+//   const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
+//     if (!user || !accessToken || !allowedRoles.includes(role)) {
+//       return <Navigate to="/login" replace />;
+//     }
+//     return <Outlet />;
+//   };
+
+//   // Default redirect for "/"
+//   const RedirectHome = () => {
+//     if (user && accessToken) {
+//       return <Navigate to={`/${role}/dashboard`} replace />;
+//     }
+//     return <Navigate to="/login" replace />;
+//   };
+
+//   return (
+//     <div className="flex w-[100%]">
+//       {DefinedRoles.includes(role) && (
+//         <div className="md:w-[20%]">
+//           <Navbar />
+//         </div>
+//       )}
+//       <div className={`flex-1 lg:p-5 md:p-4 p-2.5 ${!role ? "w-full" : ""}`}>
+//         <Routes>
+//           <Route path="/" element={<RedirectHome />} />
+
+//           <Route path="/login" element={<LoginForm />} />
+//           <Route path="/register" element={<RegisterForm />} />
+
+//           <Route element={<ProtectedRoute allowedRoles={DefinedRoles} />}>
+//             <Route path="bdo/*" element={<BdoRoutes />} />
+//             <Route path="hr/*" element={<HrRoutes />} />
+//           </Route>
+
+//           <Route path="*" element={<Navigate to="/" replace />} />
+//         </Routes>
+//       </div>
+//     </div>
+//   );
 // };
 
-// export default App;
+// function AppWrapper() {
+//   return (
+//     <Router>
+//       <App />
+//     </Router>
+//   );
+// }
+
+// export default AppWrapper;
+
+
+
+
+
+
+
+
+
+
+// import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from "react-router";
+// import { useEffect } from "react";
+// import useTheme from "./hooks/useTheme";
+// import useAuth from "./hooks/useAuth";
+// import Navbar from "./components/common/Navbar";
+// import LoginForm from "./components/common/Login";
+// import {RegisterForm} from "./components/common/Register";
+// import BdoRoutes from "./components/modules/bdo/BdoRoutes";
+// import HrRoutes from "./components/modules/hr/HrRoutes";
+
+// import "./App.css";
+
+// const App = () => {
+//   const { theme } = useTheme();
+//   const { user, accessToken } = useAuth();
+//   const location = useLocation();
+//   const navigate = useNavigate();
+
+//   const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
+//   const role = user?.role || "";
+
+//   useEffect(() => {
+//     document.documentElement.setAttribute("data-theme", theme);
+//   }, [theme]);
+
+//   useEffect(() => {
+//     if (user && accessToken) {
+//       if (DefinedRoles.includes(role) && !location.pathname.includes(`/${role}`)) {
+//         navigate(`/${role}/dashboard`);
+//       }
+//     } else if (!user) {
+//       navigate("/");
+//     }
+//   }, []);    
+
+//   const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
+//     if (!user || !accessToken || !allowedRoles.includes(role)) {
+//       return <Navigate to="/login" replace />;
+//     }
+//     return <Outlet />;
+//   };
+
+//   const RedirectHome = () => {
+//     if (user && accessToken) {
+//       return <Navigate to={`/${role}/dashboard`} replace />;
+//     }
+//     return <Navigate to="/login" replace />;
+//   };
+
+//   return (
+//     <div className="flex w-[100%]">
+//       {DefinedRoles.includes(role) && (
+//         <div className="md:w-[20%]">
+//           <Navbar />
+//         </div>
+//       )}
+//       <div className={`flex-1 lg:p-5 md:p-4 p-2.5 ${!role ? "w-full" : ""}`}>
+//         <Routes>
+//           <Route path="/" element={<RedirectHome />} />
+
+//           <Route path="/login" element={<LoginForm />} />
+//           <Route path="/register" element={<RegisterForm />} />
+
+//           <Route element={<ProtectedRoute allowedRoles={DefinedRoles} />}>
+//             <Route path="bdo/*" element={<BdoRoutes />} />
+//             <Route path="hr/*" element={<HrRoutes />} />
+//           </Route>
+
+//           <Route path="*" element={<Navigate to="/" replace />} />
+//         </Routes>
+//       </div>
+//     </div>
+//   );
+// };
+
+// function AppWrapper() {
+//   return (
+//     <Router>
+//       <App />
+//     </Router>
+//   );
+// }
+
+// export default AppWrapper;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useNavigate } from "react-router";
+// import { useLocation } from "react-router";
+// import { useEffect } from "react";
+// import useTheme from "./hooks/useTheme";
+// import useAuth from "./hooks/useAuth";
+// import Navbar from "./components/common/Navbar";
+// import LoginForm from "./components/common/Login";
+// import {RegisterForm} from "./components/common/Register";
+// import BdoRoutes from "./components/modules/bdo/BdoRoutes";
+// import HrRoutes from "./components/modules/hr/HrRoutes";
+
+// import "./App.css";
+
+// const App = () => {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const { theme } = useTheme();
+//   const { user, accessToken } = useAuth();
+
+//   const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
+//   const role = user?.role || "";
+
+//   useEffect(() => {
+//     if (user && accessToken) {
+//       if (DefinedRoles.includes(role) && !location.pathname.includes(`/${role}`)) {
+//         navigate(`/${role}/dashboard`);
+//       }
+//     } else if (!user) {
+//       navigate("/");
+//     }
+//   }, [user, accessToken, role, location.pathname, navigate]);
+
+//   useEffect(() => {
+//     document.documentElement.setAttribute("data-theme", theme);
+//   }, [theme]);
+
+//   const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
+//     if (!user || !accessToken || !allowedRoles.includes(role)) {
+//       return <Navigate to="/" replace />;
+//     }
+//     return <Outlet />;
+//   };
+
+//   return (
+//     <div className="flex w-[100%]">
+//       {DefinedRoles.includes(role) && (
+//         <div className="md:w-[20%]">
+//           <Navbar />
+//         </div>
+//       )}
+//       <div className={`flex-1 lg:p-5 md:p-4 p-2.5 ${!role ? "w-full" : ""}`}>
+//         <Routes>
+//           <Route path="/" element={<LoginForm />} />
+//           <Route path="/register" element={<RegisterForm />} />
+
+//           <Route element={<ProtectedRoute allowedRoles={DefinedRoles} />}>
+//             <Route path="bdo/*" element={<BdoRoutes />} />
+//             <Route path="hr/*" element={<HrRoutes />} />
+//           </Route>
+
+//           <Route path="*" element={<Navigate to="/" replace />} />
+//         </Routes>
+//       </div>
+//     </div>
+//   );
+// };
+
+// function AppWrapper() {
+//   return (
+//     <Router>
+//       <App />
+//     </Router>
+//   );
+// }
+
+// export default AppWrapper;
