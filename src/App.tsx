@@ -5,6 +5,7 @@ import useAuth from "./hooks/useAuth";
 import Navbar from "./components/common/Navbar";
 import LoginForm from "./components/common/Login";
 import { RegisterForm } from "./components/common/Register";
+import { Invite } from "./components/common/Inviteuser";
 import BdoRoutes from "./components/modules/bdo/BdoRoutes";
 import HrRoutes from "./components/modules/hr/HrRoutes";
 
@@ -19,6 +20,12 @@ const App = () => {
   const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
   const role = user?.role || "";
 
+  /* HR Email : "gokidab319@downlor.com"
+      HR Password : "121212" */
+
+  /* Employee Email : "gannet93128@topvu.net"
+      Employee Password : "121212" */
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
@@ -29,7 +36,7 @@ const App = () => {
         navigate(`/${role}/dashboard`);
       }
     } else if (!user) {
-      if (location.pathname === "/register" || location.pathname === "/login") {
+      if (location.pathname === "/register" || location.pathname === "/login" || location.pathname === "/invite") {
         return;
       }
       // navigate("/login");
@@ -63,6 +70,7 @@ const App = () => {
 
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register/:inviteId" element={<RegisterForm />} />
+          <Route path="/invite" element={<Invite />} />
 
           <Route element={<ProtectedRoute allowedRoles={DefinedRoles} />}>
             <Route path="bdo/*" element={<BdoRoutes />} />
