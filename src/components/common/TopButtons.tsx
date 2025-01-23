@@ -25,7 +25,7 @@ export default function TopButtons() {
           description: "You have successfully started a break.",
           duration: 2000,
         })
-      } catch (error: unknown) {
+      } catch (error: unknown | any) {
         toast({
           title: "Error",
           variant: "destructive",
