@@ -16,7 +16,7 @@ export default function TopButtons() {
   const [endBreak, { isLoading: isLoading4}] = useEndBreakMutation();
 
   const isErrorWithMessage = (error: unknown): error is { data: { message: string } } => {
-    return typeof error === "object" && error !== null && "data" in error && "message" in (error as any).data;
+    return typeof error === "object" && error !== null && "data" in error && "message" in (error as { data: { message: string } }).data;
   };
 
   const StartBreak = async () => {
@@ -29,10 +29,14 @@ export default function TopButtons() {
           duration: 2000,
         })
       } catch (error) {
+        let message = "An error occurred while checking out.";
+        if (isErrorWithMessage(error)) {
+          message = error.data.message;
+        }
         toast({
           title: "Error",
           variant: "destructive",
-          // description: error.data.message || "An error occurred while starting a break.",
+          description: message,
           duration: 2000,
         })
         console.log("Error starting break:", error);
@@ -49,10 +53,14 @@ export default function TopButtons() {
           duration: 2000,
         })
       } catch (error: unknown) {
+        let message = "An error occurred while checking out.";
+        if (isErrorWithMessage(error)) {
+          message = error.data.message;
+        }
         toast({
           title: "Error",
           variant: "destructive",
-          // description: error.data.message || "An error occurred while ending a break.",
+          description: message,
           duration: 2000,
         })
         console.log("Error ending break:", error);
@@ -94,10 +102,14 @@ export default function TopButtons() {
           duration: 2000,
         })
       } catch (error: unknown) {
+        let message = "An error occurred while checking out.";
+        if (isErrorWithMessage(error)) {
+          message = error.data.message;
+        }
         toast({
           variant: "destructive",
           title: "Error",
-          description: error.data.message || "An error occurred while checking out.",
+          description: message,
           duration: 2000,
         })
         console.log("Error checking out:", error);
