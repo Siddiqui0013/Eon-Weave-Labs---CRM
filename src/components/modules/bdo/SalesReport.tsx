@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useToast } from '@/hooks/use-toast';
 import AddSaleForm from "./AddSale";
-
+import SaleView from "./SaleView";
 
 interface Milestone {
   _id: string;
@@ -50,6 +50,7 @@ export default function SalesReport() {
   const [saleToEdit, setSaleToEdit] = useState<Sale | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
   const [filters, setFilters] = useState({
     status: 'all',
     createdAt: 'all'
@@ -216,7 +217,8 @@ export default function SalesReport() {
   };
 
   const rowClick = (row: Sale) => {
-    console.log('Row clicked:', row);
+    // console.log('Row clicked:', row);
+    setSelectedSale(row);
   }
 
   useEffect(() => {
@@ -227,64 +229,66 @@ export default function SalesReport() {
 
   return (
     <div className="md:mt-8 mt-20">
-
-{saleToEdit && (
-  <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-    <DialogContent className="sm:max-w-[800px] bg-gray-900 border-gray-800">
-    <DialogHeader>
-                    <DialogTitle className="text-gray-100">Update Sale</DialogTitle>
+      {selectedSale ? (
+        <SaleView sale={selectedSale} />
+      ) : (
+        <>
+          {saleToEdit && (
+            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+              <DialogContent className="sm:max-w-[800px] bg-gray-900 border-gray-800">
+                <DialogHeader>
+                  <DialogTitle className="text-gray-100">Update Sale</DialogTitle>
                 </DialogHeader>
-      <UpdateSale 
-        sale={saleToEdit} 
-        onClose={() => {
-          setIsEditDialogOpen(false);
-          setSaleToEdit(null);
-        }} 
-      />
-    </DialogContent>
-  </Dialog>
-)}
-
-{isAddDialogOpen && (
-  <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-    <DialogContent className="sm:max-w-[800px] bg-gray-900 border-gray-800">
-    <DialogHeader>
-                    <DialogTitle className="text-gray-100">Add New Sale</DialogTitle>
+                <UpdateSale 
+                  sale={saleToEdit} 
+                  onClose={() => {
+                    setIsEditDialogOpen(false);
+                    setSaleToEdit(null);
+                  }} 
+                />
+              </DialogContent>
+            </Dialog>
+          )}
+  
+          {isAddDialogOpen && (
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+              <DialogContent className="sm:max-w-[800px] bg-gray-900 border-gray-800">
+                <DialogHeader>
+                  <DialogTitle className="text-gray-100">Add New Sale</DialogTitle>
                 </DialogHeader>
-      <AddSaleForm 
-        onClose={() => setIsAddDialogOpen(false)} 
-      />
-    </DialogContent>
-  </Dialog>
-)}
-
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-200">Sales Report</h1>
-        <Button 
-          title="Add New Sale" 
-          // onClick={() => nav('/bdo/sales-report/add')} 
-          onClick={() => setIsAddDialogOpen(true)}
-          className="items-end" 
-        />
-      </div>
-
-      <div className="w-[370px] p-2 md:w-full overflow-auto">
-        <ReusableTable
-          columns={columns}
-          data={response?.data?.sales || []}
-          isLoading={isLoading}
-          totalPages={response?.data?.pagination?.totalPages || 1}
-          currentPage={currentPage}
-          searchQuery={searchQuery}
-          filters={filters}
-          filterOptions={filterOptions}
-          onSearch={handleSearch}
-          onFilterChange={handleFilterChange}
-          onClearFilters={handleClearFilters}
-          onPageChange={setCurrentPage}
-          onRowClick={rowClick}
-        />
-      </div>
+                <AddSaleForm onClose={() => setIsAddDialogOpen(false)} />
+              </DialogContent>
+            </Dialog>
+          )}
+  
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-semibold text-gray-200">Sales Report</h1>
+            <Button 
+              title="Add New Sale" 
+              onClick={() => setIsAddDialogOpen(true)}
+              className="items-end" 
+            />
+          </div>
+  
+          <div className="w-[370px] p-2 md:w-full overflow-auto">
+            <ReusableTable
+              columns={columns}
+              data={response?.data?.sales || []}
+              isLoading={isLoading}
+              totalPages={response?.data?.pagination?.totalPages || 1}
+              currentPage={currentPage}
+              searchQuery={searchQuery}
+              filters={filters}
+              filterOptions={filterOptions}
+              onSearch={handleSearch}
+              onFilterChange={handleFilterChange}
+              onClearFilters={handleClearFilters}
+              onPageChange={setCurrentPage}
+              onRowClick={rowClick}
+            />
+          </div>
+        </>
+      )}
     </div>
-  );
+  )
 }

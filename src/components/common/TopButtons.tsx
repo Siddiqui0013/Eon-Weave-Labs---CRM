@@ -16,7 +16,8 @@ export default function TopButtons() {
   const [endBreak, { isLoading: isLoading4}] = useEndBreakMutation();
 
   const isErrorWithMessage = (error: unknown): error is { data: { message: string } } => {
-    return typeof error === "object" && error !== null && "data" in error && "message" in (error as { data: { message: string } }).data;
+    return typeof error === "object" && 
+    error !== null && "data" in error && "message" in (error as { data: { message: string } }).data;
   };
 
   const StartBreak = async () => {

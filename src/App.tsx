@@ -26,6 +26,9 @@ const App = () => {
   /* Employee Email : "gannet93128@topvu.net"
       Employee Password : "121212" */
 
+  /* BDO Email : "locef40983@downlor.com"
+      BDO Password : "121212" */
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);

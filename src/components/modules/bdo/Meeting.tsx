@@ -68,7 +68,6 @@ export default function Meeting() {
   useEffect(() => {
     if (response) {
       setTotalMeetings(response.data.pagination.total);
-      // console.log(response.data.meetings);
     }
   }, [response]);
   
@@ -148,7 +147,6 @@ export default function Meeting() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-
         </div>
       )
     }
@@ -169,10 +167,6 @@ export default function Meeting() {
     setSearchQuery('');
     setCurrentPage(1);
   };
-
-  // const handleEdit = (row: Meeting) => {
-  //   console.log('Edit:', row);
-  // };
 
   const [removeMeeting] = useRemoveMeetingMutation();
 
