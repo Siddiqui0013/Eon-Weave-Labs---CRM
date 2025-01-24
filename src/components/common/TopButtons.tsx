@@ -15,6 +15,9 @@ export default function TopButtons() {
   const [startBreak, { isLoading: isLoading3}] = useStartBreakMutation();
   const [endBreak, { isLoading: isLoading4}] = useEndBreakMutation();
 
+  const isErrorWithMessage = (error: unknown): error is { data: { message: string } } => {
+    return typeof error === "object" && error !== null && "data" in error && "message" in (error as any).data;
+  };
 
   const StartBreak = async () => {
       try {
@@ -57,6 +60,7 @@ export default function TopButtons() {
   }
 
   const CheckIn = async () => {
+    // console.log("Current Time : ", new Date().toISOString() );
       try {
         const response = await checkIn({}).unwrap();
         console.log("CheckIn Response:", response);
@@ -66,10 +70,14 @@ export default function TopButtons() {
           duration: 2000,
         })
       } catch (error: unknown) {
+        let message = "An error occurred while checking out.";
+        if (isErrorWithMessage(error)) {
+          message = error.data.message;
+        }
         toast({
           title: "Error",
           variant: "destructive",
-          // description: error.data.message || "An error occurred while checking in.",
+          description: message,
           duration: 2000,
         })
         console.log("Error checking in:", error);
@@ -89,7 +97,7 @@ export default function TopButtons() {
         toast({
           variant: "destructive",
           title: "Error",
-          // description: error.data.message || "An error occurred while checking out.",
+          description: error.data.message || "An error occurred while checking out.",
           duration: 2000,
         })
         console.log("Error checking out:", error);
