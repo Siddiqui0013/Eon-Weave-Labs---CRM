@@ -64,7 +64,7 @@ const App = () => {
           <Navbar />
         </div>
       )}
-      <div className={`flex-1 lg:p-5 md:p-4 p-2.5 ${!role ? "w-full" : ""}`}>
+      <div className={`flex-1 2xl:p-8 lg:p-5 md:p-4 p-2.5 ${!role ? "w-full" : ""}`}>
         <Routes>
           <Route path="/" element={<RedirectHome />} />
 
@@ -231,7 +231,7 @@ export default AppWrapper;
 //     } else if (!user) {
 //       navigate("/");
 //     }
-//   }, []);    
+//   }, []);
 
 //   const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
 //     if (!user || !accessToken || !allowedRoles.includes(role)) {
