@@ -127,6 +127,7 @@ export default function TopButtons() {
     email: user?.email || "jane.doe@example.com",
     phone: user?.phone || "555-5678",
     address: user?.address || "Islamabad, Pakistan",
+    cnic : user?.cnic || "12345-12456644-0",
     jobTitle: user?.jobTitle || "Employee",
     joiningDate: user?.createdAt || "2020-01-15",
   };

@@ -42,6 +42,14 @@ export const UserApi = createApi({
             invalidatesTags: ["Users"],
         }),
 
+        updateUser: builder.mutation({
+            query: (data) => ({
+                url: `/user/updateUser`,
+                method: "PUT",
+                body: data,
+            }),
+        }),
+
         checkIn: builder.mutation({
             query: () => ({
                 url: `/attendance/checkIn`,
@@ -74,11 +82,10 @@ export const UserApi = createApi({
             invalidatesTags: ["Users"],
         }),
 
-
     }),
 });
 
-export const { useLogoutMutation, useLoginMutation, useRegisterMutation, useInviteMutation, 
+export const { useLogoutMutation, useLoginMutation, useRegisterMutation, useInviteMutation, useUpdateUserMutation, 
     useCheckInMutation, useCheckOutMutation, 
     useStartBreakMutation, useEndBreakMutation
 } = UserApi;

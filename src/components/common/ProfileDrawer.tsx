@@ -4,15 +4,18 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Input } from "@/components/ui/input";
-import { Mail, Phone, MapPin, Edit, X } from "lucide-react";
+import { Mail, Phone, MapPin, Edit, X, IdCard, Loader2 } from "lucide-react";
 import useTheme from "@/hooks/useTheme";
 import { useState } from "react";
+import { useUpdateUserMutation } from "@/services/userApi";
+import { useToast } from "@/hooks/use-toast";
 
 interface EmployeeProfileProps {
     employee: {
         name: string;
         profileImage: string;
         email: string;
+        cnic: string,
         phone: string;
         address: string;
         jobTitle: string;
@@ -26,9 +29,28 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
     const [selectedTheme, setSelectedTheme] = useState(theme);
     const [isEditing, setIsEditing] = useState(false);
     const [employee, setEmployee] = useState(initialEmployee);
+    const [updateUser, { isLoading }] = useUpdateUserMutation();
+    const { toast } = useToast();
 
-    const handleUpdate = () => {
+    const handleUpdate = async () => {
         console.log('Updated employee:', employee);
+        try {
+            const response = await updateUser(employee).unwrap();
+            console.log(response);
+            toast({
+                variant: "default",
+                title: "Success",
+                description: "User updated successfully",
+                duration: 1500,
+            });
+        } catch {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Error Updating User",
+                duration : 1500
+            })
+        }
         setIsEditing(false);
     };
 
@@ -64,7 +86,11 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                                         className="bg-green-600 hover:bg-green-700 text-white"
                                         onClick={handleUpdate}
                                     >
-                                        Update
+                                        {isLoading ? (
+                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                        ) : (
+                                            <><IdCard className="h-4 w-4 mr-2" />Save</>
+                                        )}
                                     </Button>
                                 )}
                                 <Button
@@ -118,6 +144,17 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                                     className="bg-gray-800 border-gray-700 text-gray-100"
                                 />
                             </div>
+
+                            <div className="flex items-center gap-3">
+                                <IdCard className="h-5 w-5 text-gray-400" />
+                                <Input
+                                    disabled={!isEditing}
+                                    value={employee.cnic}
+                                    onChange={(e) => setEmployee({...employee, cnic: e.target.value})}
+                                    className="bg-gray-800 border-gray-700 text-gray-100"
+                                />
+                            </div>
+
                             <div className="flex items-center gap-3">
                                 <MapPin className="h-5 w-5 text-gray-400" />
                                 <Input
