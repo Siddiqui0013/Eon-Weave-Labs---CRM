@@ -200,7 +200,9 @@ export default function TopButtons() {
       
     <div className="flex gap-2">
       
-     { breakEnded ? (
+     {/* {
+     !checkedIn ? null : 
+     breakEnded ? (
               <Button 
               title="AFK"
               onClick={StartBreak} 
@@ -214,7 +216,34 @@ export default function TopButtons() {
         icon={ isLoading4 ? <Loader2 size={16} className="animate-spin" /> : <Keyboard size={16} />}
         >
         </Button>
+      )} */}
+
+{
+  checkedIn && (
+    <div>
+      {breakEnded ? (
+        <Button
+          title="AFK"
+          onClick={StartBreak}
+          icon={isLoading3 ? <Loader2 size={16} className="animate-spin" /> : <UtensilsCrossed size={16} />}
+        />
+      ) : (
+        <Button
+          title="BTK"
+          onClick={EndBreak}
+          icon={isLoading4 ? <Loader2 size={16} className="animate-spin" /> : <Keyboard size={16} />}
+        />
       )}
+
+      <Button
+        title="Check Out"
+        onClick={CheckOut}
+        icon={isLoading2 ? <Loader2 size={16} className="animate-spin" /> : <LogOut size={16} />}
+      />
+    </div>
+  )
+}
+
     </div>
 
       { checkedIn ? (
