@@ -48,6 +48,7 @@ export const UserApi = createApi({
                 method: "PUT",
                 body: data,
             }),
+            invalidatesTags: ["Users"],
         }),
 
         checkIn: builder.mutation({

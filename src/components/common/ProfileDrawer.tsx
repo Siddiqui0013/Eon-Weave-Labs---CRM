@@ -117,7 +117,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                             </Avatar>
                             <div>
                                 <Input
-                                    disabled={!isEditing}
+                                    disabled
                                     value={employee.name}
                                     onChange={(e) => setEmployee({...employee, name: e.target.value})}
                                     className="bg-gray-800 border-gray-700 text-gray-100"
@@ -129,7 +129,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                             <div className="flex items-center gap-3">
                                 <Mail className="h-5 w-5 text-gray-400" />
                                 <Input
-                                    disabled={!isEditing}
+                                    disabled
                                     value={employee.email}
                                     onChange={(e) => setEmployee({...employee, email: e.target.value})}
                                     className="bg-gray-800 border-gray-700 text-gray-100"
@@ -170,7 +170,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                             <div className="p-4 rounded-lg bg-gray-800">
                                 <h3 className="text-sm font-medium text-gray-400 mb-1">Job Title</h3>
                                 <Input
-                                    disabled={!isEditing}
+                                    disabled
                                     value={employee.jobTitle}
                                     onChange={(e) => setEmployee({...employee, jobTitle: e.target.value})}
                                     className="bg-gray-800 border-gray-700 text-gray-100"
@@ -179,7 +179,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                             <div className="p-4 rounded-lg bg-gray-800">
                                 <h3 className="text-sm font-medium text-gray-400 mb-1">Joining Date</h3>
                                 <Input
-                                    disabled={!isEditing}
+                                    disabled
                                     value={employee.joiningDate.slice(0, 10)}
                                     onChange={(e) => setEmployee({...employee, joiningDate: e.target.value})}
                                     className="bg-gray-800 border-gray-700 text-gray-100"
