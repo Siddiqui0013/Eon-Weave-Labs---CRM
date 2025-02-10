@@ -24,6 +24,12 @@ export default function TopButtons() {
   };
 
   const StartBreak = async () => {
+    if ( !checkedIn ) return toast({
+      title: "Error",
+      variant: "destructive",
+      description: "You are not checked in.",
+      duration: 1000,
+    })
       try {
         const response = await startBreak({}).unwrap();
         console.log("StartBreak Response:", response);
