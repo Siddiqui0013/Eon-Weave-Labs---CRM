@@ -46,8 +46,8 @@ export const SalesApi = createApi({
                 url: `/sales/updateSale/${data._id}`,
                 method: 'PUT',
                 body: data,
-        }),
-        invalidatesTags: ['Sales']
+            }),
+            invalidatesTags: ['Sales']
         }),
 
         removeSale: builder.mutation({
@@ -57,7 +57,30 @@ export const SalesApi = createApi({
             }),
             invalidatesTags: ['Sales']
         }),
+
+        salesAnalytics: builder.query({
+            query: () => ({
+                url: `/sales/salesAnalytics`,
+                method: 'GET',
+            }),
+            providesTags: ['Sales']
+        }),
+
+        getLeaderboard: builder.query({
+            query: () => ({
+                url: `/sales/getLeaderboard`,
+                method: 'GET',
+            }),
+            providesTags: ['Sales']
+        }),
     }),
 })
 
-export const { useGetSalesByUserQuery, useAddSaleMutation, useRemoveSaleMutation, useUpdateSaleMutation } = SalesApi
+export const {
+    useGetSalesByUserQuery,
+    useAddSaleMutation,
+    useRemoveSaleMutation,
+    useUpdateSaleMutation,
+    useSalesAnalyticsQuery,
+    useGetLeaderboardQuery
+} = SalesApi

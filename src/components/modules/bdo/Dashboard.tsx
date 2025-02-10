@@ -1,11 +1,14 @@
 import useAuth from "@/hooks/useAuth";
 import TopButtons from "@/components/common/TopButtons";
 import { Crosshair, CircleCheck, CircleDollarSign, CircleOff, CheckCheck } from "lucide-react";
+import avatar from "../../../assets/avatar.svg";
 import Card from "../../common/Card";
 import { BarChartCard } from "@/components/common/BarChart";
 import AddDailySheet from "./AddDailySheet";
 import { useGetCallsByUserQuery } from "@/services/callsApi";
+import { useSalesAnalyticsQuery, useGetLeaderboardQuery } from "@/services/salesApi";
 import { useState, useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ChartData {
 	createdAt: string;
@@ -48,7 +51,7 @@ export default function Dashboard() {
 				.toISOString()
 				.split("T")[0];
 			setTodayUpdate(latestCallDate);
-			
+
 			// setCallsDetails(response.data.calls[0]);
 
 			setCallsDetails({
@@ -98,69 +101,47 @@ export default function Dashboard() {
 		},
 	];
 
-	const salesData = [
-		{
-			name: "Sarah Martins",
-			sales: 50000,
-			image: "https://avatar.iran.liara.run/public",
-		},
-		{
-			name: "Mimi Martins",
-			sales: 45000,
-			image: "https://avatar.iran.liara.run/public",
-		},
-		{
-			name: "Yogi Nu",
-			sales: 42000,
-			image: "https://avatar.iran.liara.run/public",
-		},
-		{
-			name: "Akin Pianola",
-			sales: 38000,
-			image: "https://avatar.iran.liara.run/public",
-		},
-	];		
+	const { data: analyticsRes, isLoading } = useSalesAnalyticsQuery({})
+	const analytics = analyticsRes?.data || {}
+
+	const { data: leaderboardRes } = useGetLeaderboardQuery({})
+	const leaderboard = leaderboardRes?.data || []
 
 	interface person {
-		name: string;
-		sales: number;
-		image: string;
+		userDetails: { name: string, profileImage: string };
+		totalAmount: number;
 	}
 	const TopSalesPerson = ({ person }: { person: person }) => (
 		<div className="flex flex-col items-center mb-8">
 			<h2 className="text-xl mb-4">Most Sales</h2>
 			<div className="relative mb-2">
 				<img
-					src={person.image}
-					alt={person.name}
+					src={person.userDetails.profileImage ?? avatar}
+					alt={person.userDetails.name}
 					className="w-24 h-24 rounded-full bg-yellow-300"
 				/>
 				<div className="absolute bottom-0 right-0 w-6 h-6 bg-white rounded-full flex items-center justify-center">
 					👑
 				</div>
 			</div>
-			<p className="font-medium text-lg">{person.name}</p>
-			<p className="text-xl font-bold">{person.sales.toLocaleString()}</p>
+			<p className="font-medium text-lg">{person.userDetails.name}</p>
+			<p className="text-xl font-bold">{`$${person.totalAmount}`}</p>
 		</div>
 	);
 
 	const SalesPersonListItem = ({ person }: { person: person }) => (
 		<div className="flex items-center gap-3 bg-white rounded-full p-2 mb-2 shadow-sm">
 			<img
-				src={person.image}
-				alt={person.name}
+				src={person.userDetails.profileImage ?? avatar}
+				alt={person.userDetails.name}
 				className="w-10 h-10 rounded-full"
 			/>
 			<div className="flex justify-around w-full">
-				<span className="font-medium">{person.name}</span>
-				<span className="font-bold">{person.sales.toLocaleString()}</span>
+				<span className="font-medium">{person.userDetails.name}</span>
+				<span className="font-bold">{`$${person.totalAmount}`}</span>
 			</div>
 		</div>
 	);
-
-	const sortedData = [...salesData].sort((a, b) => b.sales - a.sales);
-	const topPerson = sortedData[0];
-	const otherPeople = sortedData.slice(1);
 
 	return (
 		<div className="flex flex-col items-center m-0 p-0 justify-center">
@@ -179,23 +160,31 @@ export default function Dashboard() {
 				</div>
 			</div>
 
-			<div className=" my-4 grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 gap-5 grid-flow-row w-[100%]">
-				<Card data={{ icon: <Crosshair />, title: "Target", val: callsDetails.target }} />
-				<Card data={{ icon: <CircleCheck />, title: "Leads", val: callsDetails.leads }} />
-				<Card
-					data={{
-						icon: <CircleDollarSign />,
-						title: "Overall Payment",
-						val: "30k",
-					}}
-				/>
-				<Card
-					data={{ icon: <CheckCheck />, title: "Payment Approved", val: "20k" }}
-				/>
-				<Card
-					data={{ icon: <CircleOff />, title: "Payment Pending", val: "10k" }}
-				/>
-			</div>
+			{isLoading ? (
+				<div className="my-4 grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 gap-5 grid-flow-row w-full">
+					{Array.from({ length: 5 }).map((_, index) => (
+						<Skeleton key={index} className="h-24 w-full" />
+					))}
+				</div>
+			) : (
+				<div className="my-4 grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 gap-5 grid-flow-row w-[100%]">
+					<Card data={{ icon: <Crosshair />, title: "Target", val: callsDetails.target }} />
+					<Card data={{ icon: <CircleCheck />, title: "Leads", val: callsDetails.leads }} />
+					<Card
+						data={{
+							icon: <CircleDollarSign />,
+							title: "Overall Payment",
+							val: `$${analytics?.totalAmount || 0}`,
+						}}
+					/>
+					<Card
+						data={{ icon: <CheckCheck />, title: "Payment Approved", val: `$${analytics?.approvedAmount || 0}` }}
+					/>
+					<Card
+						data={{ icon: <CircleOff />, title: "Payment Pending", val: `$${analytics?.pendingAmount || 0}` }}
+					/>
+				</div>
+			)}
 
 			<div className="mt-8 flex gap-4 w-[100%] flex-col md:flex-row">
 				<div className="bg-card md:w-[70%] w-full rounded-lg">
@@ -213,14 +202,21 @@ export default function Dashboard() {
 				</div>
 
 				<div className="w-full md:w-[30%]">
-					<div className=" bg-card rounded-lg flex flex-col justify-between p-2 h-full">
-						<TopSalesPerson person={topPerson} />
-						<div className="space-y-2 mb-12 text-black">
-							{otherPeople.map((person, index) => (
-								<SalesPersonListItem key={index} person={person} />
-							))}
+					{leaderboard?.length > 0 ? (
+						<div className=" bg-card rounded-lg flex flex-col justify-between p-2 h-full">
+							<TopSalesPerson person={leaderboard[0]} />
+							<div className="space-y-2 mb-12 text-black">
+								{leaderboard.slice(1).map((person: person, index: number) => (
+									<SalesPersonListItem key={index} person={person} />
+								))}
+							</div>
 						</div>
-					</div>
+					) : (
+						<div className=" bg-card rounded-lg flex flex-col justify-center items-center p-2 h-full">
+							<h1 className="text-2xl font-bold">No Sales Found</h1>
+						</div>
+					)}
+
 				</div>
 			</div>
 		</div>

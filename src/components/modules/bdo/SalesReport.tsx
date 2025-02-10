@@ -34,9 +34,9 @@ interface Sale {
   _id: string;
   projectName: string;
   clientName: string;
-  clientEmail : string,
-  description : string,
-  startDate : string, 
+  clientEmail: string,
+  description: string,
+  startDate: string,
   endDate: string;
   totalAmount: string;
   milestones: Milestone[];
@@ -105,30 +105,29 @@ export default function SalesReport() {
   const columns = [
     { key: 'projectName', label: 'Project Name' },
     { key: 'clientName', label: 'Client Name' },
-    { 
-      key: 'totalAmount', 
+    {
+      key: 'totalAmount',
       label: 'Total Amount',
       render: (value: string) => formatCurrency(value)
     },
-{ 
-  key: 'milestones', 
-  label: 'Milestones',
-  render: (value: Milestone[]) => {
-    const count = Array.isArray(value) ? value.length : 0;
-    return `${count}`;
-    // return `${count} ${count === 1 ? 'milestone' : 'milestones'}`;
-  }
-},    {
+    {
+      key: 'milestones',
+      label: 'Milestones',
+      render: (value: Milestone[]) => {
+        const count = Array.isArray(value) ? value.length : 0;
+        return `${count}`;
+        // return `${count} ${count === 1 ? 'milestone' : 'milestones'}`;
+      }
+    }, {
       key: 'status',
       label: 'Status',
       render: (value: Sale['status']) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === 'Completed'
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${value === 'Completed'
             ? 'bg-green-900 text-green-300'
             : value === 'Cancelled'
               ? 'bg-red-900 text-red-300'
               : 'bg-yellow-900 text-yellow-300'
-        }`}>
+          }`}>
           {value}
         </span>
       )
@@ -150,19 +149,19 @@ export default function SalesReport() {
             <AlertDialogTrigger>
               <Trash2 className="w-4 h-4 cursor-pointer text-red-500" />
             </AlertDialogTrigger>
-           <AlertDialogContent className='bg-dark'>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently this Sale
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel className='bg-transparent border border-slate-50 text-white'>Cancel</AlertDialogCancel>
-             <AlertDialogAction className='bg-red-700' onClick={() => handleDelete(row)}>Delete</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently this Sale
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className='bg-transparent border border-slate-50 text-white'>Cancel</AlertDialogCancel>
+                <AlertDialogAction className='bg-red-700' onClick={() => handleDelete(row)}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
         </div>
       )
@@ -193,8 +192,8 @@ export default function SalesReport() {
 
   const [removeSale] = useRemoveSaleMutation();
 
-  const handleDelete = async (row: Sale ) => {
-    if(!row) return;
+  const handleDelete = async (row: Sale) => {
+    if (!row) return;
     try {
       const response = await removeSale(row._id);
       console.log('Delete Sale:', response);
@@ -213,7 +212,7 @@ export default function SalesReport() {
         duration: 1500
       })
     }
-        
+
   };
 
   const rowClick = (row: Sale) => {
@@ -225,7 +224,7 @@ export default function SalesReport() {
     if (response?.data?.sales) {
       console.log('Sales data:', response.data.sales);
     }
-  }, [ response?.data?.sales ]);
+  }, [response?.data?.sales]);
 
   return (
     <div className="md:mt-8 mt-20">
@@ -239,17 +238,17 @@ export default function SalesReport() {
                 <DialogHeader>
                   <DialogTitle className="text-gray-100">Update Sale</DialogTitle>
                 </DialogHeader>
-                <UpdateSale 
-                  sale={saleToEdit} 
+                <UpdateSale
+                  sale={saleToEdit}
                   onClose={() => {
                     setIsEditDialogOpen(false);
                     setSaleToEdit(null);
-                  }} 
+                  }}
                 />
               </DialogContent>
             </Dialog>
           )}
-  
+
           {isAddDialogOpen && (
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogContent className="sm:max-w-[800px] bg-gray-900 border-gray-800">
@@ -260,16 +259,16 @@ export default function SalesReport() {
               </DialogContent>
             </Dialog>
           )}
-  
+
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold text-gray-200">Sales Report</h1>
-            <Button 
-              title="Add New Sale" 
+            <Button
+              title="Add New Sale"
               onClick={() => setIsAddDialogOpen(true)}
-              className="items-end" 
+              className="items-end"
             />
           </div>
-  
+
           <div className="w-[370px] p-2 md:w-full overflow-auto">
             <ReusableTable
               columns={columns}
