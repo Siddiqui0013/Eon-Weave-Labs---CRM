@@ -5,6 +5,7 @@ interface Milestone {
     startDate: string;
     endDate: string;
     description: string;
+    status: string;
   }
   
   interface SaleViewProps {
@@ -88,8 +89,8 @@ interface Milestone {
               >
                 <td className="py-3 px-4">{milestone.name}</td>
                 <td className="py-3 px-4">
-                  <span className="px-2 py-1 text-sm rounded-full bg-green-900 text-green-300">
-                    Active
+                  <span className= {`p-2 text-sm rounded-full ${milestone.status === 'Completed' ? 'bg-green-900 text-green-300' : 'bg-gray-900 text-gray-200'}`} >
+                    {milestone.status}
                   </span>
                 </td>
                 <td className="py-3 px-4">${milestone.amount}</td>

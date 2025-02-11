@@ -24,6 +24,7 @@ type Milestone = {
   amount: string;
   startDate: string;
   endDate: string;
+  status?: string;
 }
 
 interface UpdateSaleProps {
@@ -57,7 +58,8 @@ interface UpdateSaleProps {
       description: milestone.description,
       amount: milestone.amount.toString(),
       startDate: new Date(milestone.startDate).toISOString().split('T')[0],
-      endDate: new Date(milestone.endDate).toISOString().split('T')[0]
+      endDate: new Date(milestone.endDate).toISOString().split('T')[0],
+      status: milestone.status
     }))
   )
 
@@ -78,7 +80,8 @@ interface UpdateSaleProps {
             description: '',
             amount: '',
             startDate: '',
-            endDate: ''
+            endDate: '',
+            status: ''
           });
         }
         while (newMilestones.length > newCount) {
@@ -119,6 +122,7 @@ interface UpdateSaleProps {
           description: milestone.description,
           startDate: milestone.startDate, 
           endDate: milestone.endDate, 
+          status: milestone.status,
           amount: Number(milestone.amount) 
         }))
       };
@@ -140,7 +144,8 @@ interface UpdateSaleProps {
         name : '',
         amount: '',
         startDate: '',
-        endDate: ''
+        endDate: '',
+        status: ''
       }])
       toast({
         variant: 'default',
@@ -333,6 +338,20 @@ interface UpdateSaleProps {
                     onChange={(e) => handleMilestoneChange(index, 'description', e.target.value)}
                     className="w-full h-32 px-3 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                   />
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm mb-1">Status</label>
+                    <select
+                      value={milestone.status}
+                      onChange={(e) => handleMilestoneChange(index, 'status', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+                    >
+                      {['Pending', 'Completed', 'Cancelled'].map(num => (
+                        <option key={num} value={num}>{num}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
