@@ -2,6 +2,7 @@ import useAuth from "@/hooks/useAuth";
 import TopButtons from "@/components/common/TopButtons";
 import { Crosshair, CircleCheck, CircleDollarSign } from "lucide-react";
 import Card from "../../common/Card";
+import AttendanceTable from "./AttendanceTable";
 // import AddDailySheet from "./AddDailySheet";
 
 export default function Dashboard() {
@@ -35,9 +36,12 @@ export default function Dashboard() {
 				/>
 			</div>
 
-			<div className="mt-8 flex gap-4 w-[100%] flex-col md:flex-row">
+			<div className="mt-3 flex gap-4 w-[100%] flex-col md:flex-row">
 				<div className="w-full md:w-[30%]">
 				</div>
+			</div>
+			<div className="w-full">
+				<AttendanceTable />
 			</div>
 		</div>
 	);
