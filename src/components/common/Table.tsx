@@ -19,9 +19,9 @@ interface FilterOption {
 interface TableProps {
   columns: Column[];
   data: any[];
-  isLoading: boolean;
-  totalPages: number;
-  currentPage: number;
+  isLoading?: boolean;
+  totalPages?: number;
+  currentPage?: number;
   searchQuery?: string;
   filters?: Record<string, string>;
   filterOptions?: {
@@ -34,7 +34,7 @@ interface TableProps {
   onSearch?: (value: string) => void;
   onFilterChange?: (key: string, value: string) => void;
   onClearFilters?: () => void;
-  onPageChange: (page: number) => void;
+  onPageChange?: (page: number) => void;
   onRowClick?: (row: any) => void;
 }
 

@@ -2,22 +2,91 @@ import useAuth from "@/hooks/useAuth";
 import TopButtons from "@/components/common/TopButtons";
 import { Crosshair, CircleCheck, CircleDollarSign } from "lucide-react";
 import Card from "../../common/Card";
-import AttendanceTable from "./AttendanceTable";
-// import AddDailySheet from "./AddDailySheet";
+import ReusableTable from "@/components/common/Table";
+import { useAllUserAttendenceQuery } from "@/services/userApi";
+import { useEffect, useState } from "react";
+
+interface EmployeeData {
+	name : string;
+	role : string;
+	status : string;
+	checkIn : string;
+	checkOut : string;
+	overTime : string;
+}
+  
+interface Column<T> {
+	key: keyof T | 'actions';
+	label: string;
+	render?: (value: T[keyof T], row: T) => React.ReactNode;
+  }
 
 export default function Dashboard() {
 
+	const columns: Column<EmployeeData>[] = [
+		{ key: 'name', label: 'Name' },
+		{key : 'role', label: 'Role'},
+		{
+		  key: 'status',
+		  label: 'Status',
+		  render: (value: string ) => {
+			return (
+			  <span
+				className={`${
+				  value === "Present"
+					? "bg-green-500 text-white"
+					: "bg-red-500 text-white"
+				} py-1 px-2 rounded-full text-xs font-semibold`}
+			  >
+				{value}
+			  </span>
+			);
+		  }
+		},
+		{key : "checkIn", label: 'Check In'},
+		{key : "checkOut", label: 'Check Out'},
+		{key : "overTime", label: 'Over Time'}
+	  ];
+
+	const { data : response , isLoading } = useAllUserAttendenceQuery({})
+
 	const { user } = useAuth();
 	const name = user ? user.name : "";
+	const [usersData, setUsersData] = useState([{
+		name : "",
+		role : "",
+		status : "",
+		checkIn : "",
+		checkOut : "",
+		overTime : ""
+	}]);
+	const [ presentEmployees, setPresentEmployees ] = useState(0);
+	const [ totalEmployees, setTotalEmployees ] = useState(0);
+
+	useEffect(() => {
+		if (response?.data) {
+		  console.log('Response data:', response.data);
+		  setUsersData(
+			response.data.attendance.map((user: { userId: { name: string; jobTitle: string }; status: string; workHours: { checkIn: string; checkOut: string; totalHours: string } }) => ({
+			  name: user.userId.name,
+			  role: user.userId.jobTitle,
+			  status: user.status,
+			  checkIn: (user.workHours.checkIn).slice(15,19),
+			  checkOut: (user.workHours.checkOut).slice(15,19),
+			  overTime: user.workHours.totalHours,
+			}))
+		  )
+		  setPresentEmployees((response.data.attendance).length)
+		  setTotalEmployees(response.data.totalUsers)
+		}
+	  }, [response]);
 
 	return (
 		<div className="flex flex-col items-center m-0 p-0 justify-center">
+
 			<div className="top flex w-[100%] md:mt-4 mt-20 my-4 p-0 justify-between">
 				<h1 className="text-4xl">Hi , {name} </h1>
 				<div className="flex gap-2">
-
-					{/* <AddDailySheet /> */}
-
 					<div className="hidden md:block">
 						<TopButtons />
 					</div>
@@ -25,24 +94,25 @@ export default function Dashboard() {
 			</div>
 
 			<div className=" my-4 grid  md:grid-cols-3 grid-cols-2 gap-5 grid-flow-row w-[100%]">
-				<Card data={{ icon: <Crosshair />, title: "Total Employees", val: "30" }} />
-				<Card data={{ icon: <CircleCheck />, title: "Present Employees", val: "22" }} />
+				<Card data={{ icon: <Crosshair />, title: "Total Employees", val: totalEmployees }} />
+				<Card data={{ icon: <CircleCheck />, title: "Present Employees", val: presentEmployees }} />
 				<Card
 					data={{
 						icon: <CircleDollarSign />,
 						title: "Absent Employees",
-						val: "3",
+						val: totalEmployees - presentEmployees,
 					}}
 				/>
 			</div>
 
-			<div className="mt-3 flex gap-4 w-[100%] flex-col md:flex-row">
-				<div className="w-full md:w-[30%]">
-				</div>
+			<div className="w-[370px] md:w-full md:mt-8 mt-20 overflow-auto">
+					<ReusableTable
+					  columns={columns}
+					  data={usersData || []}
+					  isLoading={isLoading}
+					/>
 			</div>
-			<div className="w-full">
-				<AttendanceTable />
-			</div>
+
 		</div>
 	);
 }

@@ -89,7 +89,15 @@ export const UserApi = createApi({
                 method: "GET",
             }),
             providesTags: ["Users"],
-        })
+        }),
+
+        allUserAttendence : builder.query({
+            query: () => ({
+                url: `/attendance/getAllUserAttendance`,
+                method: "GET",
+            }),
+            providesTags: ["Users"],
+        }),
 
     }),
 });
@@ -97,5 +105,5 @@ export const UserApi = createApi({
 export const { useLogoutMutation, useLoginMutation, useRegisterMutation, useInviteMutation, useUpdateUserMutation, 
     useCheckInMutation, useCheckOutMutation, 
     useStartBreakMutation, useEndBreakMutation,
-    useUserAttendenceQuery
+    useUserAttendenceQuery, useAllUserAttendenceQuery
 } = UserApi;
