@@ -68,12 +68,12 @@ export default function Dashboard() {
 		  console.log('Response data:', response.data);
 		  setUsersData(
 			response.data.attendance.map((user: { userId: { name: string; jobTitle: string }; status: string; workHours: { checkIn: string; checkOut: string; totalHours: string } }) => ({
-			  name: user.userId.name,
-			  role: user.userId.jobTitle,
-			  status: user.status,
-			  checkIn: (user.workHours.checkIn).slice(15,19),
-			  checkOut: (user.workHours.checkOut).slice(15,19),
-			  overTime: user.workHours.totalHours,
+			  name: user.userId.name ?? "",
+			  role: user.userId.jobTitle ?? "",
+			  status: user.status ?? "",
+			  checkIn: (user?.workHours?.checkIn)?.slice(15,19) || "",
+			  checkOut: (user.workHours.checkOut)?.slice(15,19) || "",
+			  overTime: (user.workHours.totalHours) ?? "",
 			}))
 		  )
 		  setPresentEmployees((response.data.attendance).length)

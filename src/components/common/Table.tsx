@@ -42,9 +42,9 @@ export default function ReusableTable({
   columns,
   data,
   isLoading,
-  totalPages,
-  currentPage,
-  searchQuery,
+  totalPages = 10,
+  currentPage = 1,
+  searchQuery = "search",
   filters,
   filterOptions,
   onSearch,
@@ -69,7 +69,7 @@ export default function ReusableTable({
     if (startPage > 1) {
       items.push(
         <PaginationItem key="1">
-          <PaginationLink onClick={() => onPageChange(1)}>1</PaginationLink>
+          <PaginationLink onClick={() => onPageChange?.(1)}>1</PaginationLink>
         </PaginationItem>
       );
       if (startPage > 2) {
@@ -85,7 +85,7 @@ export default function ReusableTable({
       items.push(
         <PaginationItem key={page}>
           <PaginationLink
-            onClick={() => onPageChange(page)}
+            onClick={() => onPageChange?.(page)}
             isActive={page === currentPage}
           >
             {page}
@@ -104,7 +104,7 @@ export default function ReusableTable({
       }
       items.push(
         <PaginationItem key={totalPages}>
-          <PaginationLink onClick={() => onPageChange(totalPages)}>
+          <PaginationLink onClick={() => onPageChange?.(totalPages)}>
             {totalPages}
           </PaginationLink>
         </PaginationItem>
@@ -210,7 +210,7 @@ export default function ReusableTable({
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              onClick={() => onPageChange(currentPage - 1)}
+              onClick={() => onPageChange?.(currentPage - 1)}
               className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
             />
           </PaginationItem>
@@ -219,7 +219,7 @@ export default function ReusableTable({
 
           <PaginationItem>
             <PaginationNext
-              onClick={() => onPageChange(currentPage + 1)}
+              onClick={() => onPageChange?.(currentPage + 1)}
               className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
             />
           </PaginationItem>
