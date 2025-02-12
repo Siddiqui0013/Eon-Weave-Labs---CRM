@@ -99,11 +99,27 @@ export const UserApi = createApi({
             providesTags: ["Users"],
         }),
 
+        getAttendenceReport : builder.query({
+            query: ({userId, startDate, endDate}) => ({
+                url: `/attendance/report?userId=${userId}&startDate=${startDate}&endDate=${endDate}`,
+                method: "GET",
+            }),
+            providesTags: ["Users"],
+        }),
+
+        allUsers : builder.query({
+            query: () => ({
+                url: `/user/getAllUsers`,
+                method: "GET",
+            }),
+            providesTags: ["Users"],
+        }),
     }),
 });
 
 export const { useLogoutMutation, useLoginMutation, useRegisterMutation, useInviteMutation, useUpdateUserMutation, 
     useCheckInMutation, useCheckOutMutation, 
     useStartBreakMutation, useEndBreakMutation,
-    useUserAttendenceQuery, useAllUserAttendenceQuery
+    useUserAttendenceQuery, useAllUserAttendenceQuery, useGetAttendenceReportQuery,
+    useAllUsersQuery
 } = UserApi;

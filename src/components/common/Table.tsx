@@ -42,7 +42,7 @@ export default function ReusableTable({
   columns,
   data,
   isLoading,
-  totalPages = 10,
+  totalPages = 1,
   currentPage = 1,
   searchQuery = "search",
   filters,
