@@ -1,27 +1,54 @@
-interface Milestone {
-    _id: string;
-    name: string;
-    amount: string; 
-    startDate: string;
-    endDate: string;
-    description: string;
-    status: string;
-  }
+// interface Milestone {
+//     _id: string;
+//     name: string;
+//     amount: string; 
+//     startDate: string;
+//     endDate: string;
+//     description: string;
+//     status: string;
+//   }
   
-  interface SaleViewProps {
-    sale: {
-      _id: string;
-      projectName: string;
-      clientName: string;
-      clientEmail: string;
-      description: string;
-      startDate: string;
-      endDate: string;
-      totalAmount: string;
-      status: string;
-      milestones: Milestone[];
-    };
+//   interface SaleViewProps {
+//     sale: {
+//       _id: string;
+//       projectName: string;
+//       clientName: string;
+//       clientEmail: string;
+//       description: string;
+//       startDate: string;
+//       endDate: string;
+//       totalAmount: string;
+//       status: string;
+//       milestones: Milestone[];
+//     };
+//   }
+
+
+interface Milestone {
+  _id: string;
+  name: string;
+  amount: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  status: string;
+}
+
+interface SaleViewProps {
+  sale : {
+    _id: string;
+    projectName: string;
+    clientName: string;
+    clientEmail: string,
+    description: string,
+    startDate: string,
+    endDate: string;
+    totalAmount: string;
+    milestones: Milestone[];
+    status: 'Completed' | 'Cancelled' | 'Pending';
+    createdAt: string;
   }
+}
   
   const SaleView = ({ sale }: SaleViewProps) => {
     const projectData = [

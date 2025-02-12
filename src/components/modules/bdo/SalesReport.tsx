@@ -28,6 +28,7 @@ interface Milestone {
   startDate: string;
   endDate: string;
   description: string;
+  status: string;
 }
 
 interface Sale {
@@ -116,7 +117,6 @@ export default function SalesReport() {
       render: (value: Milestone[]) => {
         const count = Array.isArray(value) ? value.length : 0;
         return `${count}`;
-        // return `${count} ${count === 1 ? 'milestone' : 'milestones'}`;
       }
     }, {
       key: 'status',

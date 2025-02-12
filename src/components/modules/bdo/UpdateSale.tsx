@@ -24,7 +24,7 @@ type Milestone = {
   amount: string;
   startDate: string;
   endDate: string;
-  status?: string;
+  status: string;
 }
 
 interface UpdateSaleProps {
