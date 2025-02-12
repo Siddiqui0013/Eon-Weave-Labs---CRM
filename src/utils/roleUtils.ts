@@ -7,9 +7,10 @@ export const getRoleLinks = (role: string) => {
         ],
         hr: [
             { name: "Dashboard", path: "/hr/dashboard" },
-            { name: "Employees", path: "/hr/employees" },
-            { name: "Attendance", path: "/hr/attendance" },
-            { name: "Chat", path: "/bdo/chat" },
+            // { name: "Employees", path: "/hr/employees" },
+            // { name: "Attendance", path: "/hr/attendance" },
+            { name: "Team", path: "/hr/team" },
+            { name: "Chat", path: "/hr/chat" },
         ],
         developer: [
             { name: "Dashboard", path: "/developer/dashboard" },
