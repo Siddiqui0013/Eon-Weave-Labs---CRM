@@ -71,8 +71,8 @@ export default function Dashboard() {
 			  name: user.userId.name ?? "",
 			  role: user.userId.jobTitle ?? "",
 			  status: user.status ?? "",
-			  checkIn: (user?.workHours?.checkIn)?.slice(15,19) || "",
-			  checkOut: (user.workHours.checkOut)?.slice(15,19) || "",
+			  checkIn: (user?.workHours?.checkIn)?.slice(11,16) || "",
+			  checkOut: (user.workHours.checkOut)?.slice(11,16) || "",
 			  overTime: (user.workHours.totalHours) ?? "",
 			}))
 		  )
