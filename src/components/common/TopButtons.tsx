@@ -84,6 +84,8 @@ export default function TopButtons() {
   };
 
   const CheckIn = async () => {
+    const date = new Date();
+    console.log("Loggin before send the date : ", date.toLocaleString());
     try {
       const response = await checkIn({}).unwrap();
       console.log("CheckIn Response:", response);

@@ -12,7 +12,7 @@ interface EmployeeData {
 	status : string;
 	checkIn : string;
 	checkOut : string;
-	overTime : string;
+	totalHours : string;
 }
   
 interface Column<T> {
@@ -45,7 +45,7 @@ export default function Dashboard() {
 		},
 		{key : "checkIn", label: 'Check In'},
 		{key : "checkOut", label: 'Check Out'},
-		{key : "overTime", label: 'Over Time'}
+		{key : "totalHours", label: 'Total Hours'}
 	  ];
 
 	const { data : response , isLoading } = useAllUserAttendenceQuery({})
@@ -58,7 +58,7 @@ export default function Dashboard() {
 		status : "",
 		checkIn : "",
 		checkOut : "",
-		overTime : ""
+		totalHours : ""
 	}]);
 	const [ presentEmployees, setPresentEmployees ] = useState(0);
 	const [ totalEmployees, setTotalEmployees ] = useState(0);
@@ -73,7 +73,7 @@ export default function Dashboard() {
 			  status: user.status ?? "",
 			  checkIn: (user?.workHours?.checkIn)?.slice(11,16) || "",
 			  checkOut: (user.workHours.checkOut)?.slice(11,16) || "",
-			  overTime: (user.workHours.totalHours) ?? "",
+			  totalHours: (user.workHours.totalHours) ?? "",
 			}))
 		  )
 		  setPresentEmployees((response.data.attendance).length)
