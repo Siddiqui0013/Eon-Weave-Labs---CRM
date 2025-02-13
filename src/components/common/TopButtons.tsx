@@ -12,7 +12,11 @@ import {
 } from "@/services/userApi";
 import { useToast } from "@/hooks/use-toast";
 
-export default function TopButtons() {
+interface TopButtonsProps {
+  onCheckinChange: (checkedIn: boolean) => void;
+}
+
+export default function TopButtons({ onCheckinChange }: TopButtonsProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [checkIn, { isLoading: isCheckingIn }] = useCheckInMutation();
@@ -84,8 +88,7 @@ export default function TopButtons() {
   };
 
   const CheckIn = async () => {
-    const date = new Date();
-    console.log("Loggin before send the date : ", date.toLocaleString());
+    onCheckinChange(true);
     try {
       const response = await checkIn({}).unwrap();
       console.log("CheckIn Response:", response);
@@ -101,6 +104,7 @@ export default function TopButtons() {
   };
 
   const CheckOut = async () => {
+    onCheckinChange(false);
     try {
       const response = await checkOut({}).unwrap();
       console.log("CheckOut Response:", response);

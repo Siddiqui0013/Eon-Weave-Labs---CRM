@@ -38,9 +38,13 @@ export default function Dashboard() {
 		target: 0,
 		day: ''
 	});
-
+	const [ checkCheckin, setCheckCheckin ] = useState(false);
+	const handleCheckinChange =	(value : boolean) => {
+		setCheckCheckin(value);
+	}
 
 	useEffect(() => {
+
 		if (response?.data?.calls?.length > 0) {
 
 			const latestCall = response.data.calls[0];
@@ -148,14 +152,15 @@ export default function Dashboard() {
 			<div className="top flex w-[100%] md:mt-4 mt-20 my-4 p-0 justify-between">
 				<h1 className="text-4xl">Hi , {name} </h1>
 				<div className="flex gap-2">
-					{todayUpdate !== new Date().toISOString().split("T")[0] && (
+					{todayUpdate !== new Date().toISOString().split("T")[0] && checkCheckin && (
 						<AddDailySheet />
 					)}
 
 					{/* <AddDailySheet /> */}
 
 					<div className="hidden md:block">
-						<TopButtons />
+						<TopButtons 						
+						onCheckinChange={handleCheckinChange} />
 					</div>
 				</div>
 			</div>

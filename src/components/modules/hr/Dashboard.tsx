@@ -63,7 +63,13 @@ export default function Dashboard() {
 	const [ presentEmployees, setPresentEmployees ] = useState(0);
 	const [ totalEmployees, setTotalEmployees ] = useState(0);
 
+	const [ checkCheckin, setCheckCheckin ] = useState(false);
+	const handleCheckinChange =	(value : boolean) => {
+		setCheckCheckin(value);
+	}
+
 	useEffect(() => {
+		console.log("chechking the fallback",checkCheckin);
 		if (response?.data) {
 		  console.log('Response data:', response.data);
 		  setUsersData(
@@ -79,7 +85,7 @@ export default function Dashboard() {
 		  setPresentEmployees((response.data.attendance).length)
 		  setTotalEmployees(response.data.totalUsers)
 		}
-	  }, [response]);
+	  }, [response, checkCheckin]);
 
 	return (
 		<div className="flex flex-col items-center m-0 p-0 justify-center">
@@ -88,7 +94,9 @@ export default function Dashboard() {
 				<h1 className="text-4xl">Hi , {name} </h1>
 				<div className="flex gap-2">
 					<div className="hidden md:block">
-						<TopButtons />
+						<TopButtons 					  
+						onCheckinChange={handleCheckinChange}
+						/>
 					</div>
 				</div>
 			</div>
