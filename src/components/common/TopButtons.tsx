@@ -12,11 +12,8 @@ import {
 } from "@/services/userApi";
 import { useToast } from "@/hooks/use-toast";
 
-interface TopButtonsProps {
-  onCheckinChange: (checkedIn: boolean) => void;
-}
 
-export default function TopButtons({ onCheckinChange }: TopButtonsProps) {
+export default function TopButtons() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [checkIn, { isLoading: isCheckingIn }] = useCheckInMutation();
@@ -26,6 +23,19 @@ export default function TopButtons({ onCheckinChange }: TopButtonsProps) {
   const [checkedIn, setCheckedIn] = useState(false);
   const [breakEnded, setBreakEnded] = useState(true);
   const userAttendance = useUserAttendenceQuery({});
+
+  useEffect(() => {
+    if (userAttendance.data?.data) {
+      const workHours = userAttendance.data.data.workHours;
+      const breaks = workHours.breaks.length > 0 ? workHours.breaks.at(-1) : null;
+      
+      console.log(userAttendance.data);
+      setCheckedIn(userAttendance.data.success);
+      setBreakEnded(breaks ? Boolean(breaks.endTime) : true);
+      setCheckedIn(workHours ? !workHours.checkOut : false);
+    }
+  }, [userAttendance.data, checkedIn]);
+
 
   const isErrorWithMessage = (error: unknown): error is { data: { message: string } } => {
     return typeof error === "object" && 
@@ -88,7 +98,6 @@ export default function TopButtons({ onCheckinChange }: TopButtonsProps) {
   };
 
   const CheckIn = async () => {
-    onCheckinChange(true);
     try {
       const response = await checkIn({}).unwrap();
       console.log("CheckIn Response:", response);
@@ -104,7 +113,6 @@ export default function TopButtons({ onCheckinChange }: TopButtonsProps) {
   };
 
   const CheckOut = async () => {
-    onCheckinChange(false);
     try {
       const response = await checkOut({}).unwrap();
       console.log("CheckOut Response:", response);
@@ -118,18 +126,6 @@ export default function TopButtons({ onCheckinChange }: TopButtonsProps) {
       handleError(error, "An error occurred while checking out.");
     }
   };
-
-  useEffect(() => {
-    if (userAttendance.data?.data) {
-      const workHours = userAttendance.data.data.workHours;
-      const breaks = workHours.breaks.length > 0 ? workHours.breaks.at(-1) : null;
-      
-      console.log(userAttendance.data);
-      setCheckedIn(userAttendance.data.success);
-      setBreakEnded(breaks ? Boolean(breaks.endTime) : true);
-      setCheckedIn(workHours ? !workHours.checkOut : false);
-    }
-  }, [userAttendance.data]);
 
   const employeeData = {
     name: user?.name || "John Doe",

@@ -7,6 +7,7 @@ import { BarChartCard } from "@/components/common/BarChart";
 import AddDailySheet from "./AddDailySheet";
 import { useGetCallsByUserQuery } from "@/services/callsApi";
 import { useSalesAnalyticsQuery, useGetLeaderboardQuery } from "@/services/salesApi";
+import { useUserAttendenceQuery } from "@/services/userApi";
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -38,17 +39,15 @@ export default function Dashboard() {
 		target: 0,
 		day: ''
 	});
-	const [ checkCheckin, setCheckCheckin ] = useState(false);
-	const handleCheckinChange =	(value : boolean) => {
-		setCheckCheckin(value);
-	}
 
+	const [isCheckedIn, setIsCheckedIn] = useState(false);
+	const { data: userAttendance } = useUserAttendenceQuery({});
+    
 	useEffect(() => {
 
 		if (response?.data?.calls?.length > 0) {
-
 			const latestCall = response.data.calls[0];
-			// const today = new Date().toISOString().split('T')[0];
+			console.log(response.data);
 
 			/* Worksheet once logic */
 			const latestCallDate = new Date(response.data.calls[0].createdAt)
@@ -56,15 +55,12 @@ export default function Dashboard() {
 				.split("T")[0];
 			setTodayUpdate(latestCallDate);
 
-			// setCallsDetails(response.data.calls[0]);
-
 			setCallsDetails({
 				connected: latestCall.connected,
 				leads: latestCall.leads,
 				target: latestCall.target,
 				day: new Date(latestCall.createdAt).toLocaleDateString()
 			});
-
 
 			const transformedData = response.data.calls.map((call: ChartData) => ({
 				day: new Date(call.createdAt).toLocaleDateString("en-US", {
@@ -81,13 +77,12 @@ export default function Dashboard() {
 				) => new Date(a.day).getTime() - new Date(b.day).getTime()
 			);
 			setChartData(sortedData);
-			// console.log("Sorted Data: ", sortedData);
 		}
-	}, [response]);
 
-	useEffect(() => {
-		console.log("Calls Details: ", callsDetails);
-	}, [callsDetails]);
+		setIsCheckedIn( userAttendance?.success && userAttendance?.data?.workHours?.checkIn &&
+			!userAttendance?.data?.workHours?.checkOut )
+
+	}, [response, userAttendance]);
 
 	const { user } = useAuth();
 	const name = user ? user.name : "";
@@ -152,15 +147,14 @@ export default function Dashboard() {
 			<div className="top flex w-[100%] md:mt-4 mt-20 my-4 p-0 justify-between">
 				<h1 className="text-4xl">Hi , {name} </h1>
 				<div className="flex gap-2">
-					{todayUpdate !== new Date().toISOString().split("T")[0] && checkCheckin && (
+					{ todayUpdate !== new Date().toISOString().split("T")[0] && isCheckedIn && 
 						<AddDailySheet />
-					)}
+					}
 
 					{/* <AddDailySheet /> */}
 
 					<div className="hidden md:block">
-						<TopButtons 						
-						onCheckinChange={handleCheckinChange} />
+						<TopButtons />
 					</div>
 				</div>
 			</div>
