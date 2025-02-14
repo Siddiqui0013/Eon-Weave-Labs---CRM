@@ -14,7 +14,6 @@ export const getRoleLinks = (role: string) => {
         ],
         employee: [
             { name: "Dashboard", path: "/employee/dashboard" },
-            { name: "Projects", path: "/employee/projects" },
             { name: "Tasks Assigned", path: "/employee/tasks-assigned" },
             { name: "Daily Sheet", path: "/employee/daily-sheet" },
             { name: "Chat", path: "/employee/chat" },

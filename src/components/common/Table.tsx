@@ -114,7 +114,7 @@ export default function ReusableTable({
   };
 
   return (
-    <div className="w-full space-y-4 dark">
+    <div className="w-full space-y-4 dark border-2 rounded-xl border-primary">
       {
         filterOptions && onSearch && (
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
@@ -167,7 +167,7 @@ export default function ReusableTable({
           <thead className="text-xs text-gray-300 uppercase bg-gray-900">
             <tr>
               {columns.map((column) => (
-                <th key={column.key} className="px-6 py-3 border-b border-gray-700">
+                <th key={column.key} className="px-6 py-3 border-b border-primary">
                   {column.label}
                 </th>
               ))}
@@ -191,7 +191,7 @@ export default function ReusableTable({
             ) : (
               data.map((row) => (
                 <tr key={row._id}
-                  className="bg-transparent border-b border-gray-500 hover:bg-card/80 transition-colors"
+                  className="bg-transparent border-b border-primary hover:bg-card/80 transition-colors"
                   onClick={() => onRowClick?.(row)}
                 >
                   {columns.map((column) => (
@@ -205,7 +205,7 @@ export default function ReusableTable({
           </tbody>
         </table>
       </div>
-
+            
       <Pagination>
         <PaginationContent>
           <PaginationItem>
