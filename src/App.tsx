@@ -8,6 +8,7 @@ import { RegisterForm } from "./components/common/Register";
 import { Invite } from "./components/common/Inviteuser";
 import BdoRoutes from "./components/modules/bdo/BdoRoutes";
 import HrRoutes from "./components/modules/hr/HrRoutes";
+import EmployeeRoutes from "./components/modules/employee/EmployeeRoutes";
 
 import "./App.css";
 
@@ -17,7 +18,7 @@ const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const DefinedRoles = ["ceo", "hr", "developer", "bdo"];
+  const DefinedRoles = ["admin", "hr", "employee", "bdo"];
   const role = user?.role || "";
 
   /* HR Email : "gokidab319@downlor.com"
@@ -78,6 +79,7 @@ const App = () => {
           <Route element={<ProtectedRoute allowedRoles={DefinedRoles} />}>
             <Route path="bdo/*" element={<BdoRoutes />} />
             <Route path="hr/*" element={<HrRoutes />} />
+            <Route path="employee/*" element={<EmployeeRoutes />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -234,7 +236,7 @@ export default AppWrapper;
 //     } else if (!user) {
 //       navigate("/");
 //     }
-//   }, []);    
+//   }, []);
 
 //   const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
 //     if (!user || !accessToken || !allowedRoles.includes(role)) {
