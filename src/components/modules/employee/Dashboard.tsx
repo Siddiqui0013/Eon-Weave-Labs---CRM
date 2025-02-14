@@ -2,6 +2,7 @@ import TopButtons from "@/components/common/TopButtons"
 import useAuth from "@/hooks/useAuth"
 import { FolderKanban, ClipboardList, BookCheck, LaptopMinimalCheck } from "lucide-react"
 import Card from "@/components/common/Card";
+import AddDailySheet from "./AddDailySheet";
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -11,6 +12,7 @@ const Dashboard = () => {
             <div className="top flex w-[100%] md:mt-4 mt-20 my-4 p-0 justify-between">
                 <h1 className="text-4xl">Hi , {name} </h1>
                 <div className="flex gap-2">
+                        <AddDailySheet />
                     <div className="hidden md:block">
                         <TopButtons />
                     </div>

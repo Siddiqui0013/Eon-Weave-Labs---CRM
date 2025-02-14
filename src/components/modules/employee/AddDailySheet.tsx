@@ -4,15 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
-import { useAddCallMutation } from "@/services/callsApi";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 interface DailyWorksheetData {
-    target: number;
-    totalCalls: number;
-    connected: number;
-    leads: number;
+    projectNumber: number;
+    kpis: number;
+    completedKpis: number;
+    pendingKpis: number;
     comment: string;
 }
 
@@ -20,15 +19,13 @@ export default function AddDailySheet() {
     
     const { toast } = useToast()
     const [loading, setloading] = useState(false)
-    const [addCall] = useAddCallMutation();
-
 
     const form = useForm<DailyWorksheetData>({
         defaultValues: {
-            target: 100,
-            totalCalls: 0,
-            connected: 0,
-            leads: 0,
+            projectNumber: 0,
+            kpis: 0,
+            completedKpis: 0,
+            pendingKpis: 0,
             comment: ''
         }
     });
@@ -37,14 +34,10 @@ export default function AddDailySheet() {
         setloading(true)
         console.log(data);
 
-        // setTimeout(() => {
-        //     setloading(false)
-        // }, 1000 )
-
         try {
-            if( data.totalCalls && data.connected && data.leads && data.comment.length > 1) {
-            const response =  await addCall(data).unwrap();
-            console.log(response);
+            if( data.projectNumber && data.kpis && data.completedKpis && data.pendingKpis && data.comment.length > 1) {
+            // const response =  await addCall(data).unwrap();
+            // console.log(response);
             form.reset();
             setloading(false)
             toast({
@@ -88,36 +81,35 @@ export default function AddDailySheet() {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-2">
-                            <label className="text-sm text-gray-300">Target</label>
+                            <label className="text-sm text-gray-300">Project Number</label>
                             <Input
                                 type="number"
-                                disabled={true}
-                                {...form.register('target')}
+                                {...form.register('projectNumber')}
                                 className="bg-gray-800 border-gray-700 text-gray-100"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm text-gray-300">Total Call</label>
+                            <label className="text-sm text-gray-300">KPIs</label>
                             <Input
                                 type="number"
-                                {...form.register('totalCalls')}
+                                {...form.register('kpis')}
                                 className="bg-gray-800 border-gray-700 text-gray-100"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm text-gray-300">Connected Calls</label>
+                            <label className="text-sm text-gray-300">Completed KPIs</label>
                             <Input
                                 type="number"
-                                {...form.register('connected')}
+                                {...form.register('completedKpis')}
                                 className="bg-gray-800 border-gray-700 text-gray-100"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm text-gray-300">Leads</label>
+                            <label className="text-sm text-gray-300">Pending KPIs</label>
                             <Input
                                 type="number"
-                                {...form.register('leads')}
+                                {...form.register('pendingKpis')}
                                 className="bg-gray-800 border-gray-700 text-gray-100"
                             />
                         </div>
