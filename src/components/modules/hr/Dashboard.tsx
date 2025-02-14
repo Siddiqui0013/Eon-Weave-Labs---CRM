@@ -12,7 +12,7 @@ interface EmployeeData {
 	status : string;
 	checkIn : string;
 	checkOut : string;
-	totalHours : string;
+	totalMinutes : number;
 }
   
 interface Column<T> {
@@ -45,7 +45,7 @@ export default function Dashboard() {
 		},
 		{key : "checkIn", label: 'Check In'},
 		{key : "checkOut", label: 'Check Out'},
-		{key : "totalHours", label: 'Total Hours'}
+		{key : "totalMinutes", label: 'Total Minutes'}
 	  ];
 
 	const { data : response , isLoading } = useAllUserAttendenceQuery({})
@@ -58,7 +58,7 @@ export default function Dashboard() {
 		status : "",
 		checkIn : "",
 		checkOut : "",
-		totalHours : ""
+		totalMinutes : 0
 	}]);
 	const [ presentEmployees, setPresentEmployees ] = useState(0);
 	const [ totalEmployees, setTotalEmployees ] = useState(0);
@@ -66,13 +66,13 @@ export default function Dashboard() {
 		if (response?.data) {
 		  console.log('Response data:', response.data);
 		  setUsersData(
-			response.data.attendance.map((user: { userId: { name: string; jobTitle: string }; status: string; workHours: { checkIn: string; checkOut: string; totalHours: string } }) => ({
+			response.data.attendance.map((user: { userId: { name: string; jobTitle: string }; status: string; workHours: { checkIn: string; checkOut: string; totalMinutes: number; } }) => ({
 			  name: user.userId.name ?? "",
 			  role: user.userId.jobTitle ?? "",
 			  status: user.status ?? "",
 			  checkIn: (user?.workHours?.checkIn)?.slice(11,16) || "",
-			  checkOut: (user.workHours.checkOut)?.slice(11,16) || "",
-			  totalHours: (user.workHours.totalHours) ?? "",
+			  checkOut: (user?.workHours?.checkOut)?.slice(11,16) || "",
+			  totalMinutes: ((user?.workHours?.totalMinutes) / 60).toFixed(2).replace(".", ":")
 			}))
 		  )
 		  setPresentEmployees((response.data.attendance).length)
