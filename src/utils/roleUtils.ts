@@ -15,7 +15,7 @@ export const getRoleLinks = (role: string) => {
         employee: [
             { name: "Dashboard", path: "/employee/dashboard" },
             { name: "Projects", path: "/employee/projects" },
-            { name: "Tasks", path: "/employee/tasks" },
+            { name: "Tasks Assigned", path: "/employee/tasks-assigned" },
             { name: "Chat", path: "/bdo/chat" },
         ],
         bdo: [
