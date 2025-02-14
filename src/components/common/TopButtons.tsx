@@ -144,17 +144,20 @@ export default function TopButtons() {
             <Button
               title="AFK"
               onClick={StartBreak}
+              disabled={isStartingBreak}
               icon={isStartingBreak ? <Loader2 size={16} className="animate-spin" /> : <UtensilsCrossed size={16} />}
             />
           ) : (
             <Button
               title="BTK"
+              disabled={isEndingBreak}
               onClick={EndBreak}
               icon={isEndingBreak ? <Loader2 size={16} className="animate-spin" /> : <Keyboard size={16} />}
             />
           )}
           <Button
             title="Check Out"
+            disabled={isCheckingOut}
             onClick={CheckOut}
             icon={isCheckingOut ? <Loader2 size={16} className="animate-spin" /> : <LogOut size={16} />}
           />
@@ -162,6 +165,7 @@ export default function TopButtons() {
       ) : (
         <Button
           title="Check In"
+          disabled={isCheckingIn}
           onClick={CheckIn}
           icon={isCheckingIn ? <Loader2 size={16} className="animate-spin" /> : <LogIn size={16} />}
         />
