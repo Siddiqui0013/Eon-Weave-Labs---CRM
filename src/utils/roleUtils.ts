@@ -1,9 +1,13 @@
 export const getRoleLinks = (role: string) => {
     const roleLinks: { [key: string]: { name: string; path: string }[] } = {
-        ceo: [
-            { name: "Dashboard", path: "/ceo/dashboard" },
-            { name: "Employee Data", path: "/ceo/employeeData" },
-            { name: "Chat", path: "/bdo/chat" },
+        admin: [
+            { name: "Dashboard", path: "/admin/dashboard" },
+            { name: "Employees", path: "/admin/employees" },
+            { name: "Attendance", path: "/admin/attendance" },
+            { name: "Projects", path: "/admin/projects" },
+            // { name: "Tasks", path: "/admin/tasks" },
+            { name: "Meetings", path: "/admin/meetings" },
+            { name: "Chat", path: "/admin/chat" },
         ],
         hr: [
             { name: "Dashboard", path: "/hr/dashboard" },
@@ -41,9 +45,9 @@ export const getRoleLinks = (role: string) => {
 //     ];
 
 //     const roleSpecificLinks: { [key: string]: { name: string; path: string }[] } = {
-//         ceo: [
-//             { name: "Dashboard", path: "/ceo/dashboard" },
-//             { name: "Employee Data", path: "/ceo/employeeData" },
+//         admin: [
+//             { name: "Dashboard", path: "/admin/dashboard" },
+//             { name: "Employee Data", path: "/admin/employeeData" },
             
 //         ],
 //         hr: [
@@ -75,9 +79,9 @@ export const getRoleLinks = (role: string) => {
 
 // // export const getRoleLinks = (role: string) => {
 // //     const roleLinks: { [key: string]: { name: string; path: string }[] } = {
-// //         ceo: [
-// //             { name: "Dashboard", path: "/ceo/dashboard" },
-// //             { name: "Employee Data", path: "/ceo/employeeData" },
+// //         admin: [
+// //             { name: "Dashboard", path: "/admin/dashboard" },
+// //             { name: "Employee Data", path: "/admin/employeeData" },
 // //             { name: "Chat", path: "/chat" },
 // //         ],
 // //         hr: [

@@ -80,7 +80,7 @@ const Navbar = () => {
           {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
 
-        <TopButtons />
+        { role !== "admin" && <TopButtons />}
 
       </div>
       {isOpen && (

@@ -22,7 +22,6 @@ export default function AddDailySheet() {
     const [loading, setloading] = useState(false)
     const [addCall] = useAddCallMutation();
 
-
     const form = useForm<DailyWorksheetData>({
         defaultValues: {
             target: 100,

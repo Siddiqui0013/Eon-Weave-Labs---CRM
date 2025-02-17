@@ -4,42 +4,39 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAddEmployeeWorksheetMutation } from "@/services/EmployeeWorksheetApi";
 
 interface DailyWorksheetData {
-    projectNumber: number;
-    kpis: number;
-    completedKpis: number;
-    pendingKpis: number;
+    projectNo: string;
+    totalKpi: number;
+    completedKpi: number;
+    pendingKpi: number;
     comment: string;
 }
 
 export default function AddDailySheet() {
     
     const { toast } = useToast()
-    const [loading, setloading] = useState(false)
+    const [addCall, { isLoading } ] = useAddEmployeeWorksheetMutation();
 
     const form = useForm<DailyWorksheetData>({
         defaultValues: {
-            projectNumber: 0,
-            kpis: 0,
-            completedKpis: 0,
-            pendingKpis: 0,
-            comment: ''
+            projectNo: "",
+            totalKpi: 0,
+            completedKpi: 0,
+            pendingKpi: 0,
+            comment: "",
         }
     });
 
     const onSubmit = async (data: DailyWorksheetData) => {
-        setloading(true)
         console.log(data);
-
         try {
-            if( data.projectNumber && data.kpis && data.completedKpis && data.pendingKpis && data.comment.length > 1) {
-            // const response =  await addCall(data).unwrap();
-            // console.log(response);
+            if( data.projectNo && data.totalKpi && data.completedKpi && data.pendingKpi && data.comment.length > 1) {
+            const response =  await addCall(data).unwrap();
+            console.log(response);
             form.reset();
-            setloading(false)
             toast({
                 variant : 'default',
                 title: 'Success',
@@ -54,7 +51,6 @@ export default function AddDailySheet() {
                 description: 'Please fill all the fields',
                 duration: 1500
             })
-            setloading(false)
         }
         }
         catch (error) {
@@ -65,7 +61,6 @@ export default function AddDailySheet() {
                 description: 'Something went wrong',
                 duration: 1500
             })
-            setloading(false)
         }
     };
 
@@ -83,8 +78,8 @@ export default function AddDailySheet() {
                         <div className="space-y-2">
                             <label className="text-sm text-gray-300">Project Number</label>
                             <Input
-                                type="number"
-                                {...form.register('projectNumber')}
+                                type="text"
+                                {...form.register('projectNo')}
                                 className="bg-gray-800 border-gray-700 text-gray-100"
                             />
                         </div>
@@ -92,7 +87,7 @@ export default function AddDailySheet() {
                             <label className="text-sm text-gray-300">KPIs</label>
                             <Input
                                 type="number"
-                                {...form.register('kpis')}
+                                {...form.register('totalKpi')}
                                 className="bg-gray-800 border-gray-700 text-gray-100"
                             />
                         </div>
@@ -101,7 +96,7 @@ export default function AddDailySheet() {
                             <label className="text-sm text-gray-300">Completed KPIs</label>
                             <Input
                                 type="number"
-                                {...form.register('completedKpis')}
+                                {...form.register('completedKpi')}
                                 className="bg-gray-800 border-gray-700 text-gray-100"
                             />
                         </div>
@@ -109,7 +104,7 @@ export default function AddDailySheet() {
                             <label className="text-sm text-gray-300">Pending KPIs</label>
                             <Input
                                 type="number"
-                                {...form.register('pendingKpis')}
+                                {...form.register('pendingKpi')}
                                 className="bg-gray-800 border-gray-700 text-gray-100"
                             />
                         </div>
@@ -128,7 +123,7 @@ export default function AddDailySheet() {
                         type="submit"
                         className="w-full bg-primary hover:bg-primary/90"
                     >
-                    { loading ? 'Saving...' : 'Submit' }
+                    { isLoading ? 'Saving...' : 'Submit' }
                     </Button>
                 </form>
             </PopoverContent>

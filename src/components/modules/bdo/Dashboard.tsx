@@ -50,7 +50,7 @@ export default function Dashboard() {
 			console.log(response.data);
 
 			/* Worksheet once logic */
-			const latestCallDate = new Date(response.data.calls[0].createdAt)
+			const latestCallDate = new Date(latestCall.createdAt)
 				.toISOString()
 				.split("T")[0];
 			setTodayUpdate(latestCallDate);

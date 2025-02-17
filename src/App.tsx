@@ -9,6 +9,7 @@ import { Invite } from "./components/common/Inviteuser";
 import BdoRoutes from "./components/modules/bdo/BdoRoutes";
 import HrRoutes from "./components/modules/hr/HrRoutes";
 import EmployeeRoutes from "./components/modules/employee/EmployeeRoutes";
+import AdminRoutes from "./components/modules/admin/AdminRoutes";
 
 import "./App.css";
 
@@ -29,6 +30,9 @@ const App = () => {
 
   /* BDO Email : "locef40983@downlor.com"
       BDO Password : "121212" */
+
+  /* Admin Email : "admin@mail.com"
+      Admin Password : "121212" */
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -80,6 +84,7 @@ const App = () => {
             <Route path="bdo/*" element={<BdoRoutes />} />
             <Route path="hr/*" element={<HrRoutes />} />
             <Route path="employee/*" element={<EmployeeRoutes />} />
+            <Route path="admin/*" element={<AdminRoutes />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

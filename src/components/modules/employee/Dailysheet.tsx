@@ -1,13 +1,13 @@
 import ReusableTable from "@/components/common/Table";
 import { useState } from "react";
-// import { useGetCallsByUserQuery } from "@/services/callsApi";
+import { useGetEmployeeWorksheetsByUserQuery } from "@/services/EmployeeWorksheetApi";
 
 interface DailySheetData {
   createdAt: string ;
-  project : string;
-  kpis: string;
-  completedKpis: string;
-  pendingKpis: string;
+  projectNo: string;
+  totalKpi: number;
+  completedKpi: number;
+  pendingKpi: number;
   comment: string;
 }
 
@@ -20,31 +20,10 @@ interface Column<T> {
 export default function Calls() {
 
   const [currentPage, setCurrentPage] = useState(1);
-//   const itemsPerPage = 10;
-
-//   const { data: response, isLoading } = useGetCallsByUserQuery({
-//     page: currentPage,
-//     limit: itemsPerPage,
-//   });
-
-  const demoData: DailySheetData[] = [
-    {
-      createdAt: '2023-08-01',
-      project: 'Project 1',
-      kpis: 'KPI 1',
-      completedKpis: 'Completed KPI 1',
-      pendingKpis: 'Pending KPI 1',
-      comment: 'Comment 1',
-    },
-    {
-      createdAt: '2023-08-02',
-      project: 'Project 2',
-      kpis: 'KPI 2',
-      completedKpis: 'Completed KPI 2',
-      pendingKpis: 'Pending KPI 2',
-      comment: 'Comment 2',
-  }]
-
+  const { data: response, isLoading } = useGetEmployeeWorksheetsByUserQuery({
+    page: currentPage,
+    limit: 10,
+  });
 
   const columns: Column<DailySheetData>[] = [
     {
@@ -52,10 +31,10 @@ export default function Calls() {
       label: 'Date',
       render: (value: string | number) => new Date(value).toLocaleDateString()
     },
-    { key: 'project', label: 'Project' },
-    { key: 'kpis', label: 'KPIs' },
-    { key: 'completedKpis', label: 'Completed KPIs' },
-    { key: 'pendingKpis', label: 'Pending KPIs' },
+    { key: 'projectNo', label: 'Project Number' },
+    { key: 'totalKpi', label: 'KPIs' },
+    { key: 'completedKpi', label: 'Completed KPIs' },
+    { key: 'pendingKpi', label: 'Pending KPIs' },
     { key: 'comment', label: 'Comments' }
   ];
 
@@ -63,10 +42,9 @@ export default function Calls() {
     <div className="w-[370px] md:w-full md:mt-8 mt-20 overflow-auto">
         <ReusableTable
           columns={columns}
-          data={demoData}
-        //   data={response?.data?.calls || []}
-        //   isLoading={isLoading}
-        //   totalPages={response?.data?.pagination?.totalPages || 1}
+          data={response?.data?.worksheet || []}
+          isLoading={isLoading}
+          totalPages={response?.data?.pagination?.totalPages || 1}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
         />
