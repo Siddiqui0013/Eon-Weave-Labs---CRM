@@ -44,10 +44,20 @@ export const MeetingApi = createApi({
             invalidatesTags: ['Meetings'],
         }),
 
+        // Meeting info Cards for individual BDO
         meetingAnalytics: builder.query({
             query: () => ({
                 url: '/sales/meetingAnalytics',
                 method: 'GET',
+            }),
+            providesTags: ['Meetings'],
+        }),
+
+        // Meeting info Cards for admin
+        meetingAnalyticsForAdmin : builder.query({
+            query: () => ({
+                url: '/sales/meetingAnalyticsForAdmin',
+                method: 'GET'
             }),
             providesTags: ['Meetings'],
         }),
@@ -67,7 +77,25 @@ export const MeetingApi = createApi({
                 body: data,
         }),
         invalidatesTags: ['Meetings']
-})
+        }),
+
+        getAllMeetings: builder.query({
+            query: ({ page = 1, limit = 10, search, status, createdAt }: QueryParams) => {
+                const query: Record<string, string | number | undefined> = {
+                    page,
+                    limit
+                }
+                if (search) query.search = search
+                if (status) query.status = status
+                if (createdAt) query.createdAt = createdAt
+                return {
+                    url: `/sales/getAllMeetings`,
+                    method: 'GET',
+                    params: query
+                }
+            },
+            providesTags: ['Meetings']
+        }),
     })
 })
 
@@ -75,6 +103,8 @@ export const {
     useGetMeetingsByUserQuery,
     useAddMeetingScheduleMutation,
     useMeetingAnalyticsQuery,
+    useMeetingAnalyticsForAdminQuery,
     useUpdateMeetingMutation,
-    useRemoveMeetingMutation
+    useRemoveMeetingMutation,
+    useGetAllMeetingsQuery
 } = MeetingApi
