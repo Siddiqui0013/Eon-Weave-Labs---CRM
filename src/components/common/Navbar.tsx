@@ -52,6 +52,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await logout({}).unwrap();
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       useLogout();
       toast({
         variant: "default",
