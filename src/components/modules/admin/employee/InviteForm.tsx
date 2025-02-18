@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { useInviteMutation } from "@/services/userApi";
 import { useToast } from "@/hooks/use-toast";
-import Button from "./Button";
+import Button from "@/components/common/Button";
 import { Loader2 } from "lucide-react";
 
-export const Invite = () => {
+export const InviteForm = () => {
 
-    const [ name, setName ] = useState("");
-    const [ email, setEmail ] = useState("");
-    const [ role, setRole ] = useState("Employee");
-    const [ jobTitle, setJobTitle ] = useState("");
-    const [ salary, setSalary ] = useState("");
-    const [ type, setType ] = useState("full-time");
+    const [ formData, setFormData ] = useState({
+        name: "",
+        email: "",
+        role: "",
+        jobTitle: "",
+        salary: "",
+        type: ""
+    });
 
 const { toast } = useToast();
 const [invite, { isLoading }] = useInviteMutation();
@@ -19,11 +21,8 @@ const [invite, { isLoading }] = useInviteMutation();
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
     try {
-        const data = { name, email, role, jobTitle, salary, type };
-        console.log("Data:", data);    
-        const response = await invite(data).unwrap();
-        console.log("Response:", response);
-    
+        const response = await invite(formData).unwrap();
+        console.log("Response:", response);    
         toast({
         variant: "default",
         title: "Success",
@@ -58,8 +57,8 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="name"
-                onChange={(e) => setName(e.target.value)}
-                value={name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                value={formData.name}
                 required
                 type="text"
                 placeholder="Enter Employee name"
@@ -73,8 +72,8 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="email"
-                onChange={(e) => setEmail(e.target.value)}
-                value={email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                value={formData.email}
                 type="email"
                 required
                 placeholder="Enter Employee email"
@@ -88,8 +87,8 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               <select
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="role"
-                onChange={(e) => setRole(e.target.value)}
-                value={role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                value={formData.role}
               >
                 <option value="employee">Employee (Designer/Developer) </option>
                 <option value="hr">HR</option>
@@ -104,8 +103,8 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="jobTitle"
-                onChange={(e) => setJobTitle(e.target.value)}
-                value={jobTitle}
+                onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                value={formData.jobTitle}
                 type="text"
                 required
                 placeholder="Enter job title"
@@ -119,8 +118,8 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="salary"
-                onChange={(e) => setSalary(e.target.value)}
-                value={salary}
+                onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+                value={formData.salary}
                 type="number"
                 required
                 placeholder="Enter salary"
@@ -134,11 +133,11 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               <select
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="type"
-                onChange={(e) => setType(e.target.value)}
-                value={type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                value={formData.type}
               >
-                <option value="full time">Full Time</option>
-                <option value="part time">Part Time</option>
+                <option value="fullTime">Full Time</option>
+                <option value="partTime">Part Time</option>
                 <option value="contract">Contract</option>
                 <option value="internship">Internship</option>
                 <option value="probation">Probation</option>
@@ -160,4 +159,4 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         </div>
       </div>
   );
-};
+}
