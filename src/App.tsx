@@ -5,7 +5,6 @@ import useAuth from "./hooks/useAuth";
 import Navbar from "./components/common/Navbar";
 import LoginForm from "./components/common/Login";
 import { RegisterForm } from "./components/common/Register";
-import { Invite } from "./components/common/Inviteuser";
 import BdoRoutes from "./components/modules/bdo/BdoRoutes";
 import HrRoutes from "./components/modules/hr/HrRoutes";
 import EmployeeRoutes from "./components/modules/employee/EmployeeRoutes";
@@ -78,8 +77,6 @@ const App = () => {
 
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register/:inviteId" element={<RegisterForm />} />
-          <Route path="/invite" element={<Invite />} />
-
           <Route element={<ProtectedRoute allowedRoles={DefinedRoles} />}>
             <Route path="bdo/*" element={<BdoRoutes />} />
             <Route path="hr/*" element={<HrRoutes />} />

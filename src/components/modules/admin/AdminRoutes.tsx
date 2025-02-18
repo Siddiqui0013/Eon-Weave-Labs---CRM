@@ -1,7 +1,7 @@
 import { Route, Routes, Navigate } from "react-router";
 import Dashboard from "./Dashboard";
 import AllMeetings from "./AllMeetings";
-import AllEmployees from "./team/AllEmployees";
+import AllEmployees from "./employee/AllEmployees";
 import AllProjects from "./projects/AllProjects";
 import ChatScreen from "@/components/common/ChatScreen";
 import Attendence from "./Attendence";

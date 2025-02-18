@@ -1,8 +1,9 @@
 import { User } from 'lucide-react';
-// import { useNavigate } from 'react-router';
 import { useAllUsersQuery } from '@/services/userApi';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import Button from '@/components/common/Button';
+import InviteEmployee from './InviteEmployee';
 
 interface User {
   _id: number;
@@ -15,8 +16,9 @@ interface User {
 const AllEmployees = () => {
 
   const { data, isLoading } = useAllUsersQuery({});
-
   const [users, setUsers] = useState<User[]>([]); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   useEffect(() => {
     if (data) {
@@ -25,12 +27,10 @@ const AllEmployees = () => {
     }
   }, [data]);
 
-  // const navigate = useNavigate();
-
   if (isLoading) {
     return (
       <div className="p-4 space-y-6">
-        <h1 className="text-3xl font-semibold">Team</h1>
+        <h1 className="text-3xl font-semibold">Employees</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {[...Array(8)].map((_, index) => (
             <Skeleton key={index} className="h-80" />
@@ -42,15 +42,17 @@ const AllEmployees = () => {
 
   return (
     <div className='p-4 space-y-6'>
-          <h1 className="text-3xl font-semibold">All Employees</h1>
+        <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-semibold">Employees</h1>
+        <Button 
+          title='Invite Employee' 
+          onClick={() => setIsModalOpen(true)}
+        />
+        </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {users.map((member, index) => (
         <div 
-        // onClick={() => {
-        //   navigate(`/admin/team/${member._id}`)
-        //   console.log(member._id);
-        //   } }
-
         key={index} 
         className="bg-[url('/src/assets/profileBg.png')] flex flex-col py-6 rounded-lg p-4 gap-2 justify-between text-center bg-[#3F3F3F]"
         >
@@ -74,6 +76,10 @@ const AllEmployees = () => {
       ))}
 
     </div>
+    <InviteEmployee 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
 
   );
