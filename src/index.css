@@ -61,3 +61,7 @@ select {
     background-color: rgb(0, 0, 0) !important;
     color: rgb(227, 224, 224) !important;
 }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}

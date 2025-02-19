@@ -206,7 +206,7 @@ export default function AddSaleForm( { onClose }: AddSaleProps) {
                 name="startDate"
                 value={formData.startDate}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 text-black focus:ring-primary"
+                className="w-full px-3 py-2 border bg-white text-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
             <div>
