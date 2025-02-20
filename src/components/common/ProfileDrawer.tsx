@@ -52,19 +52,22 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
     const handleUpdate = async () => {
         try {
             const formData = new FormData();
+            Object.entries(employee).forEach(([key, value]) => {
+                formData.append(key, value);
+            });
             if (selectedFile) {
                 formData.append('profileImage', selectedFile);
             }
             const response = await updateUser(formData).unwrap();
             console.log("response", response);
-            
+
             toast({
                 variant: "default",
                 title: "Success",
                 description: "User updated successfully",
                 duration: 1500,
             });
-            
+
             // Reset the selected file after successful update
             setSelectedFile(null);
         } catch (error) {
@@ -136,7 +139,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
 
                     <div className="p-6 h-full">
                         <div className="flex items-center gap-4 mb-6">
-                            <div 
+                            <div
                                 className="relative cursor-pointer"
                                 onClick={handleImageClick}
                             >
@@ -163,7 +166,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                                 <Input
                                     disabled
                                     value={employee.name}
-                                    onChange={(e) => setEmployee({...employee, name: e.target.value})}
+                                    onChange={(e) => setEmployee({ ...employee, name: e.target.value })}
                                     className="bg-gray-800 border-gray-700 text-gray-100"
                                 />
                             </div>
@@ -175,7 +178,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                                 <Input
                                     disabled
                                     value={employee.email}
-                                    onChange={(e) => setEmployee({...employee, email: e.target.value})}
+                                    onChange={(e) => setEmployee({ ...employee, email: e.target.value })}
                                     className="bg-gray-800 border-gray-700 text-gray-100"
                                 />
                             </div>
@@ -184,7 +187,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                                 <Input
                                     disabled={!isEditing}
                                     value={employee.phone}
-                                    onChange={(e) => setEmployee({...employee, phone: e.target.value})}
+                                    onChange={(e) => setEmployee({ ...employee, phone: e.target.value })}
                                     className="bg-gray-800 border-gray-700 text-gray-100"
                                 />
                             </div>
@@ -194,7 +197,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                                 <Input
                                     disabled={!isEditing}
                                     value={employee.cnic}
-                                    onChange={(e) => setEmployee({...employee, cnic: e.target.value})}
+                                    onChange={(e) => setEmployee({ ...employee, cnic: e.target.value })}
                                     className="bg-gray-800 border-gray-700 text-gray-100"
                                 />
                             </div>
@@ -204,7 +207,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                                 <Input
                                     disabled={!isEditing}
                                     value={employee.address}
-                                    onChange={(e) => setEmployee({...employee, address: e.target.value})}
+                                    onChange={(e) => setEmployee({ ...employee, address: e.target.value })}
                                     className="bg-gray-800 border-gray-700 text-gray-100"
                                 />
                             </div>
@@ -216,7 +219,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                                 <Input
                                     disabled
                                     value={employee.jobTitle}
-                                    onChange={(e) => setEmployee({...employee, jobTitle: e.target.value})}
+                                    onChange={(e) => setEmployee({ ...employee, jobTitle: e.target.value })}
                                     className="bg-gray-800 border-gray-700 text-gray-100"
                                 />
                             </div>
@@ -225,7 +228,7 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                                 <Input
                                     disabled
                                     value={employee.joiningDate.slice(0, 10)}
-                                    onChange={(e) => setEmployee({...employee, joiningDate: e.target.value})}
+                                    onChange={(e) => setEmployee({ ...employee, joiningDate: e.target.value })}
                                     className="bg-gray-800 border-gray-700 text-gray-100"
                                 />
                             </div>
