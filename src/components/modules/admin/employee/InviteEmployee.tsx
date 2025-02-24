@@ -10,7 +10,7 @@ const InviteEmployee = ({ isOpen, onClose }: InviteEmployeeProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 rounded-3xl z-50 flex items-center justify-center">
+    <div className="fixed -inset-20 bg-black bg-opacity-50 z-50 flex items-center justify-center">
       <div className="relative w-full max-w-md">
         <button 
           onClick={onClose}
