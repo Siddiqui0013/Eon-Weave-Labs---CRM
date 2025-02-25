@@ -3,6 +3,12 @@
     name: string;
     email: string;
     role: string;
+    profileImage: string;
+    phone: string;
+    address: string;
+    cnic: string;
+    jobTitle: string;
+    createdAt: string;
  }
 
 const useAuth = (): {
