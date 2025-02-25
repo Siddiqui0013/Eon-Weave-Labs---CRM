@@ -4,14 +4,14 @@ import { MeetingApi } from '@/services/meetingApi';
 import { SalesApi } from '@/services/salesApi';
 import { CallsApi } from '@/services/callsApi';
 import { EmployeeWorksheetApi } from '@/services/EmployeeWorksheetApi';
-import chatReducer from './slices/chatSlice';
+// import chatReducer from './slices/chatSlice';
 
 export const store = configureStore({
   reducer: {
     [UserApi.reducerPath]: UserApi.reducer,
     [MeetingApi.reducerPath]: MeetingApi.reducer,
     [SalesApi.reducerPath]: SalesApi.reducer,
-    chat: chatReducer,
+    // chat: chatReducer,
     [CallsApi.reducerPath]: CallsApi.reducer,
     [EmployeeWorksheetApi.reducerPath]: EmployeeWorksheetApi.reducer
   },
