@@ -1,81 +1,45 @@
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers, fetchChannels, setSelectedChat, Chat } from "@/redux/slices/chatSlice";
+import { RootState, AppDispatch } from "@/redux/Store"
 
-interface Chat {
-  _id: string;
-  name: string;
-  email?: string;
-  profileImage?: string;
-}
-
-interface SidebarProps {
-  onSelectChat: (chat: Chat, type: string) => void;
-}
-
-const Sidebar = ({ onSelectChat }: SidebarProps) => {
+const Sidebar = () => {
   const [selected, setSelected] = useState("");
   const [activeTab, setActiveTab] = useState("inbox");
-  const [users, setUsers] = useState<Chat[]>([]);
-  const [channels, setChannels] = useState<Chat[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  
+  const dispatch = useDispatch<AppDispatch>();
+  const { 
+    users, 
+    channels, 
+    // isUsersLoading, 
+    // isChannelsLoading, 
+    // error 
+  } = useSelector((state: RootState) => state.chat);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError("");
-      
-      try {
-        const usersResponse = await fetch("https://ewlcrm-backend.vercel.app/api/user/getSidebarUsers", {
-          headers: {
-            "Authorization": `${localStorage.getItem("accessToken")}`
-          }
-        });
-        
-        if (!usersResponse.ok) {
-          throw new Error("Failed to fetch users");
-        }
-        
-        const usersData = await usersResponse.json()
-        const users = usersData.data || [];
-        setUsers(users);
-        
-        const channelsResponse = await fetch("https://ewlcrm-backend.vercel.app/api/chat/channels/me", {
-          headers: {
-            "Authorization": `${localStorage.getItem("accessToken")}`
-          }
-        });
-        
-        if (!channelsResponse.ok) {
-          throw new Error("Failed to fetch channels");
-        }
-        
-        const channelsData = await channelsResponse.json();
-        setChannels(channelsData.data || []);
-        
-        if (users.length > 0 && !selected) {
-          setSelected(users[0]._id);
-          onSelectChat(users[0], "user");
-        }
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message || "Error fetching data");
-        } else {
-          setError("Error fetching data");
-        }
-        console.error("Error fetching data:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchData();
-  }, []);
+    dispatch(fetchUsers());
+    dispatch(fetchChannels());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (users.length > 0 && !selected) {
+      setSelected(users[0]._id);
+      dispatch(setSelectedChat({ 
+        chat: users[0], 
+        type: "user" 
+      }));
+    }
+  }, [users, selected, dispatch]);
 
   const chats = activeTab === "inbox" ? users : channels;
+  // const isLoading = activeTab === "inbox" ? isUsersLoading : isChannelsLoading;
   
   const handleSelectChat = (chat: Chat) => {
     setSelected(chat._id);
-    onSelectChat(chat, activeTab === "inbox" ? "user" : "channel");
+    dispatch(setSelectedChat({ 
+      chat, 
+      type: activeTab === "inbox" ? "user" : "channel" 
+    }));
   };
 
   return (
@@ -95,21 +59,25 @@ const Sidebar = ({ onSelectChat }: SidebarProps) => {
         </button>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center items-center flex-1">
-          <p>Loading...</p>
-        </div>
-      ) : error ? (
-        <div className="text-red-400 text-center mt-4">
-          <p>{error}</p>
-          <button 
-            className="mt-2 px-4 py-2 bg-primary rounded"
-            onClick={() => window.location.reload()}
-          >
-            Retry
-          </button>
-        </div>
-      ) : (
+      {
+      // isLoading ? (
+      //   <div className="flex justify-center items-center flex-1">
+      //     <p>Loading...</p>
+      //   </div>
+      // ) : error ? (
+      //   <div className="text-red-400 text-center mt-4">
+      //     <p>{error}</p>
+      //     <button 
+      //       className="mt-2 px-4 py-2 bg-primary rounded"
+      //       onClick={() => {
+      //         dispatch(activeTab === "inbox" ? fetchUsers() : fetchChannels());
+      //       }}
+      //     >
+      //       Retry
+      //     </button>
+      //   </div>
+      // ) : 
+      (
         <div className="flex-1 overflow-y-auto">
           {chats.length === 0 ? (
             <p className="text-center text-gray-400 mt-4">
@@ -119,17 +87,24 @@ const Sidebar = ({ onSelectChat }: SidebarProps) => {
             chats.map((chat: Chat) => (
               <div
                 key={chat._id}
-                className={`p-3 rounded-lg cursor-pointer ${
+                className={`p-3 rounded-lg flex gap-4 cursor-pointer items-center ${
                   selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
                 }`}
                 onClick={() => handleSelectChat(chat)}
               >
-                <p className="font-bold">{chat.name}</p>
-                {activeTab === "inbox" && (
-                  <p className="text-xs text-gray-400 truncate">
-                    {chat.email || ""}
-                  </p>
-                )}
+                <img
+                  src={chat.profileImage || "https://avatar.iran.liara.run/public"}
+                  alt={chat.name}
+                  className="w-10 h-10 rounded-full"
+                />
+                <div>
+                  <p className="font-bold">{chat.name}</p>
+                  {activeTab === "inbox" && chat.email && (
+                    <p className="text-xs text-gray-400 truncate">
+                      {chat.email}
+                    </p>
+                  )}
+                </div>
               </div>
             ))
           )}
@@ -140,6 +115,168 @@ const Sidebar = ({ onSelectChat }: SidebarProps) => {
 };
 
 export default Sidebar;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { useState, useEffect } from "react";
+
+// interface Chat {
+//   _id: string;
+//   name: string;
+//   email?: string;
+//   profileImage?: string;
+// }
+
+// interface SidebarProps {
+//   onSelectChat: (chat: Chat, type: string) => void;
+// }
+
+// const Sidebar = ({ onSelectChat }: SidebarProps) => {
+//   const [selected, setSelected] = useState("");
+//   const [activeTab, setActiveTab] = useState("inbox");
+//   const [users, setUsers] = useState<Chat[]>([]);
+//   const [channels, setChannels] = useState<Chat[]>([]);
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [error, setError] = useState("");
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       setIsLoading(true);
+//       setError("");
+      
+//       try {
+//         const usersResponse = await fetch("https://ewlcrm-backend.vercel.app/api/user/getSidebarUsers", {
+//           headers: {
+//             "Authorization": `${localStorage.getItem("accessToken")}`
+//           }
+//         });
+        
+//         if (!usersResponse.ok) {
+//           throw new Error("Failed to fetch users");
+//         }
+        
+//         const usersData = await usersResponse.json()
+//         const users = usersData.data || [];
+//         console.log(users);
+//         setUsers(users);
+        
+//         const channelsResponse = await fetch("https://ewlcrm-backend.vercel.app/api/chat/channels/me", {
+//           headers: {
+//             "Authorization": `${localStorage.getItem("accessToken")}`
+//           }
+//         });
+        
+//         if (!channelsResponse.ok) {
+//           throw new Error("Failed to fetch channels");
+//         }
+        
+//         const channelsData = await channelsResponse.json();
+//         setChannels(channelsData.data || []);
+        
+//         if (users.length > 0 && !selected) {
+//           setSelected(users[0]._id);
+//           onSelectChat(users[0], "user");
+//         }
+//       } catch (err) {
+//         if (err instanceof Error) {
+//           setError(err.message || "Error fetching data");
+//         } else {
+//           setError("Error fetching data");
+//         }
+//         console.error("Error fetching data:", err);
+//       } finally {
+//         setIsLoading(false);
+//       }
+//     };
+    
+//     fetchData();
+//   }, []);
+
+//   const chats = activeTab === "inbox" ? users : channels;
+  
+//   const handleSelectChat = (chat: Chat) => {
+//     setSelected(chat._id);
+//     onSelectChat(chat, activeTab === "inbox" ? "user" : "channel");
+//   };
+
+//   return (
+//     <div className="w-1/4 border-r border-gray-700 text-white h-screen p-4 flex flex-col">
+//       <div className="flex w-full justify-between mb-4">
+//         <button
+//           className={`px-4 py-2 w-[48%] rounded ${activeTab === "inbox" ? "bg-primary" : ""}`}
+//           onClick={() => setActiveTab("inbox")}
+//         >
+//           Inbox
+//         </button>
+//         <button
+//           className={`px-4 py-2 w-[48%] rounded ${activeTab === "channels" ? "bg-primary" : ""}`}
+//           onClick={() => setActiveTab("channels")}
+//         >
+//           Channels
+//         </button>
+//       </div>
+
+//       {isLoading ? (
+//         <div className="flex justify-center items-center flex-1">
+//           <p>Loading...</p>
+//         </div>
+//       ) : error ? (
+//         <div className="text-red-400 text-center mt-4">
+//           <p>{error}</p>
+//           <button 
+//             className="mt-2 px-4 py-2 bg-primary rounded"
+//             onClick={() => window.location.reload()}
+//           >
+//             Retry
+//           </button>
+//         </div>
+//       ) : (
+//         <div className="flex-1 overflow-y-auto">
+//           {chats.length === 0 ? (
+//             <p className="text-center text-gray-400 mt-4">
+//               {activeTab === "inbox" ? "No users found" : "No channels found"}
+//             </p>
+//           ) : (
+//             chats.map((chat: Chat) => (
+//               <div
+//                 key={chat._id}
+//                 className={`p-3 rounded-lg flex gap-4 cursor-pointer items-center ${
+//                   selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
+//                 }`}
+//                 onClick={() => handleSelectChat(chat)}
+//               >
+//                 <img
+//                   src={chat.profileImage || "https://avatar.iran.liara.run/public"}
+//                   alt={chat.name}
+//                   className="w-10 h-10 rounded-full"
+//                 />
+//                 <p className="font-bold">{chat.name}</p>
+//                 {activeTab === "inbox" && (
+//                   <p className="text-xs text-gray-400 truncate">
+//                     {chat.email || ""}
+//                   </p>
+//                 )}
+//               </div>
+//             ))
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Sidebar;
 
 
 
