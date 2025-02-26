@@ -5,6 +5,14 @@ export interface Chat {
   name: string;
   email?: string;
   profileImage?: string;
+  participants?: [
+    {
+      _id: string;
+      name: string;
+      email: string;
+      profileImage: string;
+    }
+  ];
 }
 
 export interface Message {
@@ -18,6 +26,7 @@ export interface Message {
 interface ChatState {
   users: Chat[];
   channels: Chat[];
+  userConversations: Chat[];
   selectedChat: Chat | null;
   chatType: string;
   messages: Record<string, Message[]>;
@@ -30,6 +39,7 @@ interface ChatState {
 const initialState: ChatState = {
   users: [],
   channels: [],
+  userConversations: [],
   selectedChat: null,
   chatType: "",
   messages: {},
@@ -57,6 +67,29 @@ export const fetchUsers = createAsyncThunk(
       return data.data || [];
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch users");
+    }
+  }
+);
+
+export const fetchUserConversations = createAsyncThunk(
+  "chat/fetchUserConversations",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch("https://ewlcrm-backend.vercel.app/api/chat/conversations", {
+        method: "GET",
+        headers: {
+          "Authorization": `${localStorage.getItem("accessToken")}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch conversations");
+      }
+      
+      const data = await response.json();
+      return data.data || [];
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch conversations");
     }
   }
 );
@@ -201,6 +234,20 @@ const chatSlice = createSlice({
         state.users = action.payload;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
+        state.isUsersLoading = false;
+        state.error = action.payload as string;
+      })
+
+      // Conversations
+      .addCase(fetchUserConversations.pending, (state) => {
+        state.isUsersLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserConversations.fulfilled, (state, action) => {
+        state.isUsersLoading = false;
+        state.userConversations = action.payload;
+      })
+      .addCase(fetchUserConversations.rejected, (state, action) => {
         state.isUsersLoading = false;
         state.error = action.payload as string;
       })
