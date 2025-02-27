@@ -64,7 +64,7 @@ export default function Dashboard() {
 	const [ totalEmployees, setTotalEmployees ] = useState(0);
 	useEffect(() => {
 		if (response?.data) {
-		  console.log('Response data:', response.data);
+		//   console.log('Response data:', response.data);
 		  setUsersData(
 			response.data.attendance.map((user: { userId: { name: string; jobTitle: string }; status: string; workHours: { checkIn: string; checkOut: string; totalMinutes: number; } }) => ({
 			  name: user.userId.name ?? "",

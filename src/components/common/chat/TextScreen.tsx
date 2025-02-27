@@ -1,20 +1,12 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { 
-  fetchMessages, 
-  sendMessage, 
-  addLocalMessage, 
-  removeLocalMessage 
-} from "@/redux/slices/chatSlice";
+import { fetchMessages, sendMessage, addLocalMessage, removeLocalMessage } from "@/redux/slices/chatSlice";
 import { RootState, AppDispatch } from "@/redux/Store"
 import useAuth from "@/hooks/useAuth";
 
 const TextScreen = () => {
   const { user } = useAuth();
   const currentUserId = user?._id
-  // console.log("user", user);
-  
-  // console.log("currentUserId", currentUserId);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -22,21 +14,19 @@ const TextScreen = () => {
   
   const { 
     selectedChat, 
-    chatType, 
+    chatType,
+    conversationId, // Access the conversationId from the state
     messages, 
     isMessagesLoading 
   } = useSelector((state: RootState) => state.chat); 
   
-  // Get messages for selected chat
-  const chatMessages = useMemo(() => selectedChat ? messages[selectedChat._id] || [] : [], [selectedChat, messages]);
-  console.log("chatMessages", chatMessages);
+  const chatId = selectedChat?._id || "";
+  const chatMessages = useMemo(() => selectedChat ? messages[chatId] || [] : [], [selectedChat, messages, chatId]);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
 
-  // Fetch messages when selected chat changes
   useEffect(() => {
     if (selectedChat?._id) {
       dispatch(fetchMessages({ 
@@ -59,7 +49,6 @@ const TextScreen = () => {
       time: new Date().toLocaleTimeString(),
     };
 
-    // Update UI immediately (optimistic update)
     dispatch(addLocalMessage({ 
       chatId: selectedChat._id, 
       message: tempMessage 
@@ -68,22 +57,18 @@ const TextScreen = () => {
     setNewMessage("");
 
     try {
-      // Send to server
       await dispatch(sendMessage({ 
         chatId: selectedChat._id, 
         chatType, 
         content: newMessage 
       })).unwrap();
       
-      // Remove temp message (real message will be added by the reducer)
       dispatch(removeLocalMessage({ 
         chatId: selectedChat._id, 
         messageId: tempId 
       }));
     } catch (error) {
       console.error("Failed to send message:", error);
-      // Keep the temporary message (don't remove it)
-      // You might want to add an error indicator to it
     }
   };
 
@@ -98,7 +83,8 @@ const TextScreen = () => {
   return (
     <div className="flex-1 bg-gray-800 h-screen flex flex-col">
       <div className="p-4 bg-primary text-white font-bold">
-        {selectedChat.name}
+        {selectedChat.name || (selectedChat.participants && selectedChat.participants.name)}
+        {conversationId && <span className="text-xs ml-2 opacity-50">(Conversation ID: {conversationId})</span>}
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
@@ -151,236 +137,3 @@ const TextScreen = () => {
 };
 
 export default TextScreen;
-
-
-
-
-
-
-
-
-
-
-
-
-// import { useState, useEffect } from "react";
-
-// interface Message {
-//   id: string;
-//   senderId: string;
-//   receiverId: string;
-//   text: string;
-//   time: string;
-// }
-
-// interface ChatProps {
-//   selectedChat: {
-//     _id: string;
-//     name: string;
-//     profileImage?: string;
-//   };
-//   chatType: string;
-// }
-
-// const TextScreen = ({ selectedChat, chatType }: ChatProps) => {
-//   const [messages, setMessages] = useState<Message[]>([]);
-//   const [newMessage, setNewMessage] = useState("");
-//   const [isLoading, setIsLoading] = useState(false);
-
-
-//   const currentUserId = "me"; 
-
-//   useEffect(() => {
-//     setMessages([]);
-    
-//     if (selectedChat?._id) {
-//       fetchMessages();
-//     }
-//   }, [selectedChat]);
-
-//   const fetchMessages = async () => {
-//     setIsLoading(true);
-//     try {
-//       const endpoint = chatType === "user" 
-//         ? `https://ewlcrm-backend.vercel.app/api/chat/conversations/${selectedChat._id}/messages`
-//         : `https://ewlcrm-backend.vercel.app/api/chat/channels/${selectedChat._id}/messages`;
-      
-//       const response = await fetch(endpoint, {
-//         headers: {
-//           "Authorization": `${localStorage.getItem("accessToken")}`
-//         }
-//       });
-
-//       if (!response.ok) {
-//         throw new Error("Failed to fetch messages");
-//       }
-
-//       const data = await response.json();
-      
-//       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//       const formattedMessages = data.data.map((msg: any) => ({
-//         id: msg._id,
-//         senderId: msg.sender._id,
-//         receiverId: msg.receiverId || selectedChat._id,
-//         text: msg.content,
-//         time: (new Date(msg.createdAt).toISOString()).split("T")[0] + " " + (new Date(msg.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
-//       }));
-
-//       setMessages(formattedMessages);
-//     } catch (error) {
-//       console.error("Error fetching messages:", error);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   const handleSendMessage = async () => {
-//     if (!newMessage.trim() || !selectedChat._id) return;
-
-//     const tempMessage: Message = {
-//       id: Date.now().toString(),
-//       senderId: currentUserId,
-//       receiverId: selectedChat._id,
-//       text: newMessage,
-//       time: new Date().toLocaleTimeString(),
-//     };
-
-//     setMessages(prev => [...prev, tempMessage]);
-//     setNewMessage("");
-
-//     try {
-//       const endpoint = chatType === "user"
-//         ? `https://ewlcrm-backend.vercel.app/api/chat/conversations/${selectedChat._id}/sendMessages`
-//         : `https://ewlcrm-backend.vercel.app/api/chat/channels/${selectedChat._id}/sendMessages`;
-      
-//       const response = await fetch(endpoint, {
-//         method: "POST",
-//         headers: {
-//           "Authorization": `${localStorage.getItem("accessToken")}`,
-//           "Content-Type": "application/json"
-//         },
-//         body: JSON.stringify({ content: newMessage })
-//       });
-
-//       if (!response.ok) {
-//         throw new Error("Failed to send message");
-//       }
-
-//     } catch (error) {
-//       console.error("Error sending message:", error);
-
-//       setMessages(prev => prev.filter(msg => msg.id !== tempMessage.id));
-//     }
-//   };
-
-//   return (
-//     <div className="flex-1 bg-gray-800 h-screen flex flex-col">
-//       <div className="p-4 bg-primary text-white font-bold">
-//         {selectedChat.name}
-//       </div>
-
-//       <div className="flex-1 overflow-y-auto p-4">
-//         {isLoading ? (
-//           <div className="flex justify-center items-center h-full">
-//             <p className="text-gray-400">Loading messages...</p>
-//           </div>
-//         ) : messages.length === 0 ? (
-//           <div className="flex justify-center items-center h-full">
-//             <p className="text-gray-400">No messages yet. Start a conversation!</p>
-//           </div>
-//         ) : (
-//           messages.map((msg) => (
-//             <div 
-//               key={msg.id} 
-//               className={`flex ${msg.senderId === currentUserId ? "justify-end" : "justify-start"} mb-2`}
-//             >
-//               <div 
-//                 className={`p-3 rounded-lg max-w-xs ${
-//                   msg.senderId === currentUserId ? "bg-primary text-white" : "bg-gray-700 text-gray-200"
-//                 }`}
-//               >
-//                 <p className="text-md">{msg.text}</p>
-//                 <p className="text-[11px]  text-gray-300">{msg.time}</p>
-//               </div>
-//             </div>
-//           ))
-//         )}
-//       </div>
-
-//       <div className="p-4 bg-gray-900 flex">
-//         <input
-//           type="text"
-//           placeholder="Type a message..."
-//           value={newMessage}
-//           onChange={(e) => setNewMessage(e.target.value)}
-//           onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-//           className="flex-1 p-2 bg-gray-700 rounded text-white"
-//         />
-//         <button 
-//           className="ml-2 py-2 px-4 bg-primary rounded" 
-//           onClick={handleSendMessage}
-//         >
-//           Send
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default TextScreen;
-
-
-
-
-
-
-
-
-
-
-
-
-// const TextScreen = ({ selectedChat }: { selectedChat: string }) => {
-//   const messages = [
-//     { text: "Hi Jack! I'm doing well.", time: "10:30 AM", type: "received" },
-//     {  text: "Hey Grace, how's it going?", time: "10:30 AM", type: "sent" },
-//     {  text: "Weekend plans are the best!", time: "10:30 AM", type: "sent" },
-//   ];
-
-//   return (
-//     <div className="flex-1 bg-gray-800 h-screen flex flex-col">
-//       <div className="p-4 bg-primary text-white font-bold">{selectedChat}</div>
-
-//       <div className="flex-1 overflow-y-auto p-4">
-//         {messages.map((msg, index) => (
-//           <div
-//             key={index}
-//             className={`flex ${
-//               msg.type === "sent" ? "justify-end" : "justify-start"
-//             } mb-2`}
-//           >
-//             <div
-//               className={`p-3 rounded-lg max-w-xs ${
-//                 msg.type === "sent" ? "bg-primary text-white" : "bg-gray-700 text-gray-200"
-//               }`}
-//             >
-//               <p className="text-sm">{msg.text}</p>
-//               <p className="text-xs text-white">{msg.time}</p>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-
-//       <div className="p-4 bg-gray-900 flex">
-//         <input
-//           type="text"
-//           placeholder="Type a message..."
-//           className="flex-1 p-2 bg-gray-700 rounded text-white"
-//         />
-//         <button className="ml-2 py-2 px-4 bg-primary rounded">Send</button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default TextScreen;

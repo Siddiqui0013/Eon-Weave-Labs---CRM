@@ -29,7 +29,7 @@ export default function TopButtons() {
       const workHours = userAttendance.data.data.workHours;
       const breaks = workHours.breaks.length > 0 ? workHours.breaks.at(-1) : null;
       
-      console.log(userAttendance.data);
+      // console.log(userAttendance.data);
       setCheckedIn(userAttendance.data.success);
       setBreakEnded(breaks ? Boolean(breaks.endTime) : true);
       setCheckedIn(workHours ? !workHours.checkOut : false);
