@@ -15,7 +15,7 @@ const TextScreen = () => {
   const { 
     selectedChat, 
     chatType,
-    conversationId, // Access the conversationId from the state
+    // conversationId,
     messages, 
     isMessagesLoading 
   } = useSelector((state: RootState) => state.chat); 
@@ -39,7 +39,6 @@ const TextScreen = () => {
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedChat?._id) return;
 
-    // Create temp message for optimistic update
     const tempId = `temp-${Date.now()}`;
     const tempMessage = {
       id: tempId,
@@ -84,7 +83,7 @@ const TextScreen = () => {
     <div className="flex-1 bg-gray-800 h-screen flex flex-col">
       <div className="p-4 bg-primary text-white font-bold">
         {selectedChat.name || (selectedChat.participants && selectedChat.participants.name)}
-        {conversationId && <span className="text-xs ml-2 opacity-50">(Conversation ID: {conversationId})</span>}
+        {/* {conversationId && <span className="text-xs ml-2 opacity-50">(Conversation ID: {conversationId})</span>} */}
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">

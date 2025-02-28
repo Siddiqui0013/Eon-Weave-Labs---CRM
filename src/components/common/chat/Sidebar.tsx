@@ -91,10 +91,9 @@ const Sidebar = () => {
       dispatch(setSelectedChat({ 
         chat, 
         type: "user", 
-        conversationId: chat._id  // Set the conversation ID here
+        conversationId: chat._id 
       }));
     } else {
-      // No existing conversation: Create new one
       try {
         console.log("Creating conversation with:", chat);
         const response = await fetch("https://ewlcrm-backend.vercel.app/api/chat/conversations", {
@@ -114,11 +113,10 @@ const Sidebar = () => {
         console.log("Conversation ID", conversationId);
   
         if (conversationId) {
-          // Store both the user info and the conversation ID
           dispatch(setSelectedChat({ 
             chat, 
             type: "user", 
-            conversationId  // Pass the conversation ID
+            conversationId
           }));
         }
       } catch (error) {
@@ -169,8 +167,6 @@ const Sidebar = () => {
                       </div>
                     </div>
                   ))}
-                  
-                  {/* Divider between conversations and all users */}
                   <div className="border-t border-gray-700 my-4"></div>
                   <div className="text-sm font-semibold text-gray-400 mb-2">All Users</div>
                 </>
@@ -181,7 +177,6 @@ const Sidebar = () => {
                 <p className="text-center text-gray-400 mt-4">No users found</p>
               ) : (
                 users.map((chat: Chat) => {
-                  // Skip users that are already in conversations
                   if (userConversations.some(conv => conv.participants._id === chat._id)) {
                     return null;
                   }
@@ -208,7 +203,6 @@ const Sidebar = () => {
               )}
             </>
           ) : (
-            // Channels tab content (unchanged)
             channels.length === 0 ? (
               <p className="text-center text-gray-400 mt-4">No channels found</p>
             ) : (
