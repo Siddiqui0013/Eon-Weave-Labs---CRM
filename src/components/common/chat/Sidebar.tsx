@@ -108,7 +108,7 @@ const Sidebar = () => {
               {userConversations.length > 0 && (
                 <>
                   <div className="text-sm font-semibold text-gray-400 mb-2">Conversations</div>
-                  {userConversations.map((chat: userConversations) => (
+                  {/* {userConversations.map((chat: userConversations) => (
                     <div
                       key={chat._id}
                       className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center mb-1 ${
@@ -129,7 +129,7 @@ const Sidebar = () => {
                         <p className="font-bold">{(chat?.participants?.name)?.slice(0, 20)}</p>
                       </div>
                     </div>
-                  ))}
+                  ))} */}
                   <div className="border-t border-gray-700 my-4"></div>
                 </>
               )}
@@ -165,7 +165,7 @@ const Sidebar = () => {
                           :
                           <User className="w-8 h-8 rounded-full" />  }
                                                 <div>
-                            <p className="font-bold">{chat.name}</p>
+                            <p className="font-bold">{(chat.name.slice(0, 20))}</p>
                           </div>
                         </div>
                       );
