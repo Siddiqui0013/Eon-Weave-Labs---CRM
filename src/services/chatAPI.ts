@@ -20,7 +20,15 @@ export const ChatApi = createApi({
             }),
             providesTags: ['Chat']
         }),
+        createChannel: builder.mutation({
+            query: (data) => ({
+                url: `/chat/channels/create`,
+                method: 'POST',
+                body: data
+            }),
+            invalidatesTags: ['Chat']
+        })
     })
 })
 
-export const { useGetUserChannelsQuery } = ChatApi
+export const { useGetUserChannelsQuery, useCreateChannelMutation } = ChatApi

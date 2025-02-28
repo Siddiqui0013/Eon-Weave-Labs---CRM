@@ -3,6 +3,7 @@ import { UserApi } from '@/services/userApi';
 import { MeetingApi } from '@/services/meetingApi';
 import { SalesApi } from '@/services/salesApi';
 import { CallsApi } from '@/services/callsApi';
+import { ChatApi } from '@/services/chatAPI';
 import { EmployeeWorksheetApi } from '@/services/EmployeeWorksheetApi';
 import chatReducer from './slices/chatSlice';
 
@@ -11,6 +12,7 @@ export const store = configureStore({
     [UserApi.reducerPath]: UserApi.reducer,
     [MeetingApi.reducerPath]: MeetingApi.reducer,
     [SalesApi.reducerPath]: SalesApi.reducer,
+    [ChatApi.reducerPath]: ChatApi.reducer,
     chat: chatReducer,
     [CallsApi.reducerPath]: CallsApi.reducer,
     [EmployeeWorksheetApi.reducerPath]: EmployeeWorksheetApi.reducer
@@ -21,7 +23,8 @@ export const store = configureStore({
       MeetingApi.middleware,
       SalesApi.middleware,
       CallsApi.middleware,
-      EmployeeWorksheetApi.middleware
+      EmployeeWorksheetApi.middleware,
+      ChatApi.middleware
     ),
 });
 
