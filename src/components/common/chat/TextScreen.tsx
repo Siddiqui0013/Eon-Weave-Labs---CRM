@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMessages, sendMessage, addLocalMessage, removeLocalMessage } from "@/redux/slices/chatSlice";
 import { RootState, AppDispatch } from "@/redux/Store"
 import useAuth from "@/hooks/useAuth";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const TextScreen = () => {
   const { user } = useAuth();
@@ -86,6 +87,7 @@ const TextScreen = () => {
         {/* {conversationId && <span className="text-xs ml-2 opacity-50">(Conversation ID: {conversationId})</span>} */}
       </div>
 
+      <ScrollArea className="h-full">
       <div className="flex-1 overflow-y-auto p-4">
         {isMessagesLoading ? (
           <div className="flex justify-center items-center h-full">
@@ -114,6 +116,7 @@ const TextScreen = () => {
         )}
         <div ref={messagesEndRef} />
       </div>
+      </ScrollArea>
 
       <div className="p-4 bg-gray-900 flex">
         <input

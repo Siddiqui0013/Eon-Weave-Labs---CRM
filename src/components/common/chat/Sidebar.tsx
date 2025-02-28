@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers, fetchChannels, fetchUserConversations, setSelectedChat, Chat } from "@/redux/slices/chatSlice";
 import { RootState, AppDispatch } from "@/redux/Store"
+import { User, Users } from "lucide-react";
 
 interface userConversations {
   _id: string;
@@ -32,62 +33,20 @@ const Sidebar = () => {
     dispatch(fetchUserConversations());
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   // Auto-select first conversation if available, otherwise first user
-  //   if (userConversations.length > 0 && !selected) {
-  //     setSelected(userConversations[0]._id);
-  //     dispatch(setSelectedChat({ 
-  //       chat: userConversations[0].participants[1],
-  //       type: "user" 
-  //     }));
-  //   } else if (users.length > 0 && !selected) {
-  //     setSelected(users[0]._id);
-  //     dispatch(setSelectedChat({ 
-  //       chat: users[0], 
-  //       type: "user" 
-  //     }));
-  //   }
-  // }, [users, userConversations, selected, dispatch]);
+  const isAllUsers = users.length === userConversations.length;
+  console.log("isAllUsers", isAllUsers);
 
-  // const handleSelectChat = async (chat: userConversations | Chat) => {
-  //   setSelected(chat._id);
-  
-  //   if ("participants" in chat) {
-  //     dispatch(setSelectedChat({ chat, type: "user", conversationId: chat._id }));
-  //   } else {
-  //     // No existing conversation: Create new one
-  //     try {
-  //       console.log("Creating conversation with:", chat);
-  //       const response = await fetch("https://ewlcrm-backend.vercel.app/api/chat/conversations", {
-  //         method: "POST",
-  //         headers: { 
-  //           "Content-Type": "application/json",
-  //           "Authorization": `${localStorage.getItem("accessToken")}`,
-  //         },
-  //         body: JSON.stringify({ participantId: chat._id }),
-  //       });
-  
-  //       if (!response.ok) throw new Error("Failed to create conversation");
-  
-  //       const data = await response.json();
-  //       console.log("Conversation Creation data", data);
-  //       const conversationId = data?.data?._id;
-  //       console.log("Conversation ID", conversationId);
-  
-  //       if (conversationId) {
-  //         dispatch(setSelectedChat({ chat, type: "user", conversationId }));
-  //       }
-  //     } catch (error) {
-  //       console.error("Error creating conversation:", error);
-  //     }
-  //   }
-  // };
-
+  console.log("User Conversations", userConversations);
   const handleSelectChat = async (chat: userConversations | Chat) => {
     setSelected(chat._id);
+    const isChannel = activeTab === "channels";
   
-    if ("participants" in chat) {
-      // This is an existing conversation
+    if (isChannel) {
+      dispatch(setSelectedChat({ 
+        chat, 
+        type: "channel" 
+      }));
+    } else if ("participants" in chat) {
       dispatch(setSelectedChat({ 
         chat, 
         type: "user", 
@@ -157,50 +116,64 @@ const Sidebar = () => {
                       }`}
                       onClick={() => handleSelectChat(chat)}
                     >
+                    {
+                      chat.participants?.profileImage ? 
                       <img
-                        src={chat.participants?.profileImage || "https://avatar.iran.liara.run/public"}
+                        src={chat.participants?.profileImage}
                         alt={chat?.participants?.name || "User"}
                         className="w-8 h-8 rounded-full"
-                      />
+                      /> 
+                      :
+                      <User className="w-8 h-8 rounded-full" />  }
                       <div>
-                        <p className="font-bold">{chat?.participants?.name}</p>
+                        <p className="font-bold">{(chat?.participants?.name)?.slice(0, 20)}</p>
                       </div>
                     </div>
                   ))}
                   <div className="border-t border-gray-700 my-4"></div>
-                  <div className="text-sm font-semibold text-gray-400 mb-2">All Users</div>
                 </>
               )}
               
               {/* Show all users */}
-              {users.length === 0 ? (
-                <p className="text-center text-gray-400 mt-4">No users found</p>
-              ) : (
-                users.map((chat: Chat) => {
-                  if (userConversations.some(conv => conv.participants._id === chat._id)) {
-                    return null;
-                  }
-                  
-                  return (
-                    <div
-                      key={chat._id}
-                      className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center ${
-                        selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
-                      }`}
-                      onClick={() => handleSelectChat(chat)}
-                    >
-                      <img
-                        src={chat.profileImage || "https://avatar.iran.liara.run/public"}
-                        alt={chat.name}
-                        className="w-8 h-8 rounded-full"
-                      />
-                      <div>
-                        <p className="font-bold">{chat.name}</p>
-                      </div>
-                    </div>
-                  );
-                })
+              {
+                isAllUsers ? null : (
+                  <>
+                                    <div className="text-sm font-semibold text-gray-400 mb-2">All Users</div>
+                  {users.length === 0 ? (
+                    <p className="text-center text-gray-400 mt-4">No users found</p>
+                  ) : (
+                    users.map((chat: Chat) => {
+                      if (userConversations.some(conv => conv.participants._id === chat._id)) {
+                        return null;
+                      }
+                      
+                      return (
+                        <div
+                          key={chat._id}
+                          className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center ${
+                            selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
+                          }`}
+                          onClick={() => handleSelectChat(chat)}
+                        >
+                        {
+                          chat.participants?.profileImage ? 
+                          <img
+                            src={chat.participants?.profileImage}
+                            alt={chat?.participants?.name || "User"}
+                            className="w-8 h-8 rounded-full"
+                          /> 
+                          :
+                          <User className="w-8 h-8 rounded-full" />  }
+                                                <div>
+                            <p className="font-bold">{chat.name}</p>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                  </>
               )}
+
             </>
           ) : (
             channels.length === 0 ? (
@@ -214,14 +187,8 @@ const Sidebar = () => {
                   }`}
                   onClick={() => handleSelectChat(chat)}
                 >
-                  <img
-                    src={chat.profileImage || "https://avatar.iran.liara.run/public"}
-                    alt={chat.name}
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <div>
+                    <Users className="w-8 h-8 rounded-full" />
                     <p className="font-bold">{chat.name}</p>
-                  </div>
                 </div>
               ))
             )

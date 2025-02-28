@@ -67,7 +67,7 @@ const App = () => {
   return (
     <div className="flex w-[100%]">
       {DefinedRoles.includes(role) && (
-        <div className="md:w-[20%]">
+        <div className="md:w-[18%]">
           <Navbar />
         </div>
       )}

@@ -121,14 +121,17 @@ export const fetchMessages = createAsyncThunk(
   "chat/fetchMessages",
   async ({ chatId, chatType }: { chatId: string; chatType: string }, { getState, rejectWithValue }) => {
     try {
+      console.log("Fetching messages for chatType:", chatType, "chatId:", chatId);
       const state = getState() as { chat: ChatState };
       const actualChatId = chatType === "user" && state.chat.conversationId ? state.chat.conversationId : chatId;
       
-      const endpoint = chatType === "user" 
-        ? `https://ewlcrm-backend.vercel.app/api/chat/conversations/${actualChatId}/messages`
-        : `https://ewlcrm-backend.vercel.app/api/chat/channels/${chatId}/messages`;
+      console.log("Actual Chat ID:", (actualChatId ));
       
-      console.log("Fetching messages from endpoint:", endpoint);
+      const endpoint = chatType === "channel" 
+        ? `https://ewlcrm-backend.vercel.app/api/chat/channels/${chatId}/messages`
+        : `https://ewlcrm-backend.vercel.app/api/chat/conversations/${actualChatId}/messages`
+      
+      // console.log("Fetching messages from endpoint:", endpoint);
       
       const response = await fetch(endpoint, {
         headers: {
@@ -141,7 +144,7 @@ export const fetchMessages = createAsyncThunk(
       }
 
       const data = await response.json();
-      console.log("Fetched Messages:", data);
+      // console.log("Fetched Messages:", data);
       
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formattedMessages = data.data.map((msg: any) => ({
@@ -209,154 +212,6 @@ export const sendMessage = createAsyncThunk(
     }
   }
 );
-
-// export const fetchUsers = createAsyncThunk(
-//   "chat/fetchUsers",
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const response = await fetch("https://ewlcrm-backend.vercel.app/api/user/getSidebarUsers", {
-//         headers: {
-//           "Authorization": `${localStorage.getItem("accessToken")}`
-//         }
-//       });
-      
-//       if (!response.ok) {
-//         throw new Error("Failed to fetch users");
-//       }
-      
-//       const data = await response.json();
-//       return data.data || [];
-//     } catch (error) {
-//       return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch users");
-//     }
-//   }
-// );
-
-// export const fetchUserConversations = createAsyncThunk(
-//   "chat/fetchUserConversations",
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const response = await fetch("https://ewlcrm-backend.vercel.app/api/chat/conversations", {
-//         method: "GET",
-//         headers: {
-//           "Authorization": `${localStorage.getItem("accessToken")}`
-//         }
-//       });
-      
-//       if (!response.ok) {
-//         throw new Error("Failed to fetch conversations");
-//       }
-      
-//       const data = await response.json();
-//       return data.data || [];
-//     } catch (error) {
-//       return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch conversations");
-//     }
-//   }
-// );
-
-// export const fetchChannels = createAsyncThunk(
-//   "chat/fetchChannels",
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const response = await fetch("https://ewlcrm-backend.vercel.app/api/chat/channels/me", {
-//         headers: {
-//           "Authorization": `${localStorage.getItem("accessToken")}`
-//         }
-//       });
-      
-//       if (!response.ok) {
-//         throw new Error("Failed to fetch channels");
-//       }
-      
-//       const data = await response.json();
-//       return data.data || [];
-//     } catch (error) {
-//       return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch channels");
-//     }
-//   }
-// );
-
-// export const fetchMessages = createAsyncThunk(
-//   "chat/fetchMessages",
-//   async ({ chatId, chatType }: { chatId: string; chatType: string }, { rejectWithValue }) => {
-//     try {
-//       const endpoint = chatType === "user" 
-//         ? `https://ewlcrm-backend.vercel.app/api/chat/conversations/${chatId}/messages`
-//         : `https://ewlcrm-backend.vercel.app/api/chat/channels/${chatId}/messages`;
-      
-//       const response = await fetch(endpoint, {
-//         headers: {
-//           "Authorization": `${localStorage.getItem("accessToken")}`
-//         }
-//       });
-
-//       if (!response.ok) {
-//         throw new Error("Failed to fetch messages");
-//       }
-
-//       const data = await response.json();
-      
-//       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//       const formattedMessages = data.data.map((msg: any) => ({
-//         id: msg._id,
-//         senderId: msg.sender._id,
-//         receiverId: msg.receiverId || chatId,
-//         text: msg.content,
-//         time: (new Date(msg.createdAt).toISOString()).split("T")[0] + " " + 
-//               (new Date(msg.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
-//       }));
-
-//       return { chatId, messages: formattedMessages };
-//     } catch (error) {
-//       return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch messages");
-//     }
-//   }
-// );
-
-// export const sendMessage = createAsyncThunk(
-//   "chat/sendMessage",
-//   async (
-//     { chatId, chatType, content }: 
-//     { chatId: string; chatType: string; content: string },
-//     { rejectWithValue }
-//   ) => {
-//     try {
-//       const endpoint = chatType === "user"
-//         ? `https://ewlcrm-backend.vercel.app/api/chat/conversations/${chatId}/sendMessages`
-//         : `https://ewlcrm-backend.vercel.app/api/chat/channels/${chatId}/sendMessages`;
-      
-//       const response = await fetch(endpoint, {
-//         method: "POST",
-//         headers: {
-//           "Authorization": `${localStorage.getItem("accessToken")}`,
-//           "Content-Type": "application/json"
-//         },
-//         body: JSON.stringify({ content })
-//       });
-
-//       if (!response.ok) {
-//         throw new Error("Failed to send message");
-//       }
-
-//       const data = await response.json();
-      
-//       return { 
-//         chatId,
-//         message: {
-//           id: data.data._id,
-//           senderId: data.data.sender._id,
-//           receiverId: chatId,
-//           text: data.data.content,
-//           time: (new Date(data.data.createdAt).toISOString()).split("T")[0] + " " + 
-//                 (new Date(data.data.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
-//         }
-//       };
-//     } catch (error) {
-//       return rejectWithValue(error instanceof Error ? error.message : "Failed to send message");
-//     }
-//   }
-// );
 
 const chatSlice = createSlice({
   name: "chat",
