@@ -36,6 +36,7 @@ const TextScreen = () => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // console.log("Chat type:", chatType);
   }, [chatMessages]);
 
   useEffect(() => {
@@ -95,6 +96,7 @@ const TextScreen = () => {
         title: "Error",
         description: "Failed to copy link to clipboard"
       })
+      console.error("Failed to copy link to clipboard:", error)
     }
   }
 
@@ -111,19 +113,21 @@ const TextScreen = () => {
       <div className="p-4 bg-primary text-white flex items-center justify-between">
         <p className="font-bold">{selectedChat.name || (selectedChat.participants && selectedChat.participants.name)}</p>
         {/* {conversationId && <span className="text-xs ml-2 opacity-50">(Conversation ID: {conversationId})</span>} */}
+       { chatType === "channel" &&
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Ellipsis />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onSelect={() => { }}>Delete Conversation</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => { }}>Clear Messages</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => { }}>Leave Conversation</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => { }}>Mute Notifications</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => copyLink(selectedChat._id)}>Join Link</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => { }}>See Details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <DropdownMenuTrigger>
+          <Ellipsis />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onSelect={() => { }}>Delete Conversation</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => { }}>Clear Messages</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => { }}>Leave Conversation</DropdownMenuItem>
+          {/* <DropdownMenuItem onSelect={() => { }}>Mute Notifications</DropdownMenuItem> */}
+          <DropdownMenuItem onSelect={() => copyLink(selectedChat._id)}>Join Link</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => { }}>See Details</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+       }
       </div>
 
       <ScrollArea className="h-full">

@@ -163,7 +163,7 @@ const Sidebar = () => {
               {userConversations.length > 0 && (
                 <>
                   <div className="text-sm font-semibold text-gray-400 mb-2">Conversations</div>
-                  {/* {userConversations.map((chat: userConversations) => (
+                  {userConversations.map((chat: userConversations) => (
                     <div
                       key={chat._id}
                       className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center mb-1 ${
@@ -184,7 +184,7 @@ const Sidebar = () => {
                         <p className="font-bold">{(chat?.participants?.name)?.slice(0, 20)}</p>
                       </div>
                     </div>
-                  ))} */}
+                  ))}
                   <div className="border-t border-gray-700 my-4"></div>
                 </>
               )}
@@ -230,10 +230,19 @@ const Sidebar = () => {
 
             </>
           ) : (
-            channels.length === 0 ? (
+            <div className="relative h-full overflow-hidden">
+                              <div className="absolute bottom-2 w-full">
+                  <Button
+                    onClick={() => setOpen(true)}
+                    title="Create Channel"
+                    className="w-full"
+                  />
+                </div>
+                
+            { channels.length === 0 ? (
               <p className="text-center text-gray-400 mt-4">No channels found</p>
             ) : (
-              <div className="h-full relative">
+              <div className="h-full">
                 {channels.map((chat: Chat) => (
                   <div
                     key={chat._id}
@@ -245,16 +254,11 @@ const Sidebar = () => {
                     <p className="font-bold">{chat.name}</p>
                   </div>
                 ))}
-                <div className="absolute bottom-2 w-full">
-                  <Button
-                    onClick={() => setOpen(true)}
-                    title="Create Channel"
-                    className="w-full"
-                  />
-                </div>
               </div>
-            )
-          )}
+            )}
+            </div>
+          )
+          }
         </div>
       )}
       <Dialog open={open} onOpenChange={setOpen}>
