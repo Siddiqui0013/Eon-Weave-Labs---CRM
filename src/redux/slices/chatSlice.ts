@@ -117,7 +117,6 @@ export const fetchChannels = createAsyncThunk(
   }
 );
 
-// Updated to use the conversationId from state
 export const fetchMessages = createAsyncThunk(
   "chat/fetchMessages",
   async ({ chatId, chatType }: { chatId: string; chatType: string }, { getState, rejectWithValue }) => {
@@ -161,7 +160,7 @@ export const fetchMessages = createAsyncThunk(
   }
 );
 
-// Updated to use the conversationId from state
+
 export const sendMessage = createAsyncThunk(
   "chat/sendMessage",
   async (
