@@ -16,7 +16,7 @@ export default function Button({ title, icon, onClick, className, disabled = fal
       {...(disabled && { style: { cursor: 'not-allowed', opacity: 0.5 } })}
     >
       {icon && <span className="text-white">{icon}</span>}
-      <span className="text-white">{title}</span>
+      <span className="text-white mx-auto">{title}</span>
 
     </button>
   )
