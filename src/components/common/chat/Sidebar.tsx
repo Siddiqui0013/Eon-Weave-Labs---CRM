@@ -1,11 +1,7 @@
 import { useState } from "react";
-// import { useState, useEffect } from "react";
-// import { fetchUsers, fetchChannels, fetchUserConversations, setSelectedChat, Chat } from "@/redux/slices/chatSlice";
 import {  setSelectedChat, Chat } from "@/redux/slices/chatSlice";
 import { useDispatch } from "react-redux";
-// import { useDispatch, useSelector } from "react-redux";
 import {  AppDispatch } from "@/redux/Store"
-// import { RootState, AppDispatch } from "@/redux/Store"
 import { Loader2, Plus, User, Users } from "lucide-react";
 import Button from "../Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -45,23 +41,7 @@ const Sidebar = () => {
   })
 
   const dispatch = useDispatch<AppDispatch>();
-  // const {
-  //   users,
-  //   channels,
-  //   userConversations,
-  // } = useSelector((state: RootState) => state.chat);
-
-  // useEffect(() => {
-  //   dispatch(fetchUsers());
-  //   dispatch(fetchChannels());
-  //   dispatch(fetchUserConversations());
-  // }, [dispatch]);
-
   const isAllUsers = users.length === userConversations.length;
-  console.log("isAllUsers", isAllUsers);
-
-  console.log("User Conversations", userConversations.data);
-  console.log("Users ", users.data);
 
   const handleSelectChat = async (chat: userConversations | Chat) => {
     setSelected(chat._id);
@@ -80,7 +60,6 @@ const Sidebar = () => {
       }));
     } else {
       try {
-        console.log("Creating conversation with:", chat);
         const response = await fetch("https://ewlcrm-backend.vercel.app/api/chat/conversations", {
           method: "POST",
           headers: {
@@ -95,7 +74,6 @@ const Sidebar = () => {
         const data = await response.json();
         console.log("Conversation Creation data", data);
         const conversationId = data?.data?._id;
-        console.log("Conversation ID", conversationId);
 
         if (conversationId) {
           dispatch(setSelectedChat({
