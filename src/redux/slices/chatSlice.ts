@@ -50,72 +50,72 @@ const initialState: ChatState = {
   error: null,
 };
 
-export const fetchUsers = createAsyncThunk(
-  "chat/fetchUsers",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await fetch("https://ewlcrm-backend.vercel.app/api/user/getSidebarUsers", {
-        headers: {
-          "Authorization": `${localStorage.getItem("accessToken")}`
-        }
-      });
+// export const fetchUsers = createAsyncThunk(
+//   "chat/fetchUsers",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await fetch("https://ewlcrm-backend.vercel.app/api/user/getSidebarUsers", {
+//         headers: {
+//           "Authorization": `${localStorage.getItem("accessToken")}`
+//         }
+//       });
       
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
+//       if (!response.ok) {
+//         throw new Error("Failed to fetch users");
+//       }
       
-      const data = await response.json();
-      return data.data || [];
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch users");
-    }
-  }
-);
+//       const data = await response.json();
+//       return data.data || [];
+//     } catch (error) {
+//       return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch users");
+//     }
+//   }
+// );
 
-export const fetchUserConversations = createAsyncThunk(
-  "chat/fetchUserConversations",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await fetch("https://ewlcrm-backend.vercel.app/api/chat/conversations", {
-        method: "GET",
-        headers: {
-          "Authorization": `${localStorage.getItem("accessToken")}`
-        }
-      });
+// export const fetchUserConversations = createAsyncThunk(
+//   "chat/fetchUserConversations",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await fetch("https://ewlcrm-backend.vercel.app/api/chat/conversations", {
+//         method: "GET",
+//         headers: {
+//           "Authorization": `${localStorage.getItem("accessToken")}`
+//         }
+//       });
       
-      if (!response.ok) {
-        throw new Error("Failed to fetch conversations");
-      }
+//       if (!response.ok) {
+//         throw new Error("Failed to fetch conversations");
+//       }
       
-      const data = await response.json();
-      return data.data || [];
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch conversations");
-    }
-  }
-);
+//       const data = await response.json();
+//       return data.data || [];
+//     } catch (error) {
+//       return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch conversations");
+//     }
+//   }
+// );
 
-export const fetchChannels = createAsyncThunk(
-  "chat/fetchChannels",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await fetch("https://ewlcrm-backend.vercel.app/api/chat/channels/me", {
-        headers: {
-          "Authorization": `${localStorage.getItem("accessToken")}`
-        }
-      });
+// export const fetchChannels = createAsyncThunk(
+//   "chat/fetchChannels",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await fetch("https://ewlcrm-backend.vercel.app/api/chat/channels/me", {
+//         headers: {
+//           "Authorization": `${localStorage.getItem("accessToken")}`
+//         }
+//       });
       
-      if (!response.ok) {
-        throw new Error("Failed to fetch channels");
-      }
+//       if (!response.ok) {
+//         throw new Error("Failed to fetch channels");
+//       }
       
-      const data = await response.json();
-      return data.data || [];
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch channels");
-    }
-  }
-);
+//       const data = await response.json();
+//       return data.data || [];
+//     } catch (error) {
+//       return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch channels");
+//     }
+//   }
+// );
 
 export const fetchMessages = createAsyncThunk(
   "chat/fetchMessages",
@@ -131,8 +131,6 @@ export const fetchMessages = createAsyncThunk(
         ? `https://ewlcrm-backend.vercel.app/api/chat/channels/${chatId}/messages`
         : `https://ewlcrm-backend.vercel.app/api/chat/conversations/${actualChatId}/messages`
       
-      // console.log("Fetching messages from endpoint:", endpoint);
-      
       const response = await fetch(endpoint, {
         headers: {
           "Authorization": `${localStorage.getItem("accessToken")}`
@@ -143,9 +141,8 @@ export const fetchMessages = createAsyncThunk(
         throw new Error("Failed to fetch messages");
       }
 
-      const data = await response.json();
-      // console.log("Fetched Messages:", data);
-      
+      const data = await response.json();      
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formattedMessages = data.data.map((msg: any) => ({
         id: msg._id,
@@ -246,46 +243,46 @@ const chatSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-          .addCase(fetchUsers.pending, (state) => {
-        state.isUsersLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.isUsersLoading = false;
-        state.users = action.payload;
-      })
-      .addCase(fetchUsers.rejected, (state, action) => {
-        state.isUsersLoading = false;
-        state.error = action.payload as string;
-      })
+      //     .addCase(fetchUsers.pending, (state) => {
+      //   state.isUsersLoading = true;
+      //   state.error = null;
+      // })
+      // .addCase(fetchUsers.fulfilled, (state, action) => {
+      //   state.isUsersLoading = false;
+      //   state.users = action.payload;
+      // })
+      // .addCase(fetchUsers.rejected, (state, action) => {
+      //   state.isUsersLoading = false;
+      //   state.error = action.payload as string;
+      // })
 
-      // Conversations
-      .addCase(fetchUserConversations.pending, (state) => {
-        state.isUsersLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchUserConversations.fulfilled, (state, action) => {
-        state.isUsersLoading = false;
-        state.userConversations = action.payload;
-      })
-      .addCase(fetchUserConversations.rejected, (state, action) => {
-        state.isUsersLoading = false;
-        state.error = action.payload as string;
-      })
+      // // Conversations
+      // .addCase(fetchUserConversations.pending, (state) => {
+      //   state.isUsersLoading = true;
+      //   state.error = null;
+      // })
+      // .addCase(fetchUserConversations.fulfilled, (state, action) => {
+      //   state.isUsersLoading = false;
+      //   state.userConversations = action.payload;
+      // })
+      // .addCase(fetchUserConversations.rejected, (state, action) => {
+      //   state.isUsersLoading = false;
+      //   state.error = action.payload as string;
+      // })
       
-      // Channels
-      .addCase(fetchChannels.pending, (state) => {
-        state.isChannelsLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchChannels.fulfilled, (state, action) => {
-        state.isChannelsLoading = false;
-        state.channels = action.payload;
-      })
-      .addCase(fetchChannels.rejected, (state, action) => {
-        state.isChannelsLoading = false;
-        state.error = action.payload as string;
-      })
+      // // Channels
+      // .addCase(fetchChannels.pending, (state) => {
+      //   state.isChannelsLoading = true;
+      //   state.error = null;
+      // })
+      // .addCase(fetchChannels.fulfilled, (state, action) => {
+      //   state.isChannelsLoading = false;
+      //   state.channels = action.payload;
+      // })
+      // .addCase(fetchChannels.rejected, (state, action) => {
+      //   state.isChannelsLoading = false;
+      //   state.error = action.payload as string;
+      // })
       
       // Messages
       .addCase(fetchMessages.pending, (state) => {

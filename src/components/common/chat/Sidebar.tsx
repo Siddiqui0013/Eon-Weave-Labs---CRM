@@ -1,13 +1,17 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers, fetchChannels, fetchUserConversations, setSelectedChat, Chat } from "@/redux/slices/chatSlice";
-import { RootState, AppDispatch } from "@/redux/Store"
+import { useState } from "react";
+// import { useState, useEffect } from "react";
+// import { fetchUsers, fetchChannels, fetchUserConversations, setSelectedChat, Chat } from "@/redux/slices/chatSlice";
+import {  setSelectedChat, Chat } from "@/redux/slices/chatSlice";
+import { useDispatch } from "react-redux";
+// import { useDispatch, useSelector } from "react-redux";
+import {  AppDispatch } from "@/redux/Store"
+// import { RootState, AppDispatch } from "@/redux/Store"
 import { Loader2, Plus, User, Users } from "lucide-react";
 import Button from "../Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useCreateChannelMutation } from "@/services/chatAPI";
+import { useCreateChannelMutation,useGetChannelsQuery, useGetUsersQuery, useGetUserConversationsQuery } from "@/services/chatAPI";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
 
@@ -29,6 +33,10 @@ const Sidebar = () => {
   const [activeTab, setActiveTab] = useState("inbox");
   const [open, setOpen] = useState(false);
 
+  const { data: users = [] } = useGetUsersQuery({});
+  const { data: channels = [] } = useGetChannelsQuery({});
+  const { data: userConversations = [] } = useGetUserConversationsQuery({});
+
   const [createChannelForm, setCreateChannelForm] = useState({
     name: "",
     description: "",
@@ -37,22 +45,24 @@ const Sidebar = () => {
   })
 
   const dispatch = useDispatch<AppDispatch>();
-  const {
-    users,
-    channels,
-    userConversations,
-  } = useSelector((state: RootState) => state.chat);
+  // const {
+  //   users,
+  //   channels,
+  //   userConversations,
+  // } = useSelector((state: RootState) => state.chat);
 
-  useEffect(() => {
-    dispatch(fetchUsers());
-    dispatch(fetchChannels());
-    dispatch(fetchUserConversations());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchUsers());
+  //   dispatch(fetchChannels());
+  //   dispatch(fetchUserConversations());
+  // }, [dispatch]);
 
   const isAllUsers = users.length === userConversations.length;
   console.log("isAllUsers", isAllUsers);
 
-  console.log("User Conversations", userConversations);
+  console.log("User Conversations", userConversations.data);
+  console.log("Users ", users.data);
+
   const handleSelectChat = async (chat: userConversations | Chat) => {
     setSelected(chat._id);
     const isChannel = activeTab === "channels";
@@ -125,7 +135,7 @@ const Sidebar = () => {
         isPrivate: false,
         error: ""
       })
-      dispatch(fetchChannels());
+      // dispatch(fetchChannels());
     } catch (error) {
       toast({
         variant: "destructive",
@@ -160,10 +170,10 @@ const Sidebar = () => {
         <div className="flex-1 overflow-y-auto">
           {activeTab === "inbox" ? (
             <>
-              {userConversations.length > 0 && (
+              {userConversations?.data?.length > 0 && (
                 <>
                   <div className="text-sm font-semibold text-gray-400 mb-2">Conversations</div>
-                  {userConversations.map((chat: userConversations) => (
+                  {userConversations.data.map((chat: userConversations) => (
                     <div
                       key={chat._id}
                       className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center mb-1 ${
@@ -194,11 +204,11 @@ const Sidebar = () => {
                 isAllUsers ? null : (
                   <>
                     <div className="text-sm font-semibold text-gray-400 mb-2">All Users</div>
-                    {users.length === 0 ? (
+                    {users.data.length === 0 ? (
                       <p className="text-center text-gray-400 mt-4">No users found</p>
                     ) : (
-                      users.map((chat: Chat) => {
-                        if (userConversations.some(conv => conv.participants._id === chat._id)) {
+                      users.data.map((chat: Chat) => {
+                        if (userConversations.some((conv: { participants: { _id: string; }; }) => conv.participants._id === chat._id)) {
                           return null;
                         }
 
@@ -239,11 +249,11 @@ const Sidebar = () => {
                   />
                 </div>
                 
-            { channels.length === 0 ? (
+            { channels.data.length === 0 ? (
               <p className="text-center text-gray-400 mt-4">No channels found</p>
             ) : (
               <div className="h-full">
-                {channels.map((chat: Chat) => (
+                {channels.data.map((chat: Chat) => (
                   <div
                     key={chat._id}
                     className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center ${selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
