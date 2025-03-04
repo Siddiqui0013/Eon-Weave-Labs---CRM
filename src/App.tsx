@@ -21,10 +21,16 @@ import BdoRoutes from "./components/modules/bdo/BdoRoutes";
 import HrRoutes from "./components/modules/hr/HrRoutes";
 import EmployeeRoutes from "./components/modules/employee/EmployeeRoutes";
 import AdminRoutes from "./components/modules/admin/AdminRoutes";
+import SocketService from "@/lib/socket";
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/redux/Store';
 
 import "./App.css";
 
 const App = () => {
+
+  const dispatch = useDispatch<AppDispatch>();
+  const socketService = SocketService.getInstance();
   const { theme } = useTheme();
   const { user, accessToken } = useAuth();
   const location = useLocation();
@@ -39,6 +45,8 @@ const App = () => {
 
   useEffect(() => {
     if (user && accessToken) {
+      socketService.initializeSocket(accessToken);
+      socketService.setDispatch(dispatch);
       if (DefinedRoles.includes(role) && !location.pathname.includes(`/${role}`)) {
         navigate(`/${role}/dashboard`);
       }
@@ -48,7 +56,10 @@ const App = () => {
       }
       // navigate("/login");
     }
-  }, [user, accessToken, role, location.pathname, navigate]);
+    return () => {
+      socketService.disconnect();
+    }
+  }, [user, accessToken, role, dispatch, location.pathname, navigate]);
 
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
     if (!user || !accessToken || !allowedRoles.includes(role)) {
@@ -100,5 +111,3 @@ function AppWrapper() {
 }
 
 export default AppWrapper;
-
-

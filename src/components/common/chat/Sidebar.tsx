@@ -182,7 +182,7 @@ const Sidebar = () => {
                 isAllUsers ? null : (
                   <>
                     <div className="text-sm font-semibold text-gray-400 mb-2">All Users</div>
-                    {users.data.length === 0 ? (
+                    {users?.data?.length === 0 ? (
                       <p className="text-center text-gray-400 mt-4">No users found</p>
                     ) : (
                       users.data.map((chat: Chat) => {
