@@ -1,16 +1,16 @@
-  /* HR Email : "gokidab319@downlor.com"
-      HR Password : "121212" */
+/* HR Email : "gokidab319@downlor.com"
+    HR Password : "121212" */
 
-  /* Employee Email : "gannet93128@topvu.net"
-      Employee Password : "121212" */
+/* Employee Email : "gannet93128@topvu.net"
+    Employee Password : "121212" */
 
-  /* BDO Email : "locef40983@downlor.com"
-      BDO Password : "121212" */
+/* BDO Email : "locef40983@downlor.com"
+    BDO Password : "121212" */
 
-  /* Admin Email : "admin@mail.com"
-      Admin Password : "121212" */
+/* Admin Email : "admin@mail.com"
+    Admin Password : "121212" */
 
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from "react-router";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router";
 import { useEffect } from "react";
 import useTheme from "./hooks/useTheme";
 import useAuth from "./hooks/useAuth";
@@ -21,20 +21,13 @@ import BdoRoutes from "./components/modules/bdo/BdoRoutes";
 import HrRoutes from "./components/modules/hr/HrRoutes";
 import EmployeeRoutes from "./components/modules/employee/EmployeeRoutes";
 import AdminRoutes from "./components/modules/admin/AdminRoutes";
-import SocketService from "@/lib/socket";
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/redux/Store';
 
 import "./App.css";
 
 const App = () => {
 
-  const dispatch = useDispatch<AppDispatch>();
-  const socketService = SocketService.getInstance();
   const { theme } = useTheme();
   const { user, accessToken } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
 
   const DefinedRoles = ["admin", "hr", "employee", "bdo"];
   const role = user?.role || "";
@@ -42,24 +35,6 @@ const App = () => {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
-
-  useEffect(() => {
-    if (user && accessToken) {
-      socketService.initializeSocket(accessToken);
-      socketService.setDispatch(dispatch);
-      if (DefinedRoles.includes(role) && !location.pathname.includes(`/${role}`)) {
-        navigate(`/${role}/dashboard`);
-      }
-    } else if (!user) {
-      if (location.pathname === "/register" || location.pathname === "/login" || location.pathname === "/invite") {
-        return;
-      }
-      // navigate("/login");
-    }
-    return () => {
-      socketService.disconnect();
-    }
-  }, [user, accessToken, role, dispatch, location.pathname, navigate]);
 
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
     if (!user || !accessToken || !allowedRoles.includes(role)) {

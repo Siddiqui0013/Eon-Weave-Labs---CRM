@@ -8,7 +8,6 @@ import {  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigg
 import { Ellipsis } from "lucide-react"
 import { baseURL } from "@/utils/baseURL";
 import { useToast } from "@/hooks/use-toast";
-import SocketService from "@/lib/socket";
 
 const TextScreen = () => {
   const { toast } = useToast();
@@ -16,7 +15,6 @@ const TextScreen = () => {
   const currentUserId = user?._id
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const socketService = SocketService.getInstance();
   const roomJoinedRef = useRef(false);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -43,37 +41,11 @@ const TextScreen = () => {
     // Join the appropriate room based on chat type
     if (selectedChat?._id && !roomJoinedRef.current) {
       console.log('Joining room for chat:', selectedChat.name || selectedChat._id);
-      
-      if (chatType === "channel") {
-        // For channels, join using channel ID
-        socketService.joinChannel(selectedChat._id);
-      } else if (chatType === "user" && conversationId) {
-        // For direct messages, join using conversation ID
-        console.log('Joining conversation room:', conversationId);
-        // Try both possible event names the backend might expect
-        socketService.joinChannel(conversationId);
-        
-        // Manually join room since backend might not have a specific "join conversation" event
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const socket = (socketService as any).socket;
-        if (socket) {
-          socket.emit('join_room', { conversationId });
-          socket.emit('join_room', { roomId: `conversation:${conversationId}` });
-        }
       }
       
       roomJoinedRef.current = true;
-    }
     
-    // Clean up when component unmounts or chat changes
-    return () => {
-      if (chatType === "channel" && selectedChat?._id) {
-        socketService.leaveChannel(selectedChat._id);
-      } else if (chatType === "user" && conversationId) {
-        socketService.leaveChannel(conversationId);
-      }
-    };
-  }, [selectedChat, chatType, conversationId, socketService]);
+  }, [selectedChat, chatType, conversationId]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -101,9 +73,6 @@ const TextScreen = () => {
       text: newMessage,
       time: new Date().toLocaleTimeString(),
     };
-
-    // Log connection status before sending
-    console.log('Socket connected before sending?', socketService.isConnected());
 
     // Add optimistic message
     dispatch(addLocalMessage({
