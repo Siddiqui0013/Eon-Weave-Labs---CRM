@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {formatDateWithTime} from "@/utils/formatDate";
 
 export interface Chat {
   _id: string;
@@ -82,8 +83,9 @@ export const fetchMessages = createAsyncThunk(
         senderId: msg.sender._id,
         receiverId: msg.receiverId || chatId,
         text: msg.content,
-        time: (new Date(msg.createdAt).toISOString()).split("T")[0] + " " + 
-              (new Date(msg.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
+        time: formatDateWithTime(msg.createdAt, true)
+        // time: (new Date(msg.createdAt).toISOString()).split("T")[0] + " " + 
+        //       (new Date(msg.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
       }));
 
       return { chatId, messages: formattedMessages };
@@ -133,8 +135,9 @@ export const sendMessage = createAsyncThunk(
           senderId: data.data.sender._id,
           receiverId: chatId,
           text: data.data.content,
-          time: (new Date(data.data.createdAt).toISOString()).split("T")[0] + " " + 
-                (new Date(data.data.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
+          time: formatDateWithTime(data.data.createdAt, true)
+          // time: (new Date(data.data.createdAt).toISOString()).split("T")[0] + " " + 
+          //       (new Date(data.data.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
         }
       };
     } catch (error) {

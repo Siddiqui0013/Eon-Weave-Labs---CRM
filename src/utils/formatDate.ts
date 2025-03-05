@@ -21,7 +21,7 @@ export const formatDate = (date: Date | string | number, format: string = 'dd/mm
     }
 };
 
-export const formatDateWithTime = (date: Date | string | number, includeTime: boolean = false): string => {
+export const formatDateWithTime = (date: Date | string | number, includeTime: boolean = false, addhours : number = 0): string => {
     if (!date) return '';
 
     try {
@@ -39,7 +39,7 @@ export const formatDateWithTime = (date: Date | string | number, includeTime: bo
             return `${day}/${month}/${year}`;
         }
 
-        const hours = dateObject.getHours().toString().padStart(2, '0');
+        const hours = (dateObject.getHours() + addhours).toString().padStart(2, '0');
         const minutes = dateObject.getMinutes().toString().padStart(2, '0');
 
         return `${day}-${month}-${year} ${hours}:${minutes}`;
