@@ -58,6 +58,8 @@ class SocketService {
     this.socket.on('reconnect', (attemptNumber) => {
       console.log(`Socket reconnected after ${attemptNumber} attempts`);
     });
+
+    this.socket.on('test_event', (data) => console.log('Test event:', data));
     
     this.socket.on('reconnect_error', (error) => {
       console.error('Socket reconnection error:', error.message);

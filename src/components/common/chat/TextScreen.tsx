@@ -39,43 +39,58 @@ const TextScreen = () => {
     roomJoinedRef.current = false;
   }, [selectedChat, chatType]);
 
-  useEffect(() => {
-    // Join the appropriate room based on chat type
-    if (selectedChat?._id && !roomJoinedRef.current) {
-      console.log('Joining room for chat:', selectedChat.name || selectedChat._id);
+  // useEffect(() => {
+  //   // Join the appropriate room based on chat type
+  //   if (selectedChat?._id && !roomJoinedRef.current) {
+  //     console.log('Joining room for chat:', selectedChat.name || selectedChat._id);
       
-      if (chatType === "channel") {
-        // For channels, join using channel ID
-        socketService.joinChannel(selectedChat._id);
-      } else if (chatType === "user" && conversationId) {
-        // For direct messages, join using conversation ID
-        console.log('Joining conversation room:', conversationId);
-        // Try both possible event names the backend might expect
-        socketService.joinChannel(conversationId);
+  //     if (chatType === "channel") {
+  //       // For channels, join using channel ID
+  //       socketService.joinChannel(selectedChat._id);
+  //     } else if (chatType === "user" && conversationId) {
+  //       // For direct messages, join using conversation ID
+  //       console.log('Joining conversation room:', conversationId);
+  //       // Try both possible event names the backend might expect
+  //       socketService.joinChannel(conversationId);
         
-        // Manually join room since backend might not have a specific "join conversation" event
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const socket = (socketService as any).socket;
-        if (socket) {
-          socket.emit('join_room', { conversationId });
-          socket.emit('join_room', { roomId: `conversation:${conversationId}` });
-        }
-      }
+  //       // Manually join room since backend might not have a specific "join conversation" event
+  //       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //       const socket = (socketService as any).socket;
+  //       if (socket) {
+  //         socket.emit('join_room', { conversationId });
+  //         socket.emit('join_room', { roomId: `conversation:${conversationId}` });
+  //       }
+  //     }
       
+  //     roomJoinedRef.current = true;
+  //   }
+    
+  //   // Clean up when component unmounts or chat changes
+  //   return () => {
+  //     if (chatType === "channel" && selectedChat?._id) {
+  //       socketService.leaveChannel(selectedChat._id);
+  //     } else if (chatType === "user" && conversationId) {
+  //       socketService.leaveChannel(conversationId);
+  //     }
+  //   };
+  // }, [selectedChat, chatType, conversationId, socketService]);
+
+  // Auto-scroll to bottom when messages change
+  
+  useEffect(() => {
+    if (selectedChat?._id && !roomJoinedRef.current) {
+      if (chatType === "channel") {
+        socketService.joinChannel(selectedChat._id);
+      } // Remove conversation join, rely on backend
       roomJoinedRef.current = true;
     }
-    
-    // Clean up when component unmounts or chat changes
     return () => {
       if (chatType === "channel" && selectedChat?._id) {
         socketService.leaveChannel(selectedChat._id);
-      } else if (chatType === "user" && conversationId) {
-        socketService.leaveChannel(conversationId);
       }
     };
-  }, [selectedChat, chatType, conversationId, socketService]);
-
-  // Auto-scroll to bottom when messages change
+  }, [selectedChat, chatType, socketService])
+  
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);

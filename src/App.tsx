@@ -8,7 +8,12 @@
       BDO Password : "121212" */
 
   /* Admin Email : "admin@mail.com"
-      Admin Password : "121212" */
+      Admin Password : "121212" 
+      
+     Admin Email : "capexit740@arinuse.com"
+      Admin Password : "admin"
+
+      */
 
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from "react-router";
 import { useEffect } from "react";

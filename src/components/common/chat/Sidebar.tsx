@@ -41,7 +41,7 @@ const Sidebar = () => {
   })
 
   const dispatch = useDispatch<AppDispatch>();
-  const isAllUsers = users.length === userConversations.length;
+  const isAllUsers = users?.data?.length === userConversations?.data?.length;
 
   const handleSelectChat = async (chat: userConversations | Chat) => {
     setSelected(chat._id);
@@ -177,16 +177,15 @@ const Sidebar = () => {
                 </>
               )}
 
-              {/* Show all users */}
               {
-                isAllUsers ? null : (
+                isAllUsers && users ? null : (
                   <>
                     <div className="text-sm font-semibold text-gray-400 mb-2">All Users</div>
                     {users?.data?.length === 0 ? (
                       <p className="text-center text-gray-400 mt-4">No users found</p>
                     ) : (
-                      users.data.map((chat: Chat) => {
-                        if (userConversations.some((conv: { participants: { _id: string; }; }) => conv.participants._id === chat._id)) {
+                      users?.data?.map((chat: Chat) => {
+                        if (userConversations?.data?.some((conv: { participants: { _id: string; }; }) => conv.participants._id === chat._id)) {
                           return null;
                         }
 
@@ -219,34 +218,34 @@ const Sidebar = () => {
             </>
           ) : (
             <div className="relative h-full overflow-hidden">
-                              <div className="absolute bottom-2 w-full">
-                  <Button
-                    onClick={() => setOpen(true)}
-                    title="Create Channel"
-                    className="w-full"
-                  />
-                </div>
-                
-            { channels.data.length === 0 ? (
-              <p className="text-center text-gray-400 mt-4">No channels found</p>
-            ) : (
-              <div className="h-full">
-                {channels.data.map((chat: Chat) => (
-                  <div
-                    key={chat._id}
-                    className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center ${selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
-                      }`}
-                    onClick={() => handleSelectChat(chat)}
-                  >
-                    <Users className="w-8 h-8 rounded-full" />
-                    <p className="font-bold">{chat.name}</p>
-                  </div>
-                ))}
+              <div className="absolute bottom-2 w-full">
+                <Button
+                  onClick={() => setOpen(true)}
+                  title="Create Channel"
+                  className="w-full"
+                />
               </div>
-            )}
+                
+              {!channels?.data || channels.data.length === 0 ? (
+                <p className="text-center text-gray-400 mt-4">No channels found</p>
+              ) : (
+                <div className="h-full">
+                  {channels.data.map((chat: Chat) => (
+                    <div
+                      key={chat._id}
+                      className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center ${
+                        selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
+                      }`}
+                      onClick={() => handleSelectChat(chat)}
+                    >
+                      <Users className="w-8 h-8 rounded-full" />
+                      <p className="font-bold">{chat.name}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )
-          }
+          )}
         </div>
       )}
       <Dialog open={open} onOpenChange={setOpen}>
