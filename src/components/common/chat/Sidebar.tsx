@@ -20,6 +20,7 @@ import {
 } from "@/services/chatAPI";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
+import { baseURL } from "@/utils/baseURL";
 
 interface userConversations {
   _id: string;
@@ -70,7 +71,7 @@ const Sidebar = () => {
       }));
     } else {
       try {
-        const response = await fetch("https://ewlcrm-backend.vercel.app/api/chat/conversations", {
+        const response = await fetch(`${baseURL}/chat/conversations`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
