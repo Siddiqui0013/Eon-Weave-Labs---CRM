@@ -1,6 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import customBaseQuery from "./customBaseQuery";
-import { connectSocket, disconnectSocket } from "@/redux/slices/chatSlice";
 
 export const UserApi = createApi({
     reducerPath: "UserApi",
@@ -13,15 +12,7 @@ export const UserApi = createApi({
                 url: `/user/logout`,
                 method: "POST",
             }),
-            invalidatesTags: ["Users"],
-            async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                try {
-                    await queryFulfilled;
-                    dispatch(disconnectSocket());
-                } catch {
-                    dispatch(connectSocket());
-                }
-            },
+            invalidatesTags: ["Users"]
         }),
 
         login: builder.mutation({
@@ -30,15 +21,7 @@ export const UserApi = createApi({
                 method: "POST",
                 body: data,
             }),
-            invalidatesTags: ["Users"],
-            async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                try {
-                    await queryFulfilled;
-                    dispatch(connectSocket());
-                } catch {
-                    dispatch(disconnectSocket());
-                }
-            },
+            invalidatesTags: ["Users"]
         }),
 
         register: builder.mutation({
@@ -47,15 +30,7 @@ export const UserApi = createApi({
                 method: "POST",
                 body: data,
             }),
-            invalidatesTags: ["Users"],
-            async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                try {
-                    await queryFulfilled;
-                    dispatch(connectSocket());
-                } catch {
-                    dispatch(disconnectSocket());
-                }
-            },
+            invalidatesTags: ["Users"]
         }),
 
         invite: builder.mutation({

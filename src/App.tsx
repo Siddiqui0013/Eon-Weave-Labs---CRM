@@ -10,7 +10,7 @@
 /* Admin Email : "admin@mail.com"
     Admin Password : "121212" */
 
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router";
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, Outlet } from "react-router";
 import { useEffect } from "react";
 import useTheme from "./hooks/useTheme";
 import useAuth from "./hooks/useAuth";
@@ -21,11 +21,14 @@ import BdoRoutes from "./components/modules/bdo/BdoRoutes";
 import HrRoutes from "./components/modules/hr/HrRoutes";
 import EmployeeRoutes from "./components/modules/employee/EmployeeRoutes";
 import AdminRoutes from "./components/modules/admin/AdminRoutes";
+import SocketManager from "./lib/SocketManager";
 
 import "./App.css";
 
 const App = () => {
 
+  const navigate = useNavigate();
+  const location = useLocation();
   const { theme } = useTheme();
   const { user, accessToken } = useAuth();
 
@@ -35,6 +38,19 @@ const App = () => {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (user && accessToken) {
+      if (DefinedRoles.includes(role) && !location.pathname.includes(`/${role}`)) {
+        navigate(`/${role}/dashboard`);
+      }
+    } else if (!user) {
+      if (location.pathname === "/register" || location.pathname === "/login" || location.pathname === "/invite") {
+        return;
+      }
+      // navigate("/login");
+    }
+  }, [user, accessToken, role, location.pathname, navigate]);
 
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
     if (!user || !accessToken || !allowedRoles.includes(role)) {
@@ -78,8 +94,10 @@ const App = () => {
 };
 
 function AppWrapper() {
+  const { isAuthenticated } = useAuth();
   return (
     <Router>
+      {isAuthenticated && <SocketManager isAuthenticated={isAuthenticated} />}
       <App />
     </Router>
   );
