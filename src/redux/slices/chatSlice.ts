@@ -1,18 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {formatDateWithTime} from "@/utils/formatDate";
+import { baseURL } from "@/utils/baseURL";
 
 export interface Chat {
   _id: string;
   name: string;
   email: string;
   profileImage?: string;
-  participants:
-    {
-      _id: string;
-      name: string;
-      email: string;
-      profileImage: string;
-    },
+  participants: {
+    _id: string;
+    name: string;
+    email: string;
+    profileImage: string;
+  }
 }
 
 export interface Message {
@@ -29,7 +28,7 @@ interface ChatState {
   userConversations: Chat[];
   selectedChat: Chat | null;
   chatType: string;
-  conversationId: string | null
+  conversationId: string | null;
   messages: Record<string, Message[]>;
   isUsersLoading: boolean;
   isChannelsLoading: boolean;
@@ -48,7 +47,7 @@ const initialState: ChatState = {
   isUsersLoading: false,
   isChannelsLoading: false,
   isMessagesLoading: false,
-  error: null,
+  error: null
 };
 
 export const fetchMessages = createAsyncThunk(
@@ -58,13 +57,13 @@ export const fetchMessages = createAsyncThunk(
       console.log("Fetching messages for chatType:", chatType, "chatId:", chatId);
       const state = getState() as { chat: ChatState };
       const actualChatId = chatType === "user" && state.chat.conversationId ? state.chat.conversationId : chatId;
-      
-      console.log("Actual Chat ID:", (actualChatId ));
-      
-      const endpoint = chatType === "channel" 
-        ? `https://ewlcrm-backend.vercel.app/api/chat/channels/${chatId}/messages`
-        : `https://ewlcrm-backend.vercel.app/api/chat/conversations/${actualChatId}/messages`
-      
+
+      console.log("Actual Chat ID:", actualChatId);
+
+      const endpoint = chatType === "channel"
+        ? `${baseURL}chat/channels/${chatId}/messages`
+        : `${baseURL}chat/conversations/${actualChatId}/messages`;
+
       const response = await fetch(endpoint, {
         headers: {
           "Authorization": `${localStorage.getItem("accessToken")}`
@@ -75,7 +74,7 @@ export const fetchMessages = createAsyncThunk(
         throw new Error("Failed to fetch messages");
       }
 
-      const data = await response.json();      
+      const data = await response.json();
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formattedMessages = data.data.map((msg: any) => ({
@@ -83,36 +82,34 @@ export const fetchMessages = createAsyncThunk(
         senderId: msg.sender._id,
         receiverId: msg.receiverId || chatId,
         text: msg.content,
-        time: formatDateWithTime(msg.createdAt, true)
-        // time: (new Date(msg.createdAt).toISOString()).split("T")[0] + " " + 
-        //       (new Date(msg.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
+        time: (new Date(msg.createdAt).toISOString()).split("T")[0] + " " +
+          (new Date(msg.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
       }));
 
-      return { chatId, messages: formattedMessages };
+      return { chatId: actualChatId, messages: formattedMessages };
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch messages");
     }
   }
 );
 
-
 export const sendMessage = createAsyncThunk(
   "chat/sendMessage",
   async (
-    { chatId, chatType, content }: 
-    { chatId: string; chatType: string; content: string },
+    { chatId, chatType, content }:
+      { chatId: string; chatType: string; content: string },
     { getState, rejectWithValue }
   ) => {
     try {
       const state = getState() as { chat: ChatState };
       const actualChatId = chatType === "user" && state.chat.conversationId ? state.chat.conversationId : chatId;
-      
+
       const endpoint = chatType === "user"
-        ? `https://ewlcrm-backend.vercel.app/api/chat/conversations/${actualChatId}/sendMessages`
-        : `https://ewlcrm-backend.vercel.app/api/chat/channels/${chatId}/sendMessages`;
-      
+        ? `${baseURL}chat/conversations/${actualChatId}/sendMessages`
+        : `${baseURL}chat/channels/${chatId}/sendMessages`;
+
       console.log("Sending message to endpoint:", endpoint);
-      
+
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -127,17 +124,16 @@ export const sendMessage = createAsyncThunk(
       }
 
       const data = await response.json();
-      
-      return { 
-        chatId,
+
+      return {
+        chatId: actualChatId,
         message: {
           id: data.data._id,
           senderId: data.data.sender._id,
           receiverId: chatId,
           text: data.data.content,
-          time: formatDateWithTime(data.data.createdAt, true)
-          // time: (new Date(data.data.createdAt).toISOString()).split("T")[0] + " " + 
-          //       (new Date(data.data.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
+          time: (new Date(data.data.createdAt).toISOString()).split("T")[0] + " " +
+            (new Date(data.data.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
         }
       };
     } catch (error) {
@@ -159,7 +155,6 @@ const chatSlice = createSlice({
         state.conversationId = null;
       }
     },
-    // For optimistic updates
     addLocalMessage: (state, action) => {
       const { chatId, message } = action.payload;
       if (!state.messages[chatId]) {
@@ -171,6 +166,19 @@ const chatSlice = createSlice({
       const { chatId, messageId } = action.payload;
       if (state.messages[chatId]) {
         state.messages[chatId] = state.messages[chatId].filter(msg => msg.id !== messageId);
+      }
+    },
+    // New reducer for handling real-time socket messages
+    receiveSocketMessage: (state, action) => {
+      const { chatId, message } = action.payload;
+      if (!state.messages[chatId]) {
+        state.messages[chatId] = [];
+      }
+
+      // Check if we already have this message to prevent duplicates
+      const isDuplicate = state.messages[chatId].some(msg => msg.id === message.id);
+      if (!isDuplicate) {
+        state.messages[chatId].push(message);
       }
     },
     clearError: (state) => {
@@ -193,14 +201,18 @@ const chatSlice = createSlice({
         state.isMessagesLoading = false;
         state.error = action.payload as string;
       })
-      
+
       // Send Message
       .addCase(sendMessage.fulfilled, (state, action) => {
         const { chatId, message } = action.payload;
         if (!state.messages[chatId]) {
           state.messages[chatId] = [];
         }
-        state.messages[chatId].push(message);
+        // Add the sent message to the messages list
+        const isDuplicate = state.messages[chatId].some(msg => msg.id === message.id);
+        if (!isDuplicate) {
+          state.messages[chatId].push(message);
+        }
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.error = action.payload as string;
@@ -208,5 +220,11 @@ const chatSlice = createSlice({
   },
 });
 
-export const { setSelectedChat, addLocalMessage, removeLocalMessage, clearError } = chatSlice.actions;
+export const {
+  setSelectedChat,
+  addLocalMessage,
+  removeLocalMessage,
+  receiveSocketMessage,
+  clearError
+} = chatSlice.actions;
 export default chatSlice.reducer;
