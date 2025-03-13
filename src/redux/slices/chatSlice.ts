@@ -20,6 +20,7 @@ export interface Message {
   receiverId: string;
   text: string;
   time: string;
+  profileImage?: string;
 }
 
 interface ChatState {
@@ -52,17 +53,26 @@ const initialState: ChatState = {
 
 export const fetchMessages = createAsyncThunk(
   "chat/fetchMessages",
-  async ({ chatId, chatType }: { chatId: string; chatType: string }, { getState, rejectWithValue }) => {
+  async ({
+    chatId,
+    chatType,
+    page = 1,
+    limit = 25
+  }: {
+    chatId: string;
+    chatType: string;
+    page?: number;
+    limit?: number;
+  }, { getState, rejectWithValue }) => {
     try {
-      console.log("Fetching messages for chatType:", chatType, "chatId:", chatId);
       const state = getState() as { chat: ChatState };
-      const actualChatId = chatType === "user" && state.chat.conversationId ? state.chat.conversationId : chatId;
-
-      console.log("Actual Chat ID:", actualChatId);
+      const actualChatId = chatType === "user" && state.chat.conversationId
+        ? state.chat.conversationId
+        : chatId;
 
       const endpoint = chatType === "channel"
-        ? `${baseURL}chat/channels/${chatId}/messages`
-        : `${baseURL}chat/conversations/${actualChatId}/messages`;
+        ? `${baseURL}/chat/channels/${chatId}/messages?page=${page}&limit=${limit}`
+        : `${baseURL}/chat/conversations/${actualChatId}/messages?page=${page}&limit=${limit}`;
 
       const response = await fetch(endpoint, {
         headers: {
@@ -71,22 +81,26 @@ export const fetchMessages = createAsyncThunk(
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch messages");
+        throw new Error(`Failed to fetch messages: ${response.status}`);
       }
 
       const data = await response.json();
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formattedMessages = data.data.map((msg: any) => ({
         id: msg._id,
         senderId: msg.sender._id,
         receiverId: msg.receiverId || chatId,
         text: msg.content,
-        time: (new Date(msg.createdAt).toISOString()).split("T")[0] + " " +
-          (new Date(msg.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
+        profileImage: msg.sender.profileImage,
+        time: new Date(msg.createdAt).toLocaleTimeString()
       }));
 
-      return { chatId: actualChatId, messages: formattedMessages };
+      return {
+        chatId: actualChatId,
+        messages: formattedMessages,
+        page,
+        isFirstPage: page === 1
+      };
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch messages");
     }
@@ -96,19 +110,18 @@ export const fetchMessages = createAsyncThunk(
 export const sendMessage = createAsyncThunk(
   "chat/sendMessage",
   async (
-    { chatId, chatType, content }:
-      { chatId: string; chatType: string; content: string },
+    { chatId, chatType, content }: { chatId: string; chatType: string; content: string },
     { getState, rejectWithValue }
   ) => {
     try {
       const state = getState() as { chat: ChatState };
-      const actualChatId = chatType === "user" && state.chat.conversationId ? state.chat.conversationId : chatId;
+      const actualChatId = chatType === "user" && state.chat.conversationId
+        ? state.chat.conversationId
+        : chatId;
 
       const endpoint = chatType === "user"
-        ? `${baseURL}chat/conversations/${actualChatId}/sendMessages`
-        : `${baseURL}chat/channels/${chatId}/sendMessages`;
-
-      console.log("Sending message to endpoint:", endpoint);
+        ? `${baseURL}/chat/conversations/${actualChatId}/sendMessages`
+        : `${baseURL}/chat/channels/${chatId}/sendMessages`;
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -120,7 +133,7 @@ export const sendMessage = createAsyncThunk(
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send message");
+        throw new Error(`Failed to send message: ${response.status}`);
       }
 
       const data = await response.json();
@@ -132,8 +145,8 @@ export const sendMessage = createAsyncThunk(
           senderId: data.data.sender._id,
           receiverId: chatId,
           text: data.data.content,
-          time: (new Date(data.data.createdAt).toISOString()).split("T")[0] + " " +
-            (new Date(data.data.createdAt).toISOString()).split("T")[1].split(".")[0].split(":").slice(0, 2).join(":")
+          profileImage: data.data.sender.profileImage,
+          time: new Date(data.data.createdAt).toLocaleTimeString()
         }
       };
     } catch (error) {
@@ -168,14 +181,12 @@ const chatSlice = createSlice({
         state.messages[chatId] = state.messages[chatId].filter(msg => msg.id !== messageId);
       }
     },
-    // New reducer for handling real-time socket messages
     receiveSocketMessage: (state, action) => {
       const { chatId, message } = action.payload;
       if (!state.messages[chatId]) {
         state.messages[chatId] = [];
       }
 
-      // Check if we already have this message to prevent duplicates
       const isDuplicate = state.messages[chatId].some(msg => msg.id === message.id);
       if (!isDuplicate) {
         state.messages[chatId].push(message);
@@ -187,28 +198,40 @@ const chatSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Messages
       .addCase(fetchMessages.pending, (state) => {
         state.isMessagesLoading = true;
         state.error = null;
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.isMessagesLoading = false;
-        const { chatId, messages } = action.payload;
-        state.messages[chatId] = messages;
+        const { chatId, messages, isFirstPage } = action.payload;
+
+        if (isFirstPage) {
+          // Replace all messages if it's the first page
+          state.messages[chatId] = messages;
+        } else {
+          // Prepend older messages to the existing ones (for pagination)
+          if (!state.messages[chatId]) {
+            state.messages[chatId] = [];
+          }
+
+          // Don't add duplicates
+          const existingIds = new Set(state.messages[chatId].map(msg => msg.id));
+          const uniqueNewMessages = messages.filter((msg: Message) => !existingIds.has(msg.id));
+
+          state.messages[chatId] = [...uniqueNewMessages, ...state.messages[chatId]];
+        }
       })
       .addCase(fetchMessages.rejected, (state, action) => {
         state.isMessagesLoading = false;
         state.error = action.payload as string;
       })
-
-      // Send Message
       .addCase(sendMessage.fulfilled, (state, action) => {
         const { chatId, message } = action.payload;
         if (!state.messages[chatId]) {
           state.messages[chatId] = [];
         }
-        // Add the sent message to the messages list
+
         const isDuplicate = state.messages[chatId].some(msg => msg.id === message.id);
         if (!isDuplicate) {
           state.messages[chatId].push(message);
@@ -227,4 +250,5 @@ export const {
   receiveSocketMessage,
   clearError
 } = chatSlice.actions;
+
 export default chatSlice.reducer;

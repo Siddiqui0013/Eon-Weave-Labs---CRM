@@ -4,8 +4,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router";
 import Button from "./Button";
 import { Loader2 } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/Store";
+import { loginUser } from "@/redux/slices/authSlice";
 
 const LoginForm = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -28,7 +32,7 @@ const LoginForm = () => {
       const credentials = { email, password };
       const response = await login(credentials).unwrap();
       const data = response.data;
-
+      dispatch(loginUser(data));
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
       localStorage.setItem("user", JSON.stringify(data.user));
@@ -46,7 +50,7 @@ const LoginForm = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description:  "Invalid email or password",
+        description: "Invalid email or password",
         duration: 1500,
       });
       console.log("Error logging in:", error);

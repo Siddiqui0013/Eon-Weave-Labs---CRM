@@ -1,22 +1,20 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMessages, sendMessage, addLocalMessage, removeLocalMessage } from "@/redux/slices/chatSlice";
 import { RootState, AppDispatch } from "@/redux/Store";
 import useAuth from "@/hooks/useAuth";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Ellipsis } from "lucide-react";
-import { baseURL } from "@/utils/baseURL";
 import { useToast } from "@/hooks/use-toast";
+import ChatHeader from "./ChatHeader";
+import MessageList from "./MessageList";
+import MessageInput from "./MessageInput";
 
 const TextScreen = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const currentUserId = user?._id;
-  const [newMessage, setNewMessage] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
   const dispatch = useDispatch<AppDispatch>();
+  const [page, setPage] = useState(1);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
 
   // Get state from Redux
   const {
@@ -29,55 +27,75 @@ const TextScreen = () => {
 
   const chatId = selectedChat?._id || "";
   const actualChatId = chatType === "user" && conversationId ? conversationId : chatId;
-  const chatMessages = useMemo(() => selectedChat ? messages[actualChatId] || [] : [], [selectedChat, messages, actualChatId]);
-
-  // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatMessages]);
+  const chatMessages = useMemo(() =>
+    selectedChat ? messages[actualChatId] || [] : [],
+    [selectedChat, messages, actualChatId]
+  );
 
   // Fetch initial messages when selected chat changes
   useEffect(() => {
     if (selectedChat?._id) {
+      setPage(1);
+      setHasMoreMessages(true);
       dispatch(fetchMessages({
         chatId: selectedChat._id,
-        chatType
+        chatType,
+        page: 1
       }));
     }
   }, [selectedChat, chatType, dispatch]);
 
-  // Function to send a message
-  const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedChat?._id) return;
+  // Function to load more messages (pagination)
+  const handleLoadMoreMessages = () => {
+    if (!selectedChat || isMessagesLoading || !hasMoreMessages) return;
 
-    // Create a temporary message ID for optimistic UI updates
+    const nextPage = page + 1;
+    setPage(nextPage);
+
+    dispatch(fetchMessages({
+      chatId: selectedChat._id,
+      chatType,
+      page: nextPage
+    })).then((action) => {
+      // Properly type check the action and its payload
+      if (action.type.endsWith('/fulfilled') && action.payload) {
+        // Cast to any first to avoid TypeScript errors
+        const payload = action.payload as any;
+
+        if (payload.messages && Array.isArray(payload.messages)) {
+          if (payload.messages.length < 25) { // Assuming 50 is your page size
+            setHasMoreMessages(false);
+          }
+        }
+      }
+    });
+  };
+
+  // Function to send a message
+  const handleSendMessage = async (content: string) => {
+    if (!content.trim() || !selectedChat?._id) return;
+
     const tempId = `temp-${Date.now()}`;
     const tempMessage = {
       id: tempId,
       senderId: currentUserId,
       receiverId: actualChatId,
-      text: newMessage,
+      text: content,
       time: new Date().toLocaleTimeString()
     };
 
-    // Add optimistic message to UI immediately
     dispatch(addLocalMessage({
       chatId: actualChatId,
       message: tempMessage
     }));
 
-    setNewMessage("");
-
     try {
-      // Send the message via API
-      console.log('Sending message via API with type:', chatType);
-      const result = await dispatch(sendMessage({
+      await dispatch(sendMessage({
         chatId: selectedChat._id,
         chatType,
-        content: newMessage
-      }))
-      console.log('Message sent result:', result);
-      // Remove the temporary message once we get the real one from the server
+        content
+      })).unwrap();
+
       dispatch(removeLocalMessage({
         chatId: actualChatId,
         messageId: tempId
@@ -92,23 +110,6 @@ const TextScreen = () => {
     }
   };
 
-  const copyLink = (id: string) => {
-    try {
-      navigator.clipboard.writeText(`${baseURL}/chat/channels/${id}/join`);
-      toast({
-        variant: "default",
-        title: "Link copied to clipboard",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to copy link to clipboard"
-      });
-      console.error("Failed to copy link to clipboard:", error);
-    }
-  };
-
   if (!selectedChat) {
     return (
       <div className="flex-1 bg-gray-800 flex items-center justify-center">
@@ -118,78 +119,26 @@ const TextScreen = () => {
   }
 
   return (
-    <div className="flex-1 bg-gray-800 h-screen flex flex-col">
-      <div className="p-4 bg-primary text-white flex items-center justify-between">
-        <div className="flex items-center">
-          <p className="font-bold">{selectedChat.name || (selectedChat.participants && selectedChat.participants.name)}</p>
-          {conversationId && <span className="text-xs ml-2 opacity-50">(ID: {conversationId.substring(0, 6)}...)</span>}
-        </div>
-        {chatType === "channel" &&
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Ellipsis />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onSelect={() => { }}>Delete Conversation</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => { }}>Clear Messages</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => { }}>Leave Conversation</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => copyLink(selectedChat._id)}>Join Link</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => { }}>See Details</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        }
-      </div>
+    <div className="flex-1 bg-gray-800 h-screen flex flex-col overflow-hidden">
+      <ChatHeader
+        selectedChat={selectedChat}
+        chatType={chatType}
+        conversationId={conversationId}
+      />
 
-      <ScrollArea className="h-full">
-        <div className="flex-1 p-4 flex flex-col gap-3">
-          {isMessagesLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <p className="text-gray-400">Loading messages...</p>
-            </div>
-          ) : chatMessages.length === 0 ? (
-            <div className="flex justify-center items-center h-full">
-              <p className="text-gray-400">No messages yet. Start a conversation!</p>
-            </div>
-          ) : (
-            chatMessages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.senderId === currentUserId ? "justify-end" : "justify-start"}`}
-              >
-                <div className={`w-4/5 max-w-[80%]`}>
-                  <div
-                    className={`p-3 rounded-lg break-words ${msg.senderId === currentUserId
-                      ? "bg-primary text-white ml-auto"
-                      : "bg-gray-700 text-gray-200"
-                      }`}
-                  >
-                    <p className="text-md whitespace-normal">{msg.text}</p>
-                    <p className="text-[11px] text-gray-300 mt-1">{msg.time}</p>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-      </ScrollArea>
+      <MessageList
+        messages={chatMessages}
+        isLoading={isMessagesLoading}
+        chatType={chatType}
+        currentUserId={currentUserId}
+        onLoadMore={handleLoadMoreMessages}
+        hasMoreMessages={hasMoreMessages}
+      />
 
-      <div className="p-4 bg-gray-900 flex">
-        <input
-          type="text"
-          placeholder="Type a message..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-          className="flex-1 p-2 bg-gray-700 rounded text-white"
-        />
-        <button
-          className="ml-2 py-2 px-4 bg-primary rounded"
-          onClick={handleSendMessage}
-        >
-          Send
-        </button>
-      </div>
+      <MessageInput
+        onSendMessage={handleSendMessage}
+        disabled={isMessagesLoading}
+      />
     </div>
   );
 };
