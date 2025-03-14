@@ -11,8 +11,12 @@ import useAuth from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { X, Menu } from 'lucide-react';
 import TopButtons from "./TopButtons";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/Store";
+import { logoutUser } from "@/redux/slices/authSlice";
 
 const Navbar = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const role = user ? user.role : "";
@@ -54,6 +58,7 @@ const Navbar = () => {
       await logout({}).unwrap();
       // eslint-disable-next-line react-hooks/rules-of-hooks
       useLogout();
+      dispatch(logoutUser());
       toast({
         variant: "default",
         title: "Success",
@@ -81,7 +86,7 @@ const Navbar = () => {
           {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
 
-        { role !== "admin" && <TopButtons />}
+        {role !== "admin" && <TopButtons />}
 
       </div>
       {isOpen && (
@@ -104,7 +109,7 @@ const Navbar = () => {
               className="text-xl font-bold text-white"
               onClick={handleLinkClick}
             >
-            <img src={logo} alt="EWL" className="h-8" />
+              <img src={logo} alt="EWL" className="h-8" />
             </Link>
 
           </div>

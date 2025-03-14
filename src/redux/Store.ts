@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { setupListeners } from '@reduxjs/toolkit/query';
 import { UserApi } from '@/services/userApi';
 import { MeetingApi } from '@/services/meetingApi';
 import { SalesApi } from '@/services/salesApi';
@@ -6,6 +7,7 @@ import { CallsApi } from '@/services/callsApi';
 import { ChatApi } from '@/services/chatAPI';
 import { EmployeeWorksheetApi } from '@/services/EmployeeWorksheetApi';
 import chatReducer from './slices/chatSlice';
+import authReducer from './slices/authSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +16,7 @@ export const store = configureStore({
     [SalesApi.reducerPath]: SalesApi.reducer,
     [ChatApi.reducerPath]: ChatApi.reducer,
     chat: chatReducer,
+    auth: authReducer,
     [CallsApi.reducerPath]: CallsApi.reducer,
     [EmployeeWorksheetApi.reducerPath]: EmployeeWorksheetApi.reducer
   },
@@ -30,3 +33,5 @@ export const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+setupListeners(store.dispatch);

@@ -1,28 +1,33 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
-import { baseURL } from '@/utils/baseURL';
 import { AppDispatch, RootState } from '@/redux/Store';
 import { receiveSocketMessage } from '@/redux/slices/chatSlice';
 
-interface SocketManagerProps { 
+interface SocketManagerProps {
     isAuthenticated: boolean;
+    isAuth: boolean;
 }
 
-const SocketManager: React.FC<SocketManagerProps> = ({ isAuthenticated }) => {
+//const base_url = 'https://ewlcrm-backend.vercel.app';
+const base_url = 'http://localhost:8000';
+
+const SocketManager: React.FC<SocketManagerProps> = ({ isAuthenticated, isAuth }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { selectedChat, chatType, conversationId } = useSelector((state: RootState) => state.chat);
+    const { accessToken: token } = useSelector((state: RootState) => state.auth);
+
 
     // Initialize socket connection
     useEffect(() => {
         if (!isAuthenticated) return;
 
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = token || localStorage.getItem('accessToken');
         if (!accessToken) return;
 
         console.log('Initializing socket connection...');
 
-        const socket = io('https://eon-weave-labs-crm-backend.onrender.com', {
+        const socket = io(base_url, {
             auth: { token: accessToken }
         });
 
@@ -49,6 +54,7 @@ const SocketManager: React.FC<SocketManagerProps> = ({ isAuthenticated }) => {
                 senderId: data.message.sender._id,
                 receiverId: data.channelId,
                 text: data.message.content,
+                profileImage: data.message.sender.profileImage,
                 time: new Date(data.message.createdAt).toLocaleTimeString()
             };
 
@@ -83,16 +89,16 @@ const SocketManager: React.FC<SocketManagerProps> = ({ isAuthenticated }) => {
             console.log('Cleaning up socket connection');
             socket.disconnect();
         };
-    }, [isAuthenticated, dispatch]);
+    }, [isAuthenticated, isAuth, dispatch, token]);
 
     // Join appropriate rooms when chat selection changes
     useEffect(() => {
-        if (!isAuthenticated || !selectedChat) return;
+        if (!selectedChat) return;
 
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = token || localStorage.getItem('accessToken');
         if (!accessToken) return;
 
-        const socket = io(baseURL, {
+        const socket = io(base_url, {
             auth: { token: accessToken }
         });
 

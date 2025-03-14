@@ -131,7 +131,7 @@ export default function ReusableTable({
             <div className="flex gap-2">
               {filterOptions && Object.entries(filterOptions).map(([key, filter]) => (
                 <Select
-                  key={key}
+                  key={filter.placeholder}
                   value={filters && filters[key]}
                   onValueChange={(value) => onFilterChange && onFilterChange(key, value)}
                 >
@@ -166,8 +166,8 @@ export default function ReusableTable({
         <table className="w-full text-sm text-left text-gray-300">
           <thead className="text-xs text-gray-300 uppercase bg-gray-900">
             <tr>
-              {columns.map((column) => (
-                <th key={column.key} className="px-6 py-3 border-b border-primary">
+              {columns.map((column, index) => (
+                <th key={index} className="px-6 py-3 border-b border-primary">
                   {column.label}
                 </th>
               ))}
@@ -189,13 +189,13 @@ export default function ReusableTable({
                 </td>
               </tr>
             ) : (
-              data.map((row) => (
-                <tr key={row._id}
+              data.map((row, index) => (
+                <tr key={index}
                   className="bg-transparent border-b border-primary hover:bg-card/80 transition-colors"
                   onClick={() => onRowClick?.(row)}
                 >
-                  {columns.map((column) => (
-                    <td key={column.key} className="px-6 py-4">
+                  {columns.map((column, index) => (
+                    <td key={index} className="px-6 py-4">
                       {column.render ? column.render(row[column.key], row) : row[column.key]}
                     </td>
                   ))}
@@ -205,7 +205,7 @@ export default function ReusableTable({
           </tbody>
         </table>
       </div>
-            
+
       <Pagination>
         <PaginationContent>
           <PaginationItem>

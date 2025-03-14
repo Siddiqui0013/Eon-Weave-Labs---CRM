@@ -6,7 +6,7 @@ export const UserApi = createApi({
     baseQuery: customBaseQuery,
     tagTypes: ["Users"],
     endpoints: (builder) => ({
-        
+
         logout: builder.mutation({
             query: () => ({
                 url: `/user/logout`,
@@ -61,7 +61,7 @@ export const UserApi = createApi({
 
         checkOut: builder.mutation({
             query: () => ({
-                url: `/attendance/checkOut`,                
+                url: `/attendance/checkOut`,
                 method: "POST",
             }),
             invalidatesTags: ["Users"],
@@ -83,7 +83,7 @@ export const UserApi = createApi({
             invalidatesTags: ["Users"],
         }),
 
-        userAttendence : builder.query({
+        userAttendence: builder.query({
             query: () => ({
                 url: `/attendance/getUserAttendance`,
                 method: "GET",
@@ -91,7 +91,7 @@ export const UserApi = createApi({
             providesTags: ["Users"],
         }),
 
-        allUserAttendence : builder.query({
+        allUserAttendence: builder.query({
             query: () => ({
                 url: `/attendance/getAllUserAttendance`,
                 method: "GET",
@@ -99,27 +99,45 @@ export const UserApi = createApi({
             providesTags: ["Users"],
         }),
 
-        getAttendenceReport : builder.query({
-            query: ({userId, startDate, endDate}) => ({
+        getAttendenceReport: builder.query({
+            query: ({ userId, startDate, endDate }) => ({
                 url: `/attendance/report?userId=${userId}&startDate=${startDate}&endDate=${endDate}`,
                 method: "GET",
             }),
             providesTags: ["Users"],
         }),
 
-        allUsers : builder.query({
+        allUsers: builder.query({
             query: () => ({
                 url: `/user/getAllUsers`,
                 method: "GET",
             }),
             providesTags: ["Users"],
         }),
+
+        getUser: builder.query({
+            query: () => ({
+                url: `/user/getUser`,
+                method: "GET",
+            }),
+            providesTags: ["Users"],
+        })
     }),
 });
 
-export const { useLogoutMutation, useLoginMutation, useRegisterMutation, useInviteMutation, useUpdateUserMutation, 
-    useCheckInMutation, useCheckOutMutation, 
-    useStartBreakMutation, useEndBreakMutation,
-    useUserAttendenceQuery, useAllUserAttendenceQuery, useGetAttendenceReportQuery,
-    useAllUsersQuery
+export const {
+    useLogoutMutation,
+    useLoginMutation,
+    useRegisterMutation,
+    useInviteMutation,
+    useUpdateUserMutation,
+    useCheckInMutation,
+    useCheckOutMutation,
+    useStartBreakMutation,
+    useEndBreakMutation,
+    useUserAttendenceQuery,
+    useAllUserAttendenceQuery,
+    useGetAttendenceReportQuery,
+    useAllUsersQuery,
+    useGetUserQuery
 } = UserApi;
