@@ -9,7 +9,8 @@ interface SocketManagerProps {
     isAuth: boolean;
 }
 
-const base_url = 'https://ewlcrm-backend.vercel.app';
+//const base_url = 'https://ewlcrm-backend.vercel.app';
+const base_url = 'https://eon-weave-labs-crm-backend.onrender.com';
 //const base_url = 'http://localhost:8000';
 
 const SocketManager: React.FC<SocketManagerProps> = ({ isAuthenticated, isAuth }) => {
