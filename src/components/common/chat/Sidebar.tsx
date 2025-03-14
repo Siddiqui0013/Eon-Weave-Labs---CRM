@@ -31,7 +31,8 @@ interface userConversations {
     name: string;
     email: string;
     profileImage: string;
-  }
+  },
+  isOnline: boolean;
 }
 
 const Sidebar = () => {
@@ -165,19 +166,23 @@ const Sidebar = () => {
                   {userConversations?.data?.map((chat: userConversations) => (
                     <div
                       key={chat._id}
-                      className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center mb-1 ${selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
+                      className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center mb-1 ${selected === chat._id ? "bg-black" : "hover:bg-gray-700"
                         }`}
                       onClick={() => handleSelectChat(chat)}
                     >
-                      {
-                        chat?.participants?.profileImage ?
-                          <img
-                            src={chat?.participants?.profileImage}
-                            alt={chat?.participants?.name || "User"}
-                            className="w-8 h-8 rounded-full"
-                          />
-                          :
-                          <User className="w-8 h-8 rounded-full" />}
+                      <div className="relative">
+                        {
+                          chat?.participants?.profileImage ?
+                            <img
+                              src={chat?.participants?.profileImage}
+                              alt={chat?.participants?.name || "User"}
+                              className="w-8 h-8 rounded-full"
+                            />
+                            :
+                            <User className="w-8 h-8 rounded-full" />}
+                        {
+                          chat?.isOnline && <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full"></div>}
+                      </div>
                       <div>
                         <p className="font-bold">{(chat?.participants?.name)?.slice(0, 20)}</p>
                       </div>
