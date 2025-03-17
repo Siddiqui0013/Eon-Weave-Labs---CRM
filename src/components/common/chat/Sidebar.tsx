@@ -19,8 +19,10 @@ import {
   useGetUserConversationsQuery
 } from "@/services/chatAPI";
 import { useToast } from "@/hooks/use-toast";
+import useAuth from "@/hooks/useAuth";
 import { Switch } from "@/components/ui/switch";
 import { baseURL } from "@/utils/baseURL";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface userConversations {
   _id: string;
@@ -31,19 +33,26 @@ interface userConversations {
     name: string;
     email: string;
     profileImage: string;
+    isOnline: boolean;
   },
-  isOnline: boolean;
 }
 
 const Sidebar = () => {
+  const { user } = useAuth();
+  const userId = user?._id;
   const { toast } = useToast();
   const [selected, setSelected] = useState("");
   const [activeTab, setActiveTab] = useState("inbox");
   const [open, setOpen] = useState(false);
 
-  const { data: users = [] } = useGetUsersQuery({});
-  const { data: channels = [] } = useGetChannelsQuery({});
-  const { data: userConversations = [] } = useGetUserConversationsQuery({});
+  const { data: users = [], isLoading: usersLoading } = useGetUsersQuery({});
+  const { data: channels = [], isLoading: channelsLoading } = useGetChannelsQuery({});
+  const { data: userConversations = [], isLoading: conversationsLoading } = useGetUserConversationsQuery({});
+
+  const conversations = userConversations?.data?.map((conversation: any) => ({
+    ...conversation,
+    participants: conversation.participants.filter((participant: any) => participant._id !== userId)
+  }));
 
   const [createChannelForm, setCreateChannelForm] = useState({
     name: "",
@@ -158,109 +167,122 @@ const Sidebar = () => {
 
       {(
         <div className="flex-1 overflow-y-auto">
-          {activeTab === "inbox" ? (
-            <>
-              {userConversations?.data?.length > 0 && (
-                <>
-                  <div className="text-sm font-semibold text-gray-400 mb-2">Conversations</div>
-                  {userConversations?.data?.map((chat: userConversations) => (
-                    <div
-                      key={chat._id}
-                      className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center mb-1 ${selected === chat._id ? "bg-black" : "hover:bg-gray-700"
-                        }`}
-                      onClick={() => handleSelectChat(chat)}
-                    >
-                      <div className="relative">
-                        {
-                          chat?.participants?.profileImage ?
-                            <img
-                              src={chat?.participants?.profileImage}
-                              alt={chat?.participants?.name || "User"}
-                              className="w-8 h-8 rounded-full"
-                            />
-                            :
-                            <User className="w-8 h-8 rounded-full" />}
-                        {
-                          chat?.isOnline && <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full"></div>}
-                      </div>
-                      <div>
-                        <p className="font-bold">{(chat?.participants?.name)?.slice(0, 20)}</p>
-                      </div>
-                    </div>
-                  ))}
-                  <div className="border-t border-gray-700 my-4"></div>
-                </>
-              )}
-
-              {/* Show all users */}
-              {
-                isAllUsers ? null : (
+          {usersLoading || channelsLoading || conversationsLoading ? (
+            <div className="space-y-3 flex flex-col w-full">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <div key={i} className="flex items-center gap-2 overflow-hidden">
+                  <Skeleton className="w-10 h-10 rounded-full bg-gray-500" />
+                  <div className="space-y-2 w-full">
+                    <Skeleton className="w-1/2 h-2 rounded bg-gray-500" />
+                    <Skeleton className="w-3/4 h-2 rounded bg-gray-500" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) :
+            activeTab === "inbox" ? (
+              <>
+                {userConversations?.data?.length > 0 && (
                   <>
-                    <div className="text-sm font-semibold text-gray-400 mb-2">All Users</div>
-                    {users?.data?.length === 0 ? (
-                      <p className="text-center text-gray-400 mt-4">No users found</p>
-                    ) : (
-                      users.data.map((chat: Chat) => {
-                        if (userConversations.some((conv: { participants: { _id: string; }; }) => conv.participants._id === chat._id)) {
-                          return null;
-                        }
-
-                        return (
-                          <div
-                            key={chat._id}
-                            className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center ${selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
-                              }`}
-                            onClick={() => handleSelectChat(chat)}
-                          >
-                            {
-                              chat.participants?.profileImage ?
-                                <img
-                                  src={chat.participants?.profileImage}
-                                  alt={chat?.participants?.name || "User"}
-                                  className="w-8 h-8 rounded-full"
-                                />
-                                :
-                                <User className="w-8 h-8 rounded-full" />}
-                            <div>
-                              <p className="font-bold">{(chat.name.slice(0, 20))}</p>
-                            </div>
-                          </div>
-                        );
-                      })
-                    )}
+                    <div className="text-sm font-semibold text-gray-400 mb-2">Conversations</div>
+                    {conversations?.map((chat: any) => (
+                      <div
+                        key={chat._id}
+                        className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center mb-1 ${selected === chat._id ? "bg-black" : "hover:bg-gray-700"
+                          }`}
+                        onClick={() => handleSelectChat(chat)}
+                      >
+                        <div className="relative">
+                          {
+                            chat?.participants[0]?.profileImage ?
+                              <img
+                                src={chat?.participants[0]?.profileImage}
+                                alt={chat?.participants[0]?.name || "User"}
+                                className="w-8 h-8 rounded-full"
+                              />
+                              :
+                              <User className="w-8 h-8 rounded-full" />}
+                          {
+                            chat?.participants[0]?.isOnline && <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full"></div>}
+                        </div>
+                        <div>
+                          <p className="font-bold">{(chat?.participants[0]?.name)?.slice(0, 20)}</p>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="border-t border-gray-700 my-4"></div>
                   </>
                 )}
 
-            </>
-          ) : (
-            <div className="relative h-full overflow-hidden">
-              <div className="absolute bottom-2 w-full">
-                <Button
-                  onClick={() => setOpen(true)}
-                  title="Create Channel"
-                  className="w-full"
-                />
-              </div>
+                {/* Show all users */}
+                {
+                  isAllUsers ? null : (
+                    <>
+                      <div className="text-sm font-semibold text-gray-400 mb-2">All Users</div>
+                      {users?.data?.length === 0 ? (
+                        <p className="text-center text-gray-400 mt-4">No users found</p>
+                      ) : (
+                        users?.data?.map((chat: Chat) => {
+                          if (userConversations.some((conv: { participants: { _id: string; }; }) => conv.participants._id === chat._id)) {
+                            return null;
+                          }
 
-              {channels.data.length === 0 ? (
-                <p className="text-center text-gray-400 mt-4">No channels found</p>
-              ) : (
-                <div className="h-full">
-                  {channels.data.map((chat: Chat) => (
-                    <div
-                      key={chat._id}
-                      className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center ${selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
-                        }`}
-                      onClick={() => handleSelectChat(chat)}
-                    >
-                      <Users className="w-8 h-8 rounded-full" />
-                      <p className="font-bold">{chat.name}</p>
-                    </div>
-                  ))}
+                          return (
+                            <div
+                              key={chat._id}
+                              className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center ${selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
+                                }`}
+                              onClick={() => handleSelectChat(chat)}
+                            >
+                              {
+                                chat.participants?.profileImage ?
+                                  <img
+                                    src={chat.participants?.profileImage}
+                                    alt={chat?.participants?.name || "User"}
+                                    className="w-8 h-8 rounded-full"
+                                  />
+                                  :
+                                  <User className="w-8 h-8 rounded-full" />}
+                              <div>
+                                <p className="font-bold">{(chat.name.slice(0, 20))}</p>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </>
+                  )}
+
+              </>
+            ) : (
+              <div className="relative h-full overflow-hidden">
+                <div className="absolute bottom-2 w-full">
+                  <Button
+                    onClick={() => setOpen(true)}
+                    title="Create Channel"
+                    className="w-full"
+                  />
                 </div>
-              )}
-            </div>
-          )
+
+                {channels.data.length === 0 ? (
+                  <p className="text-center text-gray-400 mt-4">No channels found</p>
+                ) : (
+                  <div className="h-full">
+                    {channels.data.map((chat: Chat) => (
+                      <div
+                        key={chat._id}
+                        className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center ${selected === chat._id ? "bg-gray-900" : "hover:bg-gray-700"
+                          }`}
+                        onClick={() => handleSelectChat(chat)}
+                      >
+                        <Users className="w-8 h-8 rounded-full" />
+                        <p className="font-bold">{chat.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
           }
         </div>
       )}
