@@ -19,27 +19,24 @@ import {
   useGetUserConversationsQuery
 } from "@/services/chatAPI";
 import { useToast } from "@/hooks/use-toast";
-import useAuth from "@/hooks/useAuth";
 import { Switch } from "@/components/ui/switch";
 import { baseURL } from "@/utils/baseURL";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface userConversations {
   _id: string;
-  name: string;
   participants?:
   {
     _id: string;
     name: string;
     email: string;
     profileImage: string;
-    isOnline: boolean;
+    online: boolean;
   },
+  lastMessage?: string;
 }
 
 const Sidebar = () => {
-  const { user } = useAuth();
-  const userId = user?._id;
   const { toast } = useToast();
   const [selected, setSelected] = useState("");
   const [activeTab, setActiveTab] = useState("inbox");
@@ -48,11 +45,10 @@ const Sidebar = () => {
   const { data: users = [], isLoading: usersLoading } = useGetUsersQuery({});
   const { data: channels = [], isLoading: channelsLoading } = useGetChannelsQuery({});
   const { data: userConversations = [], isLoading: conversationsLoading } = useGetUserConversationsQuery({});
+  console.log("users", users);
 
-  const conversations = userConversations?.data?.map((conversation: any) => ({
-    ...conversation,
-    participants: conversation.participants.filter((participant: any) => participant._id !== userId)
-  }));
+
+  const conversations = userConversations?.data || [];
 
   const [createChannelForm, setCreateChannelForm] = useState({
     name: "",
@@ -62,7 +58,7 @@ const Sidebar = () => {
   })
 
   const dispatch = useDispatch<AppDispatch>();
-  const isAllUsers = users.length === userConversations.length;
+  const isAllUsers = users?.data?.length === userConversations?.data?.length;
 
   const handleSelectChat = async (chat: userConversations | Chat) => {
     setSelected(chat._id);
@@ -182,10 +178,10 @@ const Sidebar = () => {
           ) :
             activeTab === "inbox" ? (
               <>
-                {userConversations?.data?.length > 0 && (
+                {conversations?.length > 0 && (
                   <>
                     <div className="text-sm font-semibold text-gray-400 mb-2">Conversations</div>
-                    {conversations?.map((chat: any) => (
+                    {conversations?.map((chat: userConversations) => (
                       <div
                         key={chat._id}
                         className={`p-1 rounded-lg flex gap-4 cursor-pointer items-center mb-1 ${selected === chat._id ? "bg-black" : "hover:bg-gray-700"
@@ -194,19 +190,19 @@ const Sidebar = () => {
                       >
                         <div className="relative">
                           {
-                            chat?.participants[0]?.profileImage ?
+                            chat?.participants?.profileImage ?
                               <img
-                                src={chat?.participants[0]?.profileImage}
-                                alt={chat?.participants[0]?.name || "User"}
+                                src={chat?.participants?.profileImage}
+                                alt={chat?.participants?.name || "User"}
                                 className="w-8 h-8 rounded-full"
                               />
                               :
                               <User className="w-8 h-8 rounded-full" />}
                           {
-                            chat?.participants[0]?.isOnline && <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full"></div>}
+                            chat?.participants?.online && <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full"></div>}
                         </div>
                         <div>
-                          <p className="font-bold">{(chat?.participants[0]?.name)?.slice(0, 20)}</p>
+                          <p className="font-bold">{(chat?.participants?.name)?.slice(0, 20)}</p>
                         </div>
                       </div>
                     ))}
@@ -223,9 +219,9 @@ const Sidebar = () => {
                         <p className="text-center text-gray-400 mt-4">No users found</p>
                       ) : (
                         users?.data?.map((chat: Chat) => {
-                          if (userConversations.some((conv: { participants: { _id: string; }; }) => conv.participants._id === chat._id)) {
-                            return null;
-                          }
+                          // if (userConversations.some((conv: { participants: { _id: string; }; }) => conv.participants._id === chat._id)) {
+                          //   return null;
+                          // }
 
                           return (
                             <div
@@ -235,10 +231,10 @@ const Sidebar = () => {
                               onClick={() => handleSelectChat(chat)}
                             >
                               {
-                                chat.participants?.profileImage ?
+                                chat?.profileImage ?
                                   <img
-                                    src={chat.participants?.profileImage}
-                                    alt={chat?.participants?.name || "User"}
+                                    src={chat?.profileImage}
+                                    alt={chat?.name || "User"}
                                     className="w-8 h-8 rounded-full"
                                   />
                                   :
