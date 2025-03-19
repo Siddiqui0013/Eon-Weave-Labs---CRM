@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { baseURL } from "@/utils/baseURL";
+import useAuth from "@/hooks/useAuth";
 
 export interface Chat {
   _id: string;
@@ -11,7 +12,10 @@ export interface Chat {
     name: string;
     email: string;
     profileImage: string;
-  }
+    online?: boolean;
+  };
+  lastMessage?: any;
+  unreadCount?: number;
 }
 
 export interface Message {
@@ -21,6 +25,7 @@ export interface Message {
   text: string;
   time: string;
   profileImage?: string;
+  readBy?: string[];
 }
 
 interface ChatState {
@@ -31,6 +36,7 @@ interface ChatState {
   chatType: string;
   conversationId: string | null;
   messages: Record<string, Message[]>;
+  unreadCounts: Record<string, number>;
   isUsersLoading: boolean;
   isChannelsLoading: boolean;
   isMessagesLoading: boolean;
@@ -45,11 +51,60 @@ const initialState: ChatState = {
   chatType: "",
   conversationId: null,
   messages: {},
+  unreadCounts: {},
   isUsersLoading: false,
   isChannelsLoading: false,
   isMessagesLoading: false,
   error: null
 };
+
+export const fetchUnreadCounts = createAsyncThunk(
+  "chat/fetchUnreadCounts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${baseURL}/chat/messages/unread-counts`, {
+        headers: {
+          "Authorization": `${localStorage.getItem("accessToken")}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch unread counts: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch unread counts");
+    }
+  }
+);
+
+export const markMessagesAsRead = createAsyncThunk(
+  "chat/markMessagesAsRead",
+  async ({ chatId, chatType }: { chatId: string; chatType: string }, { rejectWithValue }) => {
+    try {
+      const endpoint = chatType === "channel"
+        ? `${baseURL}/chat/channels/${chatId}/read`
+        : `${baseURL}/chat/conversations/${chatId}/read`;
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Authorization": `${localStorage.getItem("accessToken")}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to mark messages as read: ${response.status}`);
+      }
+
+      return { chatId, chatType };
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Failed to mark messages as read");
+    }
+  }
+);
 
 export const fetchMessages = createAsyncThunk(
   "chat/fetchMessages",
@@ -57,13 +112,13 @@ export const fetchMessages = createAsyncThunk(
     chatId,
     chatType,
     page = 1,
-    limit = 25
+    limit = 50
   }: {
     chatId: string;
     chatType: string;
     page?: number;
     limit?: number;
-  }, { getState, rejectWithValue }) => {
+  }, { getState, rejectWithValue, dispatch }) => {
     try {
       const state = getState() as { chat: ChatState };
       const actualChatId = chatType === "user" && state.chat.conversationId
@@ -86,13 +141,19 @@ export const fetchMessages = createAsyncThunk(
 
       const data = await response.json();
 
+      // Mark messages as read when fetching
+      if (page === 1) {
+        dispatch(markMessagesAsRead({ chatId, chatType }));
+      }
+
       const formattedMessages = data.data.map((msg: any) => ({
         id: msg._id,
         senderId: msg.sender._id,
         receiverId: msg.receiverId || chatId,
         text: msg.content,
         profileImage: msg.sender.profileImage,
-        time: new Date(msg.createdAt).toLocaleTimeString()
+        time: new Date(msg.createdAt).toLocaleTimeString(),
+        readBy: msg.readBy || []
       }));
 
       return {
@@ -137,6 +198,8 @@ export const sendMessage = createAsyncThunk(
       }
 
       const data = await response.json();
+      const { user } = useAuth();
+      const currentUser = (getState() as any).auth.user || user;
 
       return {
         chatId: actualChatId,
@@ -146,7 +209,8 @@ export const sendMessage = createAsyncThunk(
           receiverId: chatId,
           text: data.data.content,
           profileImage: data.data.sender.profileImage,
-          time: new Date(data.data.createdAt).toLocaleTimeString()
+          time: new Date(data.data.createdAt).toLocaleTimeString(),
+          readBy: [currentUser._id] // Initialize with current user
         }
       };
     } catch (error) {
@@ -162,10 +226,17 @@ const chatSlice = createSlice({
     setSelectedChat: (state, action) => {
       state.selectedChat = action.payload.chat;
       state.chatType = action.payload.type;
+
       if (action.payload.conversationId) {
         state.conversationId = action.payload.conversationId;
       } else {
         state.conversationId = null;
+      }
+
+      // Clear unread count for this chat
+      const chatId = action.payload.conversationId || action.payload.chat?._id;
+      if (chatId) {
+        state.unreadCounts[chatId] = 0;
       }
     },
     addLocalMessage: (state, action) => {
@@ -190,6 +261,41 @@ const chatSlice = createSlice({
       const isDuplicate = state.messages[chatId].some(msg => msg.id === message.id);
       if (!isDuplicate) {
         state.messages[chatId].push(message);
+
+        // Increment unread count if not the current chat
+        const isCurrent =
+          (state.chatType === "channel" && state.selectedChat?._id === chatId) ||
+          (state.chatType === "user" && state.conversationId === chatId);
+
+        if (!isCurrent) {
+          state.unreadCounts[chatId] = (state.unreadCounts[chatId] || 0) + 1;
+        }
+      }
+    },
+    updateMessageReadStatus: (state, action) => {
+      const { chatId, userId } = action.payload;
+
+      if (state.messages[chatId]) {
+        state.messages[chatId] = state.messages[chatId].map(msg => {
+          if (!msg.readBy) {
+            msg.readBy = [];
+          }
+
+          if (!msg.readBy.includes(userId)) {
+            return {
+              ...msg,
+              readBy: [...msg.readBy, userId]
+            };
+          }
+
+          return msg;
+        });
+      }
+
+      // If this is about current user's read status, clear unread count
+      const currentUser = (state as any).auth?.user || useAuth().user;
+      if (currentUser && userId === currentUser._id) {
+        state.unreadCounts[chatId] = 0;
       }
     },
     clearError: (state) => {
@@ -221,6 +327,11 @@ const chatSlice = createSlice({
 
           state.messages[chatId] = [...uniqueNewMessages, ...state.messages[chatId]];
         }
+
+        // Reset unread count for this chat
+        if (isFirstPage) {
+          state.unreadCounts[chatId] = 0;
+        }
       })
       .addCase(fetchMessages.rejected, (state, action) => {
         state.isMessagesLoading = false;
@@ -239,6 +350,18 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.error = action.payload as string;
+      })
+      .addCase(fetchUnreadCounts.fulfilled, (state, action) => {
+        const unreadCounts: Record<string, number> = {};
+        action.payload.forEach((item: { id: string; unreadCount: number }) => {
+          unreadCounts[item.id] = item.unreadCount;
+        });
+        state.unreadCounts = unreadCounts;
+      })
+      .addCase(markMessagesAsRead.fulfilled, (state, action) => {
+        const { chatId } = action.payload;
+        // Reset unread count for this chat
+        state.unreadCounts[chatId] = 0;
       });
   },
 });
@@ -248,6 +371,7 @@ export const {
   addLocalMessage,
   removeLocalMessage,
   receiveSocketMessage,
+  updateMessageReadStatus,
   clearError
 } = chatSlice.actions;
 

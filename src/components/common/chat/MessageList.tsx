@@ -61,7 +61,7 @@ const MessageList: React.FC<MessageListProps> = ({
             setShowScrollButton(!isNearBottom);
 
             // Check if near top for loading more
-            if (scrollTop < 50 && hasMoreMessages && !isLoading) {
+            if (scrollTop < 25 && hasMoreMessages && !isLoading) {
                 onLoadMore();
             }
         };

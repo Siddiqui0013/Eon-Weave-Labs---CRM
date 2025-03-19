@@ -2,7 +2,11 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 import { AppDispatch, RootState } from '@/redux/Store';
-import { receiveSocketMessage } from '@/redux/slices/chatSlice';
+import {
+    receiveSocketMessage,
+    updateMessageReadStatus,
+    fetchUnreadCounts
+} from '@/redux/slices/chatSlice';
 
 interface SocketManagerProps {
     isAuthenticated: boolean;
@@ -18,6 +22,11 @@ const SocketManager: React.FC<SocketManagerProps> = ({ isAuthenticated, isAuth }
     const { selectedChat, chatType, conversationId } = useSelector((state: RootState) => state.chat);
     const { accessToken: token } = useSelector((state: RootState) => state.auth);
 
+    useEffect(() => {
+        if (isAuthenticated) {
+            dispatch(fetchUnreadCounts());
+        }
+    }, [isAuthenticated, isAuth, dispatch]);
 
     // Initialize socket connection
     useEffect(() => {
@@ -83,6 +92,19 @@ const SocketManager: React.FC<SocketManagerProps> = ({ isAuthenticated, isAuth }
                 chatId: data.conversationId,
                 message: formattedMessage
             }));
+
+            socket.on('messages:read', (data) => {
+                // Update read status for messages
+                const chatId = data.conversationId || data.channelId;
+
+                if (chatId) {
+                    dispatch(updateMessageReadStatus({
+                        chatId,
+                        userId: data.userId
+                    }));
+                }
+            });
+
         });
 
         // Cleanup on unmount
@@ -106,11 +128,16 @@ const SocketManager: React.FC<SocketManagerProps> = ({ isAuthenticated, isAuth }
         if (chatType === 'channel' && selectedChat._id) {
             console.log(`Joining channel: ${selectedChat._id}`);
             socket.emit('join:channel', selectedChat._id);
+            socket.emit('mark:channel:read', {
+                channelId: selectedChat._id
+            });
         }
 
         if (chatType === 'user' && conversationId) {
             console.log(`Ready for conversation: ${conversationId}`);
-            // The server handles joining conversation rooms automatically
+            socket.emit('mark:conversation:read', {
+                conversationId
+            });
         }
 
         // Cleanup when chat selection changes
