@@ -22,6 +22,7 @@ import HrRoutes from "./components/modules/hr/HrRoutes";
 import EmployeeRoutes from "./components/modules/employee/EmployeeRoutes";
 import AdminRoutes from "./components/modules/admin/AdminRoutes";
 import SocketManager from "./lib/SocketManager";
+import NotificationManager from "./lib/NotificationManager";
 
 import "./App.css";
 import { useSelector } from "react-redux";
@@ -98,10 +99,12 @@ function AppWrapper() {
   const { isAuthenticated } = useAuth();
   const { isAuthenticated: isAuth } = useSelector((state: any) => state.auth);
   return (
-    <Router>
-      <SocketManager isAuthenticated={isAuthenticated} isAuth={isAuth} />
-      <App />
-    </Router>
+    <NotificationManager>
+      <Router>
+        <SocketManager isAuthenticated={isAuthenticated} isAuth={isAuth} />
+        <App />
+      </Router>
+    </NotificationManager>
   );
 }
 

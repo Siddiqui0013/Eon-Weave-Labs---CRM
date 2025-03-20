@@ -2,10 +2,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Input } from "@/components/ui/input";
 import { Mail, Phone, MapPin, Edit, X, IdCard, Loader2, Camera } from "lucide-react";
-// import useTheme from "@/hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
 import { useState, useRef } from "react";
 import { useUpdateUserMutation } from "@/services/userApi";
 import { useToast } from "@/hooks/use-toast";
@@ -25,8 +25,8 @@ interface EmployeeProfileProps {
 }
 
 export default function EmployeeProfilePreview({ employee: initialEmployee, side = "right" }: EmployeeProfileProps) {
-    // const { theme } = useTheme();
-    // const [selectedTheme, setSelectedTheme] = useState(theme);
+    const { theme } = useTheme();
+    const [selectedTheme, setSelectedTheme] = useState(theme);
     const [isEditing, setIsEditing] = useState(false);
     const [employee, setEmployee] = useState(initialEmployee);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -88,15 +88,15 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
         setIsEditing(false);
     };
 
-    // const changeTheme = (theme: string) => {
-    //     if (theme === '0') {
-    //         localStorage.removeItem('theme');
-    //         document.documentElement.setAttribute('data-theme', '');
-    //     } else {
-    //         localStorage.setItem('theme', theme);
-    //         document.documentElement.setAttribute('data-theme', theme);
-    //     }
-    // }
+    const changeTheme = (theme: string) => {
+        if (theme === '0') {
+            localStorage.removeItem('theme');
+            document.documentElement.setAttribute('data-theme', '');
+        } else {
+            localStorage.setItem('theme', theme);
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+    }
 
     return (
         <Sheet>
@@ -234,77 +234,70 @@ export default function EmployeeProfilePreview({ employee: initialEmployee, side
                             </div>
                         </div>
                         {/* Theme */}
-
+                        <div className="w-full mt-6 p-4 rounded-lg bg-gray-800">
+                            <h3 className="text-sm font-medium text-gray-400 mb-2">Theme</h3>
+                            <Select
+                                value={selectedTheme}
+                                onValueChange={(value) => {
+                                    setSelectedTheme(value);
+                                    changeTheme(value);
+                                }}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select Theme" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="0" className="relative">
+                                        Default
+                                        <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
+                                            <div className="h-4 w-4 bg-[#E75B10] rounded-full"></div>
+                                            <div className="h-4 w-4 bg-[#3F3F3F] rounded-full"></div>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="secondary" className="relative">
+                                        Secondary
+                                        <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
+                                            <div className="h-4 w-4 bg-[#6379F4] rounded-full"></div>
+                                            <div className="h-4 w-4 bg-[#3F3F3F] rounded-full"></div>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="cyber" className="relative">
+                                        Cyber
+                                        <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
+                                            <div className="h-4 w-4 bg-[#7b2cbf] rounded-full"></div>
+                                            <div className="h-4 w-4 bg-[#10002b] rounded-full"></div>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="golden" className="relative">
+                                        Golden
+                                        <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
+                                            <div className="h-4 w-4 bg-[#ffbd00] rounded-full"></div>
+                                            <div className="h-4 w-4 bg-[#3F3F3F] rounded-full"></div>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="neon" className="relative">
+                                        Neon Lime
+                                        <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
+                                            <div className="h-4 w-4 bg-[#2a9d8f] rounded-full"></div>
+                                            <div className="h-4 w-4 bg-[#264653] rounded-full"></div>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="cyan" className="relative">
+                                        Cyan
+                                        <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
+                                            <div className="h-4 w-4 bg-[#00b4d8] rounded-full"></div>
+                                            <div className="h-4 w-4 bg-[#03045e] rounded-full"></div>
+                                        </div>
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                 </ScrollArea>
             </SheetContent>
         </Sheet>
     );
 }
-
-
-
-
-{/* <div className="w-full mt-6 p-4 rounded-lg bg-gray-800">
-<h3 className="text-sm font-medium text-gray-400 mb-2">Theme</h3>
-<Select
-    value={selectedTheme}
-    onValueChange={(value) => {
-        setSelectedTheme(value);
-        changeTheme(value);
-    }}
->
-    <SelectTrigger className="w-full">
-        <SelectValue placeholder="Select Theme" />
-    </SelectTrigger>
-    <SelectContent>
-        <SelectItem value="0" className="relative">
-            Default
-            <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
-                <div className="h-4 w-4 bg-[#E75B10] rounded-full"></div>
-                <div className="h-4 w-4 bg-[#3F3F3F] rounded-full"></div>
-            </div>
-        </SelectItem>
-        <SelectItem value="secondary" className="relative">
-            Secondary
-            <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
-                <div className="h-4 w-4 bg-[#6379F4] rounded-full"></div>
-                <div className="h-4 w-4 bg-[#3F3F3F] rounded-full"></div>
-            </div>
-        </SelectItem>
-        <SelectItem value="cyber" className="relative">
-            Cyber
-            <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
-                <div className="h-4 w-4 bg-[#7b2cbf] rounded-full"></div>
-                <div className="h-4 w-4 bg-[#10002b] rounded-full"></div>
-            </div>
-        </SelectItem>
-        <SelectItem value="golden" className="relative">
-            Golden
-            <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
-                <div className="h-4 w-4 bg-[#ffbd00] rounded-full"></div>
-                <div className="h-4 w-4 bg-[#3F3F3F] rounded-full"></div>
-            </div>
-        </SelectItem>
-        <SelectItem value="neon" className="relative">
-            Neon Lime
-            <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
-                <div className="h-4 w-4 bg-[#2a9d8f] rounded-full"></div>
-                <div className="h-4 w-4 bg-[#264653] rounded-full"></div>
-            </div>
-        </SelectItem>
-        <SelectItem value="cyan" className="relative">
-            Cyan
-            <div className="flex gap-1 absolute top-1/2 -translate-y-1/2 right-1">
-                <div className="h-4 w-4 bg-[#00b4d8] rounded-full"></div>
-                <div className="h-4 w-4 bg-[#03045e] rounded-full"></div>
-            </div>
-        </SelectItem>
-    </SelectContent>
-</Select>
-</div> */}
-
-
 
 
 

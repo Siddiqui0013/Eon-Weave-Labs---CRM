@@ -35,14 +35,14 @@ const MessageItem: React.FC<MessageItemProps> = ({
                 </div>
             )}
 
-            <div className={`w-4/5 max-w-[80%] ${isOwnMessage ? 'ml-auto' : ''}`}>
+            <div className={`min-w-20 max-w-[80%] ${isOwnMessage ? 'ml-auto' : ''}`}>
                 <div
-                    className={`p-3 rounded-lg break-words ${isOwnMessage
-                            ? "bg-primary text-white ml-auto"
-                            : "bg-gray-700 text-gray-200"
+                    className={`px-3 py-2 rounded-lg break-words ${isOwnMessage
+                        ? "bg-primary text-white ml-auto"
+                        : "bg-gray-700 text-gray-200"
                         }`}
                 >
-                    <p className="text-md whitespace-normal">{message.text}</p>
+                    <p className="text-base whitespace-normal">{message.text}</p>
                     <p className="text-[11px] text-gray-300 mt-1">{message.time}</p>
                 </div>
             </div>
