@@ -90,35 +90,60 @@ const MessageItem: React.FC<MessageItemProps> = ({
         }
     };
 
-    // Function to parse text and render URLs as links
     const renderTextWithLinks = (text: string) => {
         // Regular expression to match URLs
         const urlRegex = /(https?:\/\/[^\s]+)/g;
 
-        // Split the text by URLs
-        const parts = text.split(urlRegex);
+        // If there are no URLs in the text, return the text as is
+        if (!text.match(urlRegex)) {
+            return text;
+        }
 
-        // Find all URLs in the text
-        const urls = text.match(urlRegex) || [];
+        // Split the text into parts (alternating text and URLs)
+        const parts = [];
+        let lastIndex = 0;
+        let match;
 
-        // Combine parts and URLs
-        const result = [];
-        for (let i = 0; i < parts.length; i++) {
-            // Add the text part
-            if (parts[i]) {
-                result.push(<span key={`text-${i}`}>{parts[i]}</span>);
+        // Use exec to get matches with their indices
+        while ((match = urlRegex.exec(text)) !== null) {
+            // Add the text before the URL
+            if (match.index > lastIndex) {
+                parts.push({
+                    type: 'text',
+                    content: text.substring(lastIndex, match.index)
+                });
             }
 
-            // Add the URL part (if there is one)
-            if (urls[i - 1]) {
-                const url = urls[i - 1];
+            // Add the URL
+            parts.push({
+                type: 'url',
+                content: match[0]
+            });
+
+            lastIndex = match.index + match[0].length;
+        }
+
+        // Add any remaining text after the last URL
+        if (lastIndex < text.length) {
+            parts.push({
+                type: 'text',
+                content: text.substring(lastIndex)
+            });
+        }
+
+        // Render each part
+        return parts.map((part, index) => {
+            if (part.type === 'text') {
+                return <span key={`text-${index}`}>{part.content}</span>;
+            } else {
+                const url = part.content;
                 const joinCheck = isChannelJoinLink(url);
 
                 if (joinCheck.isJoinLink && joinCheck.channelId) {
                     // Render a join channel button
-                    result.push(
+                    return (
                         <button
-                            key={`url-${i - 1}`}
+                            key={`url-${index}`}
                             onClick={() => handleJoinChannel(joinCheck.channelId!)}
                             disabled={isLoading}
                             className="flex items-center gap-1 py-1 px-2 bg-green-600 text-white rounded mt-1 hover:bg-green-700 transition-colors"
@@ -133,9 +158,9 @@ const MessageItem: React.FC<MessageItemProps> = ({
                     );
                 } else {
                     // Regular link
-                    result.push(
+                    return (
                         <a
-                            key={`url-${i - 1}`}
+                            key={`url-${index}`}
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -146,9 +171,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
                     );
                 }
             }
-        }
-
-        return result;
+        });
     };
 
     return (
@@ -170,6 +193,11 @@ const MessageItem: React.FC<MessageItemProps> = ({
             )}
 
             <div className={`min-w-20 max-w-[80%] ${isOwnMessage ? 'ml-auto' : ''}`}>
+                {!isOwnMessage && chatType === "channel" && (
+                    <p className="text-sm mb-1">
+                        {message.name}
+                    </p>
+                )}
                 <div
                     className={`px-3 py-2 rounded-lg break-words ${isOwnMessage
                         ? "bg-primary text-white ml-auto"
@@ -179,7 +207,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
                     <p className="text-base whitespace-normal">
                         {renderTextWithLinks(message.text)}
                     </p>
-                    <p className="text-[11px] text-gray-300 mt-1">{message.time}</p>
+                    <p className="text-[10px] text-gray-300 mt-1">{message.time}</p>
                 </div>
             </div>
         </div>

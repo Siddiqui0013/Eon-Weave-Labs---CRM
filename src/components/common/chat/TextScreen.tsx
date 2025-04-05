@@ -14,7 +14,7 @@ const TextScreen = () => {
   const currentUserId = user?._id;
   const dispatch = useDispatch<AppDispatch>();
   const [page, setPage] = useState(1);
-  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [hasMoreMessages, setHasMoreMessages] = useState(false);
 
   // Get state from Redux
   const {
@@ -36,12 +36,25 @@ const TextScreen = () => {
   useEffect(() => {
     if (selectedChat?._id) {
       setPage(1);
-      setHasMoreMessages(true);
       dispatch(fetchMessages({
         chatId: selectedChat._id,
         chatType,
         page: 1
-      }));
+      })).then((action) => {
+        // Properly type check the action and its payload
+        if (action.type.endsWith('/fulfilled') && action.payload) {
+          // Cast to any first to avoid TypeScript errors
+          const payload = action.payload as any;
+
+          if (payload.messages && Array.isArray(payload.messages)) {
+            if (payload.messages.length < 25) {
+              setHasMoreMessages(false);
+            } else {
+              setHasMoreMessages(true);
+            }
+          }
+        }
+      });
     }
   }, [selectedChat, chatType, dispatch]);
 
@@ -63,8 +76,10 @@ const TextScreen = () => {
         const payload = action.payload as any;
 
         if (payload.messages && Array.isArray(payload.messages)) {
-          if (payload.messages.length < 25) { // Assuming 50 is your page size
+          if (payload.messages.length < 25) {
             setHasMoreMessages(false);
+          } else {
+            setHasMoreMessages(true);
           }
         }
       }

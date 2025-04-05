@@ -25,6 +25,7 @@ export interface Message {
   text: string;
   time: string;
   profileImage?: string;
+  name?: string;
   readBy?: string[];
 }
 
@@ -33,7 +34,7 @@ interface ChatState {
   channels: Chat[];
   userConversations: Chat[];
   selectedChat: Chat | null;
-  chatType: string | null;
+  chatType: string;
   conversationId: string | null;
   messages: Record<string, Message[]>;
   unreadCounts: Record<string, number>;
@@ -112,7 +113,7 @@ export const fetchMessages = createAsyncThunk(
     chatId,
     chatType,
     page = 1,
-    limit = 50
+    limit = 25
   }: {
     chatId: string;
     chatType: string;
@@ -152,6 +153,7 @@ export const fetchMessages = createAsyncThunk(
         receiverId: msg.receiverId || chatId,
         text: msg.content,
         profileImage: msg.sender.profileImage,
+        name: msg.sender.name,
         time: new Date(msg.createdAt).toLocaleTimeString(),
         readBy: msg.readBy || []
       }));
@@ -241,7 +243,7 @@ const chatSlice = createSlice({
     },
     clearSelectedChat: (state) => {
       state.selectedChat = null;
-      state.chatType = null;
+      state.chatType = "";
       state.conversationId = null;
     },
     addLocalMessage: (state, action) => {
