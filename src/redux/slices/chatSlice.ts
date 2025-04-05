@@ -25,6 +25,7 @@ export interface Message {
   text: string;
   time: string;
   profileImage?: string;
+  name?: string;
   readBy?: string[];
 }
 
@@ -112,7 +113,7 @@ export const fetchMessages = createAsyncThunk(
     chatId,
     chatType,
     page = 1,
-    limit = 50
+    limit = 25
   }: {
     chatId: string;
     chatType: string;
@@ -152,6 +153,7 @@ export const fetchMessages = createAsyncThunk(
         receiverId: msg.receiverId || chatId,
         text: msg.content,
         profileImage: msg.sender.profileImage,
+        name: msg.sender.name,
         time: new Date(msg.createdAt).toLocaleTimeString(),
         readBy: msg.readBy || []
       }));
@@ -239,6 +241,11 @@ const chatSlice = createSlice({
         state.unreadCounts[chatId] = 0;
       }
     },
+    clearSelectedChat: (state) => {
+      state.selectedChat = null;
+      state.chatType = "";
+      state.conversationId = null;
+    },
     addLocalMessage: (state, action) => {
       const { chatId, message } = action.payload;
       if (!state.messages[chatId]) {
@@ -248,6 +255,12 @@ const chatSlice = createSlice({
     },
     removeLocalMessage: (state, action) => {
       const { chatId, messageId } = action.payload;
+      if (state.messages[chatId]) {
+        state.messages[chatId] = state.messages[chatId].filter(msg => msg.id !== messageId);
+      }
+    },
+    deleteMessage: (state, action) => {
+      const { messageId, chatId } = action.payload;
       if (state.messages[chatId]) {
         state.messages[chatId] = state.messages[chatId].filter(msg => msg.id !== messageId);
       }
@@ -368,8 +381,10 @@ const chatSlice = createSlice({
 
 export const {
   setSelectedChat,
+  clearSelectedChat,
   addLocalMessage,
   removeLocalMessage,
+  deleteMessage,
   receiveSocketMessage,
   updateMessageReadStatus,
   clearError
