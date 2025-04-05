@@ -4,6 +4,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useToast } from "@/hooks/use-toast";
 import { baseURL } from "@/utils/baseURL";
 import { Chat } from "@/redux/slices/chatSlice";
+import { useLeaveChannelMutation } from "@/services/chatAPI";
+import { clearSelectedChat } from "@/redux/slices/chatSlice";
+import { useDispatch } from "react-redux";
 
 interface ChatHeaderProps {
     selectedChat: Chat | null;
@@ -16,7 +19,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     chatType,
     conversationId
 }) => {
+    const dispatch = useDispatch();
     const { toast } = useToast();
+    const [leaveChannel, { isLoading: isLeaving }] = useLeaveChannelMutation();
 
     const copyLink = (id: string) => {
         try {
@@ -30,6 +35,24 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
                 variant: "destructive",
                 title: "Error",
                 description: "Failed to copy link to clipboard"
+            });
+        }
+    };
+
+    const handleLeaveChannel = async () => {
+        try {
+            await leaveChannel(selectedChat?._id).unwrap();
+            toast({
+                variant: "default",
+                title: "Left channel successfully",
+            });
+            dispatch(clearSelectedChat());
+        }
+        catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Failed to leave channel"
             });
         }
     };
@@ -68,8 +91,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
                         <DropdownMenuItem onSelect={() => { }}>
                             Clear Messages
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => { }}>
-                            Leave Conversation
+                        <DropdownMenuItem onSelect={handleLeaveChannel} disabled={isLeaving}>
+                            {isLeaving ? "Leaving..." : "Leave Channel"}
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => copyLink(selectedChat._id)}>
                             Join Link

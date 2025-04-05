@@ -33,7 +33,7 @@ interface ChatState {
   channels: Chat[];
   userConversations: Chat[];
   selectedChat: Chat | null;
-  chatType: string;
+  chatType: string | null;
   conversationId: string | null;
   messages: Record<string, Message[]>;
   unreadCounts: Record<string, number>;
@@ -239,6 +239,11 @@ const chatSlice = createSlice({
         state.unreadCounts[chatId] = 0;
       }
     },
+    clearSelectedChat: (state) => {
+      state.selectedChat = null;
+      state.chatType = null;
+      state.conversationId = null;
+    },
     addLocalMessage: (state, action) => {
       const { chatId, message } = action.payload;
       if (!state.messages[chatId]) {
@@ -368,6 +373,7 @@ const chatSlice = createSlice({
 
 export const {
   setSelectedChat,
+  clearSelectedChat,
   addLocalMessage,
   removeLocalMessage,
   receiveSocketMessage,

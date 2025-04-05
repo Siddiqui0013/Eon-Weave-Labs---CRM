@@ -3,6 +3,7 @@ import { Message } from "@/redux/slices/chatSlice";
 import { Loader, User, UserPlus } from "lucide-react";
 import { baseURL } from "@/utils/baseURL";
 import { useToast } from "@/hooks/use-toast";
+import { useGetChannelsQuery } from "@/services/chatAPI";
 
 // Utility function to detect join links
 const isChannelJoinLink = (url: string): { isJoinLink: boolean, channelId?: string } => {
@@ -47,6 +48,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 }) => {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const { refetch: refetchChannels } = useGetChannelsQuery({});
 
     // Function to handle joining a channel
     const handleJoinChannel = async (channelId: string) => {
@@ -68,8 +70,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
                     description: "You've joined the channel successfully!",
                     variant: "default"
                 });
-                // You could also dispatch an action to update the channels list
-                // dispatch(fetchChannels());
+                refetchChannels();
             } else {
                 toast({
                     title: "Error",
