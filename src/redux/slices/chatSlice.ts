@@ -259,6 +259,12 @@ const chatSlice = createSlice({
         state.messages[chatId] = state.messages[chatId].filter(msg => msg.id !== messageId);
       }
     },
+    deleteMessage: (state, action) => {
+      const { messageId, chatId } = action.payload;
+      if (state.messages[chatId]) {
+        state.messages[chatId] = state.messages[chatId].filter(msg => msg.id !== messageId);
+      }
+    },
     receiveSocketMessage: (state, action) => {
       const { chatId, message } = action.payload;
       if (!state.messages[chatId]) {
@@ -378,6 +384,7 @@ export const {
   clearSelectedChat,
   addLocalMessage,
   removeLocalMessage,
+  deleteMessage,
   receiveSocketMessage,
   updateMessageReadStatus,
   clearError

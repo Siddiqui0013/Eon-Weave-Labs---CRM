@@ -49,7 +49,12 @@ export const ChatApi = createApi({
       }),
       invalidatesTags: ['Chat']
     }),
-
+    deleteMessage: builder.mutation({
+      query: (messageId) => ({
+        url: `/chat/deleteMessage/${messageId}`,
+        method: 'DELETE'
+      }),
+    }),
   })
 })
 export const {
@@ -58,5 +63,6 @@ export const {
   useGetUserConversationsQuery,
   useCreateChannelMutation,
   useGetMessagesQuery,
-  useLeaveChannelMutation
+  useLeaveChannelMutation,
+  useDeleteMessageMutation
 } = ChatApi

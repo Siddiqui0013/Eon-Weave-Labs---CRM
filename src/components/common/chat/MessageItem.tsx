@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import { Message } from "@/redux/slices/chatSlice";
-import { Loader, User, UserPlus } from "lucide-react";
+import { Loader, User, UserPlus, Copy, Trash2, MoreVertical } from "lucide-react";
 import { baseURL } from "@/utils/baseURL";
 import { useToast } from "@/hooks/use-toast";
-import { useGetChannelsQuery } from "@/services/chatAPI";
+import { useGetChannelsQuery, useDeleteMessageMutation } from "@/services/chatAPI";
+import { deleteMessage } from "@/redux/slices/chatSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "@/redux/Store";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Utility function to detect join links
 const isChannelJoinLink = (url: string): { isJoinLink: boolean, channelId?: string } => {
@@ -46,9 +55,12 @@ const MessageItem: React.FC<MessageItemProps> = ({
     showUserImage = false,
     profileImage
 }) => {
+    const dispatch = useDispatch<AppDispatch>();
+    const { selectedChat, conversationId } = useSelector((state: RootState) => state.chat);
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const { refetch: refetchChannels } = useGetChannelsQuery({});
+    const [deleteMsg] = useDeleteMessageMutation();
 
     // Function to handle joining a channel
     const handleJoinChannel = async (channelId: string) => {
@@ -88,6 +100,54 @@ const MessageItem: React.FC<MessageItemProps> = ({
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleDeleteMessage = async () => {
+        try {
+            const result = await deleteMsg(message.id).unwrap();
+            if (result) {
+                toast({
+                    title: "Success",
+                    description: "Message deleted successfully",
+                    variant: "default"
+                });
+
+                const chatId = chatType === "user" && conversationId
+                    ? conversationId
+                    : selectedChat?._id;
+
+                if (chatId) {
+                    dispatch(deleteMessage({
+                        chatId,
+                        messageId: message.id
+                    }));
+                }
+            }
+        } catch (error: any) {
+            toast({
+                title: "Error",
+                description: error?.data?.message || "Failed to delete message",
+                variant: "destructive"
+            });
+        }
+    };
+
+    const handleCopyMessage = () => {
+        navigator.clipboard.writeText(message.text)
+            .then(() => {
+                toast({
+                    title: "Copied",
+                    description: "Message copied to clipboard",
+                    variant: "default"
+                });
+            })
+            .catch(() => {
+                toast({
+                    title: "Error",
+                    description: "Failed to copy message",
+                    variant: "destructive"
+                });
+            })
     };
 
     const renderTextWithLinks = (text: string) => {
@@ -175,7 +235,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
     };
 
     return (
-        <div className={`flex ${isOwnMessage ? "justify-end" : "justify-start"} mb-4`}>
+        <div className={`flex ${isOwnMessage ? "justify-end" : "justify-start"} mb-4 group`}>
             {!isOwnMessage && chatType === "channel" && showUserImage && (
                 <div className="mr-2 flex-shrink-0">
                     {profileImage ? (
@@ -192,12 +252,31 @@ const MessageItem: React.FC<MessageItemProps> = ({
                 </div>
             )}
 
-            <div className={`min-w-20 max-w-[80%] ${isOwnMessage ? 'ml-auto' : ''}`}>
+            <div className={`min-w-20 max-w-[80%] ${isOwnMessage ? 'ml-auto' : ''} relative`}>
                 {!isOwnMessage && chatType === "channel" && (
-                    <p className="text-sm mb-1">
+                    <p className="text-sm mb-1 text-gray-400">
                         {message.name}
                     </p>
                 )}
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <MoreVertical className="w-4 h-4 text-gray-400" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={handleCopyMessage}>
+                            <Copy className="w-4 h-4 mr-2" />
+                            <span>Copy Message</span>
+                        </DropdownMenuItem>
+                        {isOwnMessage && (
+                            <DropdownMenuItem onClick={handleDeleteMessage} className="text-red-500">
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                <span>Delete Message</span>
+                            </DropdownMenuItem>
+                        )}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
                 <div
                     className={`px-3 py-2 rounded-lg break-words ${isOwnMessage
                         ? "bg-primary text-white ml-auto"
