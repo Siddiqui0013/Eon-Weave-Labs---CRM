@@ -14,8 +14,8 @@ interface SocketManagerProps {
     isAuthenticated: boolean;
     isAuth: boolean;
 }
-//const base_url = 'https://ewl-backend.onrender.com'
-const base_url = 'http://localhost:8000';
+const base_url = 'https://ewl-backend.onrender.com'
+//const base_url = 'http://localhost:8000';
 
 const SocketManager: React.FC<SocketManagerProps> = ({ isAuthenticated, isAuth }) => {
     const dispatch = useDispatch<AppDispatch>();
